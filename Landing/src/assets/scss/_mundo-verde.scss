@@ -1,0 +1,329 @@
+/*
+// Mundo Verde Custom Styles
+*/
+
+// Estilos específicos para el tema Mundo Verde
+.mundo-verde-theme {
+  // Gradientes verdes personalizados
+  .hero-1 {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(46, 125, 50, 0.95)) !important;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(ellipse at center, transparent 20%, rgba(27, 94, 32, 0.1) 100%);
+      pointer-events: none;
+    }
+  }
+
+  // Botones con estilo verde
+  .btn-light {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.95);
+    color: #2E7D32;
+    font-weight: 600;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 1);
+      border-color: rgba(255, 255, 255, 1);
+      color: #1B5E20;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  // Mejoras para el icono de play
+  .play-icon-circle {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  // Efectos de texto mejorados
+  .hero-1-title {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    
+    &::after {
+      position: absolute;
+      top: -10px;
+      right: -30px;
+      font-size: 0.5em;
+      opacity: 0.7;
+    }
+  }
+
+  // Animaciones suaves
+  .hero-content {
+    animation: fadeInUp 1.2s ease-out;
+  }
+
+  .btn, .video-play-icon {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// Keyframes para animaciones
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Estilos para el navbar con tema verde
+.navbar-mundo-verde {
+  .navbar-nav .nav-link {
+    color: #2E7D32;
+    font-weight: 500;
+    
+    &:hover, &.active {
+      color: #1B5E20;
+    }
+  }
+  
+  .navbar-brand {
+    color: #2E7D32 !important;
+  }
+}
+
+// Footer con tema verde
+.footer-mundo-verde {
+  background: linear-gradient(135deg, #2E7D32, #1B5E20) !important;
+}
+
+// Cards y componentes con acento verde
+.card-mundo-verde {
+  border-left: 4px solid #4CAF50;
+  
+  &:hover {
+    border-left-color: #2E7D32;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.15);
+  }
+}
+
+// Texto con acento verde
+.text-mundo-verde {
+  color: #2E7D32 !important;
+}
+
+.text-mundo-verde-light {
+  color: #4CAF50 !important;
+}
+
+.bg-mundo-verde {
+  background-color: #4CAF50 !important;
+}
+
+.bg-mundo-verde-light {
+  background-color: #E8F5E8 !important;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .mundo-verde-theme {
+    .hero-1-title::after {
+      display: none;
+    }
+  }
+}
+
+// Estilos adicionales para página de Huella de Carbono
+.bg-half-170 {
+  padding: 170px 0 80px;
+}
+
+.text-white-70 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+// Botón principal Mundo Verde
+.btn-mundo-verde {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  border: 2px solid #4CAF50;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+    border-color: #2E7D32;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+  }
+  
+  &:focus, &:active {
+    background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+    border-color: #2E7D32;
+    color: white;
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+  }
+}
+
+.btn-outline-mundo-verde {
+  border: 2px solid #4CAF50;
+  color: #4CAF50;
+  background: transparent;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #4CAF50;
+    border-color: #4CAF50;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+  }
+}
+
+// Service box enhancements
+.service-box {
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(76, 175, 80, 0.1);
+  
+  &:hover {
+    border-color: rgba(76, 175, 80, 0.3);
+  }
+  
+  &.active {
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    
+    .service-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.service-icon {
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(76, 175, 80, 0.2);
+    transform: scale(1.1);
+  }
+}
+
+// Title decorations
+.title-border-simple {
+  height: 3px;
+  width: 60px;
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  margin: 20px auto;
+  border-radius: 2px;
+}
+
+// Alert styles
+.alert-mundo-verde {
+  background-color: rgba(76, 175, 80, 0.1);
+  border-color: #4CAF50;
+  color: #2E7D32;
+  border-left: 4px solid #4CAF50;
+  
+  .alert-heading {
+    color: #2E7D32;
+  }
+}
+
+// Process steps
+.process-step {
+  .process-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+  }
+}
+
+// Feature icons
+.feature-icon {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  
+  h5 {
+    margin-bottom: 0;
+    font-weight: 600;
+  }
+}
+
+// Avatar sizes
+.avatar-md {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+}
+
+.avatar-lg {
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+}
+
+// Badge styles
+.badge {
+  &.bg-mundo-verde {
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%) !important;
+    border: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+  }
+}
+
+// Link hover effects
+a.text-decoration-none {
+  text-decoration: none !important;
+  
+  &:hover {
+    .service-box {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(76, 175, 80, 0.15);
+    }
+  }
+}
+
+// Section spacing
+.section {
+  padding: 80px 0;
+}
+
+// Responsive adjustments for new components
+@media (max-width: 768px) {
+  .bg-half-170 {
+    padding: 120px 0 60px;
+  }
+  
+  .service-box {
+    margin-bottom: 30px !important;
+  }
+  
+  .section {
+    padding: 60px 0;
+  }
+}
