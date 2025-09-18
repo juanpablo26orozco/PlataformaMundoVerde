@@ -1,4 +1,4 @@
-import Login from "../src/pages/Login";
+
 import Signup from "../src/pages/Signup";
 import PswForget from "../src/pages/PswForget";
 import Layout1 from "../src/pages/Layout1/Layout_1";
@@ -12,15 +12,12 @@ import Layout8 from "../src/pages/Layout8/Layout8";
 import Layout9 from "../src/pages/Layout9/Layout9";
 import HuellaCarbono from "../src/pages/HuellaCarbono/HuellaCarbono";
 
-import CalculadoraEjemploPage from "../src/pages/HuellaCarbono/CalculadoraEjemploPage";
 import DocumentosPage from "../src/pages/DocumentosPage";
 
 const routes = [
   { path: "/password-forget", component: <PswForget /> },
   { path: "/sign-up", component: <Signup /> },
-  { path: "/login", component: <Login /> },
   { path: "/huella-carbono", component: <HuellaCarbono /> },
-  { path: "/calculadora-ejemplo", component: <CalculadoraEjemploPage /> },
   { path: "/documentos", component: <DocumentosPage /> },
   { path: "/Layout2", component: <Layout2 /> },
   { path: "/Layout3", component: <Layout3 /> },
@@ -32,6 +29,8 @@ const routes = [
   { path: "/Layout9", component: <Layout9 /> },
   { path: "/Layout1", component: <Layout1 /> },
   { path: "/", component: <Layout1 /> },
+  // Catch-all route: redirige cualquier ruta desconocida a la landing principal
+  { path: "*", component: <Layout1 /> },
 ];
 
 export default routes;

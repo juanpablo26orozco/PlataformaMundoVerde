@@ -8,8 +8,6 @@ import Navbar from "../../component/Navbar/NavBar";
 import Footer from "../../component/Footer/Footer";
 import Switch from "../../component/Switch";
 
-import { useNavigate } from "react-router-dom";
-import { Button } from "reactstrap";
 
 export default class HuellaCarbono extends Component {
   constructor(props) {
@@ -579,10 +577,6 @@ export default class HuellaCarbono extends Component {
                   </Link>
                   <Link to="/" className="btn btn-outline-light btn-lg rounded-pill">
                     Volver al Inicio
-                  </Link>
-                  {/* Botón de acceso a la calculadora de ejemplo */}
-                  <Link to="/calculadora-ejemplo" className="btn btn-warning btn-lg rounded-pill ms-3 mt-3">
-                    Probar Calculadora Ejemplo
                   </Link>
                 </div>
               </Col>

@@ -2,6 +2,7 @@
   "name": "qexal",
   "version": "2.3.0",
   "private": true,
+  "homepage": "https://juanpablo26orozco.github.io/PlataformaMundoVerde",
   "dependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
@@ -9,6 +10,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.5.0",
     "feather-icons-react": "^0.7.0",
+    "gh-pages": "^6.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-modal": "^3.16.1",
@@ -26,7 +28,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"

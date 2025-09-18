@@ -1235,86 +1235,83 @@ const FormularioHuella = ({ onFormComplete }) => {
                 )}
                 {/* RESUMEN Y GRÁFICO DE EMISIONES GEI */}
                 <div className="mt-5" id="resultados-totales">
-                  {/* El botón y el resumen siempre visibles al final */}
-                  <>
-                    {/* Botón Calcular Resumen */}
-                    {!resumenCalculado && (
-                      <div style={{ textAlign: 'center', margin: '2rem 0' }}>
-                        <button
-                          className="btn btn-success"
-                          onClick={() => setResumenCalculado(true)}
-                          style={{ fontSize: '1.2rem', padding: '0.7rem 2.5rem', borderRadius: '2rem', boxShadow: '0 2px 8px #b2dfdb' }}
-                        >
-                          Calcular Resumen
-                        </button>
-                      </div>
-                    )}
-                    {/* Mostrar resumen solo después de calcular */}
-                    {resumenCalculado && (
-                      <div ref={resumenRef} style={{ maxWidth: 900, margin: '2rem auto', background: '#f8fafc', borderRadius: 28, boxShadow: '0 8px 32px #b2dfdb', padding: 48, textAlign: 'center' }}>
-                        <h2 style={{ color: '#009688', fontWeight: 800, marginBottom: 32, fontSize: '2.5rem' }}>Resumen de Consumo de la Empresa</h2>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 32, gap: 32, flexWrap: 'wrap' }}>
-                          <div style={{ flex: 1, minWidth: 260, background: '#e0f2f1', borderRadius: 16, padding: 24, marginBottom: 16 }}>
-                            <h4 style={{ color: '#00796b', fontWeight: 700 }}>Datos de la Empresa</h4>
-                            <div style={{ textAlign: 'left', fontSize: '1.1rem', color: '#333', marginTop: 12 }}>
-                              <strong>Nombre:</strong> {datosEmpresa.nombreEmpresa || '-'}<br/>
-                              <strong>NIT:</strong> {datosEmpresa.nit || '-'}<br/>
-                              <strong>Dirección:</strong> {datosEmpresa.direccion || '-'}<br/>
-                              <strong>Departamento:</strong> {datosEmpresa.departamento || '-'}<br/>
-                              <strong>Municipio:</strong> {datosEmpresa.municipio || '-'}<br/>
-                              <strong>Año Base:</strong> {datosEmpresa.añoBase || '-'}<br/>
-                              <strong>Fecha Reporte:</strong> {datosEmpresa.fechaReporte || '-'}<br/>
-                              <strong>Teléfono:</strong> {datosEmpresa.telefono || '-'}<br/>
-                              <strong>Correo:</strong> {datosEmpresa.correo || '-'}<br/>
-                              <strong>Responsable:</strong> {datosEmpresa.personaElabora || '-'}<br/>
-                              <strong>Cargo:</strong> {datosEmpresa.cargo || '-'}
-                            </div>
-                          </div>
-                          <div style={{ flex: 2, minWidth: 320, background: '#fff', borderRadius: 16, padding: 24, marginBottom: 16, border: '1px solid #b2dfdb' }}>
-                            <h4 style={{ color: '#00796b', fontWeight: 700 }}>Emisiones por Alcance</h4>
-                            <table style={{ width: '100%', marginBottom: 24, fontSize: '1.2rem' }}>
-                              <thead>
-                                <tr style={{ background: '#e0f2f1', color: '#00695c' }}>
-                                  <th>Alcance</th>
-                                  <th>Emisiones (kg CO₂e)</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr><td>Alcance 1</td><td>{emisiones.alcance1}</td></tr>
-                                <tr><td>Alcance 2</td><td>{emisiones.alcance2}</td></tr>
-                                <tr><td>Alcance 3</td><td>{emisiones.alcance3}</td></tr>
-                                <tr style={{ fontWeight: 700, background: '#b2dfdb' }}>
-                                  <td>Total</td><td>{totalEmisiones}</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            <div style={{ fontSize: '1.3rem', marginBottom: 18, color: '#00796b', fontWeight: 700 }}>{evaluacion}</div>
-                            <div style={{ fontSize: '1.15rem', marginBottom: 24 }}>
-                              Para compensar estas emisiones, deberías plantar al menos <span style={{ color: '#388e3c', fontWeight: 700 }}>{arboles}</span> árboles.
-                            </div>
+                  {/* Mostrar botón Calcular Resumen solo en step 2 y cuando no se ha calculado el resumen */}
+                  {step === 2 && !resumenCalculado && (
+                    <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                      <button
+                        className="btn btn-success"
+                        onClick={() => setResumenCalculado(true)}
+                        style={{ fontSize: '1.2rem', padding: '0.7rem 2.5rem', borderRadius: '2rem', boxShadow: '0 2px 8px #b2dfdb' }}
+                      >
+                        Calcular Resumen
+                      </button>
+                    </div>
+                  )}
+                  {/* Mostrar resumen solo después de calcular */}
+                  {resumenCalculado && (
+                    <div ref={resumenRef} style={{ maxWidth: 900, margin: '2rem auto', background: '#f8fafc', borderRadius: 28, boxShadow: '0 8px 32px #b2dfdb', padding: 48, textAlign: 'center' }}>
+                      <h2 style={{ color: '#009688', fontWeight: 800, marginBottom: 32, fontSize: '2.5rem' }}>Resumen de Consumo de la Empresa</h2>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 32, gap: 32, flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1, minWidth: 260, background: '#e0f2f1', borderRadius: 16, padding: 24, marginBottom: 16 }}>
+                          <h4 style={{ color: '#00796b', fontWeight: 700 }}>Datos de la Empresa</h4>
+                          <div style={{ textAlign: 'left', fontSize: '1.1rem', color: '#333', marginTop: 12 }}>
+                            <strong>Nombre:</strong> {datosEmpresa.nombreEmpresa || '-'}<br/>
+                            <strong>NIT:</strong> {datosEmpresa.nit || '-'}<br/>
+                            <strong>Dirección:</strong> {datosEmpresa.direccion || '-'}<br/>
+                            <strong>Departamento:</strong> {datosEmpresa.departamento || '-'}<br/>
+                            <strong>Municipio:</strong> {datosEmpresa.municipio || '-'}<br/>
+                            <strong>Año Base:</strong> {datosEmpresa.añoBase || '-'}<br/>
+                            <strong>Fecha Reporte:</strong> {datosEmpresa.fechaReporte || '-'}<br/>
+                            <strong>Teléfono:</strong> {datosEmpresa.telefono || '-'}<br/>
+                            <strong>Correo:</strong> {datosEmpresa.correo || '-'}<br/>
+                            <strong>Responsable:</strong> {datosEmpresa.personaElabora || '-'}<br/>
+                            <strong>Cargo:</strong> {datosEmpresa.cargo || '-'}
                           </div>
                         </div>
-                        <button
-                          className="btn btn-info"
-                          onClick={() => {
-                            // Mostrar solo la sección de resultados y cálculos al imprimir
-                            const originalTitle = document.title;
-                            document.title = 'Resumen y Cálculos Huella de Carbono';
-                            const printContents = document.getElementById('resultados-totales').innerHTML;
-                            const originalContents = document.body.innerHTML;
-                            document.body.innerHTML = printContents;
-                            window.print();
-                            document.body.innerHTML = originalContents;
-                            document.title = originalTitle;
-                            window.location.reload();
-                          }}
-                          style={{ fontSize: '1.2rem', padding: '0.7rem 2.5rem', borderRadius: '1.5rem', marginTop: 24 }}
-                        >
-                          Descargar Pantallazo
-                        </button>
+                        <div style={{ flex: 2, minWidth: 320, background: '#fff', borderRadius: 16, padding: 24, marginBottom: 16, border: '1px solid #b2dfdb' }}>
+                          <h4 style={{ color: '#00796b', fontWeight: 700 }}>Emisiones por Alcance</h4>
+                          <table style={{ width: '100%', marginBottom: 24, fontSize: '1.2rem' }}>
+                            <thead>
+                              <tr style={{ background: '#e0f2f1', color: '#00695c' }}>
+                                <th>Alcance</th>
+                                <th>Emisiones (kg CO₂e)</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr><td>Alcance 1</td><td>{emisiones.alcance1}</td></tr>
+                              <tr><td>Alcance 2</td><td>{emisiones.alcance2}</td></tr>
+                              <tr><td>Alcance 3</td><td>{emisiones.alcance3}</td></tr>
+                              <tr style={{ fontWeight: 700, background: '#b2dfdb' }}>
+                                <td>Total</td><td>{totalEmisiones}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <div style={{ fontSize: '1.3rem', marginBottom: 18, color: '#00796b', fontWeight: 700 }}>{evaluacion}</div>
+                          <div style={{ fontSize: '1.15rem', marginBottom: 24 }}>
+                            Para compensar estas emisiones, deberías plantar al menos <span style={{ color: '#388e3c', fontWeight: 700 }}>{arboles}</span> árboles.
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </>
+                      <button
+                        className="btn btn-info"
+                        onClick={() => {
+                          // Mostrar solo la sección de resultados y cálculos al imprimir
+                          const originalTitle = document.title;
+                          document.title = 'Resumen y Cálculos Huella de Carbono';
+                          const printContents = document.getElementById('resultados-totales').innerHTML;
+                          const originalContents = document.body.innerHTML;
+                          document.body.innerHTML = printContents;
+                          window.print();
+                          document.body.innerHTML = originalContents;
+                          document.title = originalTitle;
+                          window.location.reload();
+                        }}
+                        style={{ fontSize: '1.2rem', padding: '0.7rem 2.5rem', borderRadius: '1.5rem', marginTop: 24 }}
+                      >
+                        Descargar Pantallazo
+                      </button>
+                    </div>
+                  )}
                 </div>
               </CardBody>
             </Card>

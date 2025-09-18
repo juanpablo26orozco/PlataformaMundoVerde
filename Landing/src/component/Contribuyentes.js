@@ -41,11 +41,11 @@ const Contribuyentes = () => (
                 }}
                 className="contribuyentes-carousel"
               >
-                <img src={LogoAlInvest} alt="Al-Invest Verde" style={{height: 110, maxWidth: 180, objectFit: 'contain', margin: '0 18px', filter: 'drop-shadow(0 2px 8px #b2dfdb)', background: 'white', borderRadius: 12, padding: 12}} />
                 <img src={LogoGlobal} alt="Global" style={{height: 110, maxWidth: 180, objectFit: 'contain', margin: '0 18px', filter: 'drop-shadow(0 2px 8px #b2dfdb)', background: 'white', borderRadius: 12, padding: 12}} />
-                <img src={LogoMundoVerde} alt="Mundo Verde" style={{height: 110, maxWidth: 180, objectFit: 'contain', margin: '0 18px', filter: 'drop-shadow(0 2px 8px #b2dfdb)', background: 'white', borderRadius: 12, padding: 12}} />
-                <img src={LogoSequa} alt="Sequa" style={{height: 110, maxWidth: 180, objectFit: 'contain', margin: '0 18px', filter: 'drop-shadow(0 2px 8px #b2dfdb)', background: 'white', borderRadius: 12, padding: 12}} />
+                <img src={LogoAlInvest} alt="Al-Invest Verde" style={{height: 110, maxWidth: 180, objectFit: 'contain', margin: '0 18px', filter: 'drop-shadow(0 2px 8px #b2dfdb)', background: 'white', borderRadius: 12, padding: 12}} />
                 <img src={LogoUnionEuropea} alt="Unión Europea" style={{height: 110, maxWidth: 180, objectFit: 'contain', margin: '0 18px', filter: 'drop-shadow(0 2px 8px #b2dfdb)', background: 'white', borderRadius: 12, padding: 12}} />
+                <img src={LogoSequa} alt="Sequa" style={{height: 110, maxWidth: 180, objectFit: 'contain', margin: '0 18px', filter: 'drop-shadow(0 2px 8px #b2dfdb)', background: 'white', borderRadius: 12, padding: 12}} />
+                <img src={LogoMundoVerde} alt="Mundo Verde" style={{height: 110, maxWidth: 180, objectFit: 'contain', margin: '0 18px', filter: 'drop-shadow(0 2px 8px #b2dfdb)', background: 'white', borderRadius: 12, padding: 12}} />
               </div>
             </CardBody>
           </Card>
@@ -56,7 +56,7 @@ const Contribuyentes = () => (
         .contribuyentes-carousel img:hover { transform: scale(1.08); box-shadow: 0 4px 24px #a5d6a7; transition: transform 0.3s; }
       `}</style>
     </Container>
-  </section>
+  </section>  
 );
 
 export default Contribuyentes;

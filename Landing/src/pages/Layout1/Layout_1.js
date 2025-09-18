@@ -90,9 +90,10 @@ class Layout_1 extends Component {
           <CalculadoraSection />
 
 
-          {/* Aliados antes de Contribuyentes */}
-          <AliadosSection />
+          
           <Contribuyentes />
+          <AliadosSection />
+          
           <Contact />
 
           {/* Importing Footer */}

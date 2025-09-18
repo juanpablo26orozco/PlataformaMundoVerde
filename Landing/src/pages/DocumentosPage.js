@@ -30,7 +30,38 @@ const documentos = [
   },
 ];
 
+
 const DocumentosPage = () => {
+  React.useEffect(() => {
+    // Force navbar to be visible and on top, and set text color
+    const navbar = document.getElementById('navbar');
+    if (navbar) {
+      navbar.style.position = 'fixed';
+      navbar.style.zIndex = '10000';
+      navbar.style.background = '#fff';
+      navbar.style.boxShadow = '0 2px 12px 0 rgba(39,83,255,0.10)';
+      navbar.style.width = '100%';
+      // Cambiar color de letras
+      const navLinks = navbar.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.style.color = '#29344a';
+      });
+    }
+    return () => {
+      if (navbar) {
+        navbar.style.position = '';
+        navbar.style.zIndex = '';
+        navbar.style.background = '';
+        navbar.style.boxShadow = '';
+        navbar.style.width = '';
+        // Restaurar color de letras
+        const navLinks = navbar.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+          link.style.color = '';
+        });
+      }
+    };
+  }, []);
   return (
     <div className="documentos-page">
       <h1 className="documentos-title">Documentos y Recursos</h1>
