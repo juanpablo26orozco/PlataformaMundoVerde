@@ -1,9 +1,9 @@
 {
   "files": {
     "main.css": "/PlataformaMundoVerde/static/css/main.53303940.css",
-    "main.js": "/PlataformaMundoVerde/static/js/main.0cb45041.js",
-    "static/js/356.12ec5c03.chunk.js": "/PlataformaMundoVerde/static/js/356.12ec5c03.chunk.js",
-    "static/js/420.4ce01168.chunk.js": "/PlataformaMundoVerde/static/js/420.4ce01168.chunk.js",
+    "main.js": "/PlataformaMundoVerde/static/js/main.680a6eac.js",
+    "static/js/356.12b55779.chunk.js": "/PlataformaMundoVerde/static/js/356.12b55779.chunk.js",
+    "static/js/302.0836e377.chunk.js": "/PlataformaMundoVerde/static/js/302.0836e377.chunk.js",
     "static/js/910.659e877b.chunk.js": "/PlataformaMundoVerde/static/js/910.659e877b.chunk.js",
     "static/css/706.b96c7094.chunk.css": "/PlataformaMundoVerde/static/css/706.b96c7094.chunk.css",
     "static/js/706.585f3ae3.chunk.js": "/PlataformaMundoVerde/static/js/706.585f3ae3.chunk.js",
@@ -42,9 +42,9 @@
     "static/media/hero-5-bg-dark.png": "/PlataformaMundoVerde/static/media/hero-5-bg-dark.47879615476b009de6b4.png",
     "index.html": "/PlataformaMundoVerde/index.html",
     "main.53303940.css.map": "/PlataformaMundoVerde/static/css/main.53303940.css.map",
-    "main.0cb45041.js.map": "/PlataformaMundoVerde/static/js/main.0cb45041.js.map",
-    "356.12ec5c03.chunk.js.map": "/PlataformaMundoVerde/static/js/356.12ec5c03.chunk.js.map",
-    "420.4ce01168.chunk.js.map": "/PlataformaMundoVerde/static/js/420.4ce01168.chunk.js.map",
+    "main.680a6eac.js.map": "/PlataformaMundoVerde/static/js/main.680a6eac.js.map",
+    "356.12b55779.chunk.js.map": "/PlataformaMundoVerde/static/js/356.12b55779.chunk.js.map",
+    "302.0836e377.chunk.js.map": "/PlataformaMundoVerde/static/js/302.0836e377.chunk.js.map",
     "910.659e877b.chunk.js.map": "/PlataformaMundoVerde/static/js/910.659e877b.chunk.js.map",
     "706.b96c7094.chunk.css.map": "/PlataformaMundoVerde/static/css/706.b96c7094.chunk.css.map",
     "706.585f3ae3.chunk.js.map": "/PlataformaMundoVerde/static/js/706.585f3ae3.chunk.js.map",
@@ -53,6 +53,6 @@
   },
   "entrypoints": [
     "static/css/main.53303940.css",
-    "static/js/main.0cb45041.js"
+    "static/js/main.680a6eac.js"
   ]
 }
