@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 
 // Import Logo
-import logodark from "../../assets/images/logo-dark.png";
+import logopositive from "../../assets/images/logo-positive.png";
 import logolight from "../../assets/images/logo-light.png";
 
 //import icon
@@ -44,7 +44,7 @@ const NavbarPage = ({ navItems }) => {
               {imglight ? (
                 <img src={logolight} alt="Mundo Verde" height="80" />
               ) : (
-                <img src={logodark} alt="Mundo Verde" height="80" />
+                <img src={logopositive} alt="Mundo Verde" height="80" />
               )}
             </Link>
           </NavbarBrand>
@@ -80,7 +80,7 @@ const NavbarPage = ({ navItems }) => {
                           textDecoration: 'none',
                           padding: '0.6rem 1rem',
                           fontWeight: '500',
-                          fontSize: '0.95rem',
+                          fontSize: '1.1rem',
                           transition: 'all 0.3s ease',
                           borderRadius: '6px',
                           whiteSpace: 'nowrap'
@@ -96,7 +96,7 @@ const NavbarPage = ({ navItems }) => {
                           textDecoration: 'none',
                           padding: '0.6rem 1rem',
                           fontWeight: (item.link === location.pathname) ? '600' : '500',
-                          fontSize: '0.95rem',
+                          fontSize: '1.1rem',
                           transition: 'all 0.3s ease',
                           borderRadius: '6px',
                           whiteSpace: 'nowrap'
@@ -113,7 +113,7 @@ const NavbarPage = ({ navItems }) => {
                         textDecoration: 'none',
                         padding: '0.6rem 1rem',
                         fontWeight: '500',
-                        fontSize: '0.95rem',
+                        fontSize: '1.1rem',
                         transition: 'all 0.3s ease',
                         borderRadius: '6px',
                         whiteSpace: 'nowrap'

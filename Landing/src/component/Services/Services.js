@@ -11,7 +11,7 @@ const modules = [
     to: "/huella-carbono"
   },
   {
-    title: "Calculadora",
+    title: "Calculadora de huella de carbono",
     description: "Calcula la huella de carbono de tu organización de manera sencilla y visualiza resultados para tomar mejores decisiones.",
     icon: "activity",
     to: "/calculadora"
@@ -30,7 +30,7 @@ const modules = [
   }
 ];
 
-const Services = () => (
+const Modules = () => (
   <section className="section" id="modules" style={{background: '#fff', padding: '2.5rem 0 2.5rem 0'}}>
     <div className="container">
       <Row className="justify-content-center mb-5">
@@ -132,4 +132,4 @@ const Services = () => (
   </section>
 );
 
-export default Services;
+export default Modules;

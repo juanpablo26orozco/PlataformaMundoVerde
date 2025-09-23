@@ -9,23 +9,7 @@ import herodark from "../../assets/images/hero-1-bottom-shape-dark.png"
 import { Link } from "react-router-dom";
 import HeroImage from "../../assets/images/mundo-verde/iot-de-agricultura-inteligente-con-fondo-de-arbol-de-plantacion-manual.jpg";
 
-// Modal Video
-import ModalVideo from "react-modal-video";
-import "../../../node_modules/react-modal-video/scss/modal-video.scss";
-
-import FeatherIcon from "feather-icons-react";
-
 class Section extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOpen: false,
-    };
-    this.openModal = this.openModal.bind(this);
-  }
-  openModal() {
-    this.setState({ isOpen: true });
-  }
   render() {
     return (
       <div className="mundo-verde-theme">
@@ -50,19 +34,9 @@ class Section extends Component {
                   que beneficien tanto a nuestras empresas como al medio ambiente.
                   Construyamos juntos un futuro más verde y próspero.
                 </p>
-                <Link to="#" className="btn btn-lg btn-light rounded-pill me-2">
+                <Link to="#modules" className="btn btn-lg btn-light rounded-pill me-2">
                   Comenzar Ahora
                 </Link>
-                <div className="d-inline-block" onClick={this.openModal}>
-                  <Link to="#" className="video-play-icon text-white">
-                    <span className="play-icon-circle me-2">
-                      <i>
-                        <FeatherIcon icon="play" className="icon-sm icon" />{" "}
-                      </i>
-                    </span>
-                    <span className="">¡Ver el Video!</span>
-                  </Link>
-                </div>
               </Col>
               <Col lg={6} sm={10} className="mx-auto ms-lg-auto me-lg-0">
                 <div className="mt-lg-0 mt-4 hero-image-container">
@@ -109,12 +83,7 @@ class Section extends Component {
               </Col>
             </Row>
           </Container>
-          <ModalVideo
-            channel="vimeo"
-            isOpen={this.state.isOpen}
-            videoId="12022651"
-            onClose={() => this.setState({ isOpen: false })}
-          />
+
           <div className="hero-bottom-shape shape-light">
                 <img src={herolight} alt="" className="img-fluid d-block mx-auto" />
             </div>

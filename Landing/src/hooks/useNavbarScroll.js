@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 // Hook para manejar sticky y color del navbar
 export default function useNavbarScroll() {
   const [navClass, setNavClass] = useState("");
-  const [imglight, setImglight] = useState(true);
+  const [imglight, setImglight] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollup = document.documentElement.scrollTop;
       if (scrollup > 80) {
         setNavClass("nav-sticky");
-        setImglight(false);
+        setImglight(true);
       } else {
         setNavClass("");
-        setImglight(true);
+        setImglight(false);
       }
     };
     window.addEventListener("scroll", handleScroll, true);

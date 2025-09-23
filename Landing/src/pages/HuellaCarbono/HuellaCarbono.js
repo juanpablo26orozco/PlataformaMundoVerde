@@ -23,7 +23,7 @@ export default class HuellaCarbono extends Component {
               <Col lg={12} className="text-center text-white">
                 <div className="page-next-level">
                   <h1 className="title text-white mb-4 fw-bold">
-                    Huella de Carbono
+                    Conceptos Claves
                   </h1>
                   <h4 className="text-white-70 mb-4">
                     Mundo Verde - Prácticas Sostenibles
@@ -40,7 +40,7 @@ export default class HuellaCarbono extends Component {
                         </Link>
                       </li>
                       <li className="breadcrumb-item active text-white" aria-current="page">
-                        Huella de Carbono
+                        Conceptos Claves
                       </li>
                     </ul>
                   </nav>
@@ -532,8 +532,8 @@ export default class HuellaCarbono extends Component {
                   para todos. Comienza midiendo tu huella de carbono hoy mismo.
                 </p>
                 <div>
-                  <Link to="/#contact" className="btn btn-light btn-lg rounded-pill me-3">
-                    Contáctanos
+                  <Link to="/#modules" className="btn btn-light btn-lg rounded-pill me-3">
+                    Explora los Módulos
                     <FeatherIcon icon="arrow-right" className="ms-2 icon-sm" />
                   </Link>
                   <Link to="/" className="btn btn-outline-light btn-lg rounded-pill">

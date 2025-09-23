@@ -8,7 +8,7 @@ import Switch from "../../component/Switch";
 
 // Importing Section
 const Section = React.lazy(() => import("./Section"));
-const Services = React.lazy(() => import("../../component/Services"));
+const Modules = React.lazy(() => import("../../component/Services"));
 const Contact = React.lazy(() => import("../../component/Contact"));
 const AliadosSection = React.lazy(() => import("../../component/Aliados"));
 const Contribuyentes = React.lazy(() => import("../../component/Contribuyentes"));
@@ -40,8 +40,8 @@ class Layout_1 extends Component {
           {/* Importing Section */}
           <Section />
 
-          {/* Importing Section */}
-          <Services />
+          {/* Importing Modules */}
+          <Modules />
 
           
           <Contribuyentes />
