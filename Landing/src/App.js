@@ -10,12 +10,12 @@ import "./assets/scss/themes.scss";
 
 // Definir los items del navbar globalmente
 const navItems = [
-  { id: 1, idnm: "home", navheading: "Inicio" },
-  { id: 2, idnm: "services", navheading: "Conceptos" },
-  { id: 3, idnm: "calculadora", navheading: "Calculadora" },
-  { id: 7, idnm: "contact", navheading: "Contacto" },
-  { id: 8, navheading: "Huella de Carbono", link: "/huella-carbono" },
-  { id: 9, navheading: "Documentos", link: "/documentos" },
+  { id: 1, idnm: "home", navheading: "Inicio", link: "/" },
+  { id: 2, navheading: "Calculadora", link: "/calculadora" },
+  { id: 3, idnm: "contact", navheading: "Contacto", link: "/#contact" },
+  { id: 4, navheading: "Conceptos Claves", link: "/huella-carbono" },
+  { id: 5, navheading: "Herramientas", link: "/documentos" },
+  { id: 6, navheading: "Autodiagnóstico de sostenibilidad ambiental", link: "/autogestion" },
 ];
 
 class App extends Component {

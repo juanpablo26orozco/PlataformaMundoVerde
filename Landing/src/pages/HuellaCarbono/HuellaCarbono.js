@@ -4,57 +4,18 @@ import { Link } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
 
 //Import Components
-import Navbar from "../../component/Navbar/NavBar";
 import Footer from "../../component/Footer/Footer";
 import Switch from "../../component/Switch";
 
 
 export default class HuellaCarbono extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      navItems: [
-        {
-          id: 1,
-          navheading: "Inicio",
-          link: "/"
-        },
-        {
-          id: 2,
-          navheading: "Huella de Carbono",
-          link: "/huella-carbono"
-        }
-      ],
-    };
-  }
-
   componentDidMount() {
     document.body.classList = "";
-    window.addEventListener("scroll", this.scrollNavigation, true);
   }
-
-  // Make sure to remove the DOM listener when the component is unmounted.
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.scrollNavigation, true);
-  }
-
-  scrollNavigation = () => {
-    var doc = document.documentElement;
-    var top = (window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
-    var navbar = document.getElementById("navbar");
-    if (navbar && top > 80) {
-      navbar.classList.add("nav-sticky");
-    } else if (navbar) {
-      navbar.classList.remove("nav-sticky");
-    }
-  };
 
   render() {
     return (
       <React.Fragment>
-        {/* Importing Navbar */}
-        <Navbar navItems={this.state.navItems} navClass="defaultscroll sticky" />
-
         {/* Hero Section */}
         <section className="bg-half-170 bg-mundo-verde d-table w-100" id="conceptos-basicos">
           <Container>
