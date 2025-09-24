@@ -119,8 +119,8 @@ export default class HuellaCarbono extends Component {
                   </CardBody>
                 </Card>
               </Col>
-              <Col lg={5} md={12} className="mb-4 d-flex align-items-stretch">
-                <div className="w-100">
+              <Col lg={5} md={12} className="mb-4 d-flex align-items-center justify-content-center">
+                <div className="w-100" style={{ maxWidth: '400px' }}>
                   <DocumentViewer 
                     pdfPath="/Concepts_docs/1.Los_Problemas_medio_ambientales.pdf"
                     title="Los Problemas Medio Ambientales"
@@ -128,6 +128,7 @@ export default class HuellaCarbono extends Component {
                     icon="alert-triangle"
                     buttonText="Ver Documento Completo"
                     cardStyle="featured"
+                    customCardStyle={{ paddingTop: '1.5rem', paddingBottom: '1.5rem' }}
                   />
                 </div>
               </Col>

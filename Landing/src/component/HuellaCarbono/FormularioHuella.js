@@ -1,10 +1,53 @@
 import React, { useState, useRef } from "react";
 import departamentosMunicipios from "../../data/departamentos_municipios.json";
 import { Container, Row, Col, Card, CardBody, Button, Table, FormGroup, Label, Input } from "reactstrap";
-// import * as html2canvas from "html2canvas";
 import FeatherIcon from "feather-icons-react";
 import "../../assets/css/formulario.css";
 import rutasVuelos from "../../data/rutas_vuelos.json";
+// Endpoints API countriesnow.space
+const API_COUNTRIES = "https://countriesnow.space/api/v0.1/countries/positions";
+const API_STATES = "https://countriesnow.space/api/v0.1/countries/states";
+const API_CITIES = "https://countriesnow.space/api/v0.1/countries/state/cities";
+
+// Utilidad para calcular distancia haversine en km
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const toRad = x => x * Math.PI / 180;
+  const R = 6371; // Radio de la tierra en km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return Math.round(R * c);
+}
+
+// Función para obtener coordenadas de una ciudad usando OpenStreetMap Nominatim (ahora con ciudad, estado y país)
+async function getCoords(city, state, country) {
+  // Construir la consulta con todos los datos
+  const params = [
+    `city=${encodeURIComponent(city)}`,
+    state ? `state=${encodeURIComponent(state)}` : "",
+    country ? `country=${encodeURIComponent(country)}` : "",
+    "format=json"
+  ].filter(Boolean).join("&");
+  const url = `https://nominatim.openstreetmap.org/search?${params}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  // Validar que el resultado corresponde al país y estado
+  if (data.length > 0) {
+    // Opcional: filtrar por país y estado si la API devuelve varios resultados
+    const match = data.find(
+      d => d.display_name.includes(country) && (state ? d.display_name.includes(state) : true)
+    );
+    if (match) {
+      return { lat: parseFloat(match.lat), lon: parseFloat(match.lon) };
+    }
+    // Si no hay match exacto, usar el primero
+    return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+  }
+  return null;
+}
 
 // Factores de emisión para vuelos corporativos (ejemplo, debes completar con los valores reales)
 const FACTORES_VUELOS = [
@@ -88,6 +131,147 @@ const getToday = () => {
 };
 
 const FormularioHuella = ({ onFormComplete }) => {
+  // Estados para selects encadenados del formulario de prueba
+  const [paisesTest, setPaisesTest] = useState([]);
+  const [estadosOrigenTest, setEstadosOrigenTest] = useState([]);
+  const [ciudadesOrigenTest, setCiudadesOrigenTest] = useState([]);
+  const [estadosDestinoTest, setEstadosDestinoTest] = useState([]);
+  const [ciudadesDestinoTest, setCiudadesDestinoTest] = useState([]);
+
+  const [paisOrigenTest, setPaisOrigenTest] = useState("");
+  const [estadoOrigenTest, setEstadoOrigenTest] = useState("");
+  const [ciudadOrigenTest, setCiudadOrigenTest] = useState("");
+  const [paisDestinoTest, setPaisDestinoTest] = useState("");
+  const [estadoDestinoTest, setEstadoDestinoTest] = useState("");
+  const [ciudadDestinoTest, setCiudadDestinoTest] = useState("");
+  const [distanciaKmTest, setDistanciaKmTest] = useState("");
+
+  // Cargar países al montar (prueba)
+  React.useEffect(() => {
+    fetch(API_COUNTRIES)
+      .then(res => res.json())
+      .then(data => {
+        if (data.data) setPaisesTest(data.data.map(p => p.name));
+      });
+  }, []);
+
+  // Cargar estados/departamentos cuando cambia país (prueba)
+  React.useEffect(() => {
+    if (paisOrigenTest) {
+      fetch(API_STATES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: paisOrigenTest })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setEstadosOrigenTest(data.data.states.map(s => s.name));
+        });
+    } else {
+      setEstadosOrigenTest([]);
+    }
+    setEstadoOrigenTest("");
+    setCiudadesOrigenTest([]);
+    setCiudadOrigenTest("");
+  }, [paisOrigenTest]);
+
+  React.useEffect(() => {
+    if (estadoOrigenTest && paisOrigenTest) {
+      fetch(API_CITIES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: paisOrigenTest, state: estadoOrigenTest })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setCiudadesOrigenTest(data.data);
+        });
+    } else {
+      setCiudadesOrigenTest([]);
+    }
+    setCiudadOrigenTest("");
+  }, [estadoOrigenTest, paisOrigenTest]);
+
+  // Destino (prueba)
+  React.useEffect(() => {
+    if (paisDestinoTest) {
+      fetch(API_STATES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: paisDestinoTest })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setEstadosDestinoTest(data.data.states.map(s => s.name));
+        });
+    } else {
+      setEstadosDestinoTest([]);
+    }
+    setEstadoDestinoTest("");
+    setCiudadesDestinoTest([]);
+    setCiudadDestinoTest("");
+  }, [paisDestinoTest]);
+
+  React.useEffect(() => {
+    if (estadoDestinoTest && paisDestinoTest) {
+      fetch(API_CITIES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: paisDestinoTest, state: estadoDestinoTest })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setCiudadesDestinoTest(data.data);
+        });
+    } else {
+      setCiudadesDestinoTest([]);
+    }
+    setCiudadDestinoTest("");
+  }, [estadoDestinoTest, paisDestinoTest]);
+
+  // Calcular distancia cuando ambas ciudades están seleccionadas (prueba)
+  React.useEffect(() => {
+    const calcular = async () => {
+      if (ciudadOrigenTest && ciudadDestinoTest) {
+        setDistanciaKmTest("Calculando...");
+        const coordsOrigen = await getCoords(ciudadOrigenTest);
+        const coordsDestino = await getCoords(ciudadDestinoTest);
+        if (coordsOrigen && coordsDestino) {
+          const km = haversineDistance(coordsOrigen.lat, coordsOrigen.lon, coordsDestino.lat, coordsDestino.lon);
+          setDistanciaKmTest(km);
+        } else {
+          setDistanciaKmTest("No encontrado");
+        }
+      } else {
+        setDistanciaKmTest("");
+      }
+    };
+    calcular();
+  }, [ciudadOrigenTest, ciudadDestinoTest]);
+  // Formulario de prueba: solo origen, destino y distancia
+  const [ciudadOrigen, setCiudadOrigen] = useState("");
+  const [ciudadDestino, setCiudadDestino] = useState("");
+  const [distanciaKm, setDistanciaKm] = useState("");
+
+  // Calcula distancia cuando cambian las ciudades
+  React.useEffect(() => {
+    const calcular = async () => {
+      if (ciudadOrigen && ciudadDestino) {
+        setDistanciaKm("Calculando...");
+        const coordsOrigen = await getCoords(ciudadOrigen);
+        const coordsDestino = await getCoords(ciudadDestino);
+        if (coordsOrigen && coordsDestino) {
+          const km = haversineDistance(coordsOrigen.lat, coordsOrigen.lon, coordsDestino.lat, coordsDestino.lon);
+          setDistanciaKm(km);
+        } else {
+          setDistanciaKm("No encontrado");
+        }
+      } else {
+        setDistanciaKm("");
+      }
+    };
+    calcular();
+  }, [ciudadOrigen, ciudadDestino]);
 
   // Estado para datosEmpresa debe ir al inicio del componente
   const [datosEmpresa, setDatosEmpresa] = useState({
@@ -114,9 +298,101 @@ const FormularioHuella = ({ onFormComplete }) => {
     ? (departamentosMunicipios.find(d => d.departamento === datosEmpresa.departamento)?.municipios || [])
     : [];
 
-  // Ciudades para vuelos (puedes ajustar según tu JSON de rutas)
-  const ciudadesOrigen = ["Bogotá", "Medellín", "Cali"];
-  const ciudadesDestino = ["Bogotá", "Medellín", "Cali"];
+  // Selects encadenados para vuelos corporativos (igual que prueba)
+  const [paisOrigenVuelo, setPaisOrigenVuelo] = useState("");
+  const [estadoOrigenVuelo, setEstadoOrigenVuelo] = useState("");
+  const [ciudadOrigenVuelo, setCiudadOrigenVuelo] = useState("");
+  const [paisDestinoVuelo, setPaisDestinoVuelo] = useState("");
+  const [estadoDestinoVuelo, setEstadoDestinoVuelo] = useState("");
+  const [ciudadDestinoVuelo, setCiudadDestinoVuelo] = useState("");
+  const [paisesVuelo, setPaisesVuelo] = useState([]);
+  const [estadosOrigenVueloList, setEstadosOrigenVueloList] = useState([]);
+  const [ciudadesOrigenVueloList, setCiudadesOrigenVueloList] = useState([]);
+  const [estadosDestinoVueloList, setEstadosDestinoVueloList] = useState([]);
+  const [ciudadesDestinoVueloList, setCiudadesDestinoVueloList] = useState([]);
+
+  // Cargar países al montar
+  React.useEffect(() => {
+    fetch(API_COUNTRIES)
+      .then(res => res.json())
+      .then(data => {
+        if (data.data) setPaisesVuelo(data.data.map(p => p.name));
+      });
+  }, []);
+
+  // Origen
+  React.useEffect(() => {
+    if (paisOrigenVuelo) {
+      fetch(API_STATES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: paisOrigenVuelo })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setEstadosOrigenVueloList(data.data.states.map(s => s.name));
+        });
+    } else {
+      setEstadosOrigenVueloList([]);
+    }
+    setEstadoOrigenVuelo("");
+    setCiudadesOrigenVueloList([]);
+    setCiudadOrigenVuelo("");
+  }, [paisOrigenVuelo]);
+
+  React.useEffect(() => {
+    if (estadoOrigenVuelo && paisOrigenVuelo) {
+      fetch(API_CITIES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: paisOrigenVuelo, state: estadoOrigenVuelo })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setCiudadesOrigenVueloList(data.data);
+        });
+    } else {
+      setCiudadesOrigenVueloList([]);
+    }
+    setCiudadOrigenVuelo("");
+  }, [estadoOrigenVuelo, paisOrigenVuelo]);
+
+  // Destino
+  React.useEffect(() => {
+    if (paisDestinoVuelo) {
+      fetch(API_STATES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: paisDestinoVuelo })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setEstadosDestinoVueloList(data.data.states.map(s => s.name));
+        });
+    } else {
+      setEstadosDestinoVueloList([]);
+    }
+    setEstadoDestinoVuelo("");
+    setCiudadesDestinoVueloList([]);
+    setCiudadDestinoVuelo("");
+  }, [paisDestinoVuelo]);
+
+  React.useEffect(() => {
+    if (estadoDestinoVuelo && paisDestinoVuelo) {
+      fetch(API_CITIES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: paisDestinoVuelo, state: estadoDestinoVuelo })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setCiudadesDestinoVueloList(data.data);
+        });
+    } else {
+      setCiudadesDestinoVueloList([]);
+    }
+    setCiudadDestinoVuelo("");
+  }, [estadoDestinoVuelo, paisDestinoVuelo]);
 
   // Factores de extintores (ejemplo)
   const FACTORES_EXTINTORES = [
@@ -224,31 +500,39 @@ const FormularioHuella = ({ onFormComplete }) => {
   const [step, setStep] = useState(1);
 
 
-  const handleVueloChange = (idx, field, value) => {
+  const handleVueloChange = async (idx, field, value) => {
     let newRows = [...vuelos];
     newRows[idx][field] = value;
-    // Si origen, destino y clase están seleccionados, buscar ruta y factor
-    if ((field === "origen" || field === "destino" || field === "clase" || field === "personas") && newRows[idx].origen && newRows[idx].destino && newRows[idx].clase) {
-      const ruta = rutasVuelos.find(r => r.origen === newRows[idx].origen && r.destino === newRows[idx].destino);
-      if (ruta) {
-        newRows[idx].distancia = ruta.distancia;
-        // Factor de emisión según clase (ojo: en JSON es 'Economica', en select es 'Económica')
-        let factorEmision = "";
-        if (newRows[idx].clase === "Ejecutiva") {
-          factorEmision = ruta.emisionesEjecutiva;
-        } else if (newRows[idx].clase === "Economica" || newRows[idx].clase === "Económica") {
-          factorEmision = ruta.emisionesEconomica;
-        }
-        newRows[idx].factor = factorEmision;
-        const personas = parseFloat(newRows[idx].personas) || 0;
-        newRows[idx].emisionKg = factorEmision ? (personas * factorEmision).toFixed(2) : "";
-        newRows[idx].emisionTon = factorEmision ? (personas * factorEmision / 1000).toFixed(4) : "";
+    // Replicar solo la lógica de cálculo de kms usando los campos de la fila
+    const row = newRows[idx];
+    if (row.ciudadOrigen && row.ciudadDestino) {
+      newRows[idx].distancia = "Calculando...";
+      // Usar solo la ciudad igual que el formulario de prueba
+      const coordsOrigen = await getCoords(row.ciudadOrigen);
+      const coordsDestino = await getCoords(row.ciudadDestino);
+      if (coordsOrigen && coordsDestino) {
+        const km = haversineDistance(coordsOrigen.lat, coordsOrigen.lon, coordsDestino.lat, coordsDestino.lon);
+        newRows[idx].distancia = km;
       } else {
-        newRows[idx].distancia = "";
-        newRows[idx].factor = "";
-        newRows[idx].emisionKg = "";
-        newRows[idx].emisionTon = "";
+        newRows[idx].distancia = "No encontrado";
       }
+    }
+    // Factor de emisión según clase y distancia
+    if (newRows[idx].distancia && newRows[idx].clase && !isNaN(parseFloat(newRows[idx].distancia))) {
+      let factorEmision = 0;
+      if (newRows[idx].clase === "Ejecutiva") {
+        factorEmision = 0.237;
+      } else if (newRows[idx].clase === "Economica" || newRows[idx].clase === "Económica") {
+        factorEmision = 0.158;
+      }
+      const personas = parseFloat(newRows[idx].personas) || 0;
+      newRows[idx].factor = factorEmision;
+      newRows[idx].emisionKg = (personas * factorEmision * parseFloat(newRows[idx].distancia)).toFixed(2);
+      newRows[idx].emisionTon = (personas * factorEmision * parseFloat(newRows[idx].distancia) / 1000).toFixed(4);
+    } else {
+      newRows[idx].factor = "";
+      newRows[idx].emisionKg = "";
+      newRows[idx].emisionTon = "";
     }
     setVuelos(newRows);
   };
@@ -475,6 +759,64 @@ const FormularioHuella = ({ onFormComplete }) => {
   return (
     <section className="section">
       <Container>
+        {/* Formulario de prueba: selects encadenados país, estado, ciudad (sin conflictos) */}
+        <Row className="justify-content-center mb-4">
+          <Col md={7}>
+            <Card className="shadow p-4 mb-4">
+              <h4 className="mb-3">Prueba: Distancia entre ciudades (Selects encadenados)</h4>
+              <form>
+                <div className="mb-3">
+                  <label className="form-label">País de Origen</label>
+                  <select className="form-control" value={paisOrigenTest} onChange={e => setPaisOrigenTest(e.target.value)}>
+                    <option value="">Seleccione país...</option>
+                    {paisesTest.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Estado/Departamento de Origen</label>
+                  <select className="form-control" value={estadoOrigenTest} onChange={e => setEstadoOrigenTest(e.target.value)} disabled={!paisOrigenTest}>
+                    <option value="">Seleccione estado/departamento...</option>
+                    {estadosOrigenTest.map(e => <option key={e} value={e}>{e}</option>)}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Ciudad de Origen</label>
+                  <select className="form-control" value={ciudadOrigenTest} onChange={e => setCiudadOrigenTest(e.target.value)} disabled={!estadoOrigenTest}>
+                    <option value="">Seleccione ciudad...</option>
+                    {ciudadesOrigenTest.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <hr />
+                <div className="mb-3">
+                  <label className="form-label">País de Destino</label>
+                  <select className="form-control" value={paisDestinoTest} onChange={e => setPaisDestinoTest(e.target.value)}>
+                    <option value="">Seleccione país...</option>
+                    {paisesTest.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Estado/Departamento de Destino</label>
+                  <select className="form-control" value={estadoDestinoTest} onChange={e => setEstadoDestinoTest(e.target.value)} disabled={!paisDestinoTest}>
+                    <option value="">Seleccione estado/departamento...</option>
+                    {estadosDestinoTest.map(e => <option key={e} value={e}>{e}</option>)}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Ciudad de Destino</label>
+                  <select className="form-control" value={ciudadDestinoTest} onChange={e => setCiudadDestinoTest(e.target.value)} disabled={!estadoDestinoTest}>
+                    <option value="">Seleccione ciudad...</option>
+                    {ciudadesDestinoTest.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Distancia (km)</label>
+                  <input type="text" className="form-control" value={distanciaKmTest} readOnly />
+                </div>
+              </form>
+            </Card>
+          </Col>
+        </Row>
+        {/* ...existing code... */}
         <Row className="justify-content-center">
           <Col lg={12}>
             <Card className="shadow">
@@ -562,35 +904,131 @@ const FormularioHuella = ({ onFormComplete }) => {
                     <Table bordered responsive size="sm">
                       <thead className="table-light">
                         <tr>
-                          <th>Ciudad Origen</th>
-                          <th>Ciudad Destino</th>
-                          <th>Clase</th>
-                          <th>Número de personas</th>
-                          <th>Distancia (km)</th>
-                          <th>Factor de Emisión (kgCO2e)</th>
-                          <th>Emisión (tCO2e)</th>
-                          <th>Emisión (kgCO2e)</th>
-                          <th></th>
+                          <th style={{minWidth:140}}>País Origen</th>
+                          <th style={{minWidth:140}}>Estado/Depto Origen</th>
+                          <th style={{minWidth:140}}>Ciudad Origen</th>
+                          <th style={{minWidth:140}}>País Destino</th>
+                          <th style={{minWidth:140}}>Estado/Depto Destino</th>
+                          <th style={{minWidth:140}}>Ciudad Destino</th>
+                          <th style={{minWidth:140}}>Clase</th>
+                          <th style={{minWidth:140}}>Número de personas</th>
+                          <th style={{minWidth:140}}>Distancia (km)</th>
+                          <th style={{minWidth:140}}>Factor de Emisión (kgCO2e)</th>
+                          <th style={{minWidth:140}}>Emisión (tCO2e)</th>
+                          <th style={{minWidth:140}}>Emisión (kgCO2e)</th>
+                          <th style={{minWidth:140}}></th>
                         </tr>
                       </thead>
                       <tbody>
                         {vuelos.map((row, idx) => (
                           <tr key={idx}>
                             <td>
-                              <Input type="select" value={row.origen} style={{minWidth:140}} onChange={e => handleVueloChange(idx, "origen", e.target.value)}>
-                                <option value="">Seleccione...</option>
-                                {ciudadesOrigen.map(ciudad => (
-                                  <option key={ciudad} value={ciudad}>{ciudad}</option>
-                                ))}
-                              </Input>
+                              <select className="form-control" style={{minWidth:140}} value={row.paisOrigen || ''} onChange={async e => {
+                                const value = e.target.value;
+                                await handleVueloChange(idx, "paisOrigen", value);
+                                // Cargar estados para el país seleccionado
+                                let newRows = [...vuelos];
+                                newRows[idx].estadoOrigen = '';
+                                newRows[idx].ciudadOrigen = '';
+                                newRows[idx].estadosOrigenList = [];
+                                newRows[idx].ciudadesOrigenList = [];
+                                if (value) {
+                                  const res = await fetch(API_STATES, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ country: value })
+                                  });
+                                  const data = await res.json();
+                                  newRows[idx].estadosOrigenList = data.data.states.map(s => s.name);
+                                }
+                                setVuelos(newRows);
+                              }}>
+                                <option value="">País...</option>
+                                {paisesVuelo.map(p => <option key={p} value={p}>{p}</option>)}
+                              </select>
                             </td>
                             <td>
-                              <Input type="select" value={row.destino} style={{minWidth:140}} onChange={e => handleVueloChange(idx, "destino", e.target.value)}>
-                                <option value="">Seleccione...</option>
-                                {ciudadesDestino.map(ciudad => (
-                                  <option key={ciudad} value={ciudad}>{ciudad}</option>
-                                ))}
-                              </Input>
+                              <select className="form-control" style={{minWidth:140}} value={row.estadoOrigen || ''} onChange={async e => {
+                                const value = e.target.value;
+                                await handleVueloChange(idx, "estadoOrigen", value);
+                                // Cargar ciudades para el estado seleccionado
+                                let newRows = [...vuelos];
+                                newRows[idx].ciudadOrigen = '';
+                                newRows[idx].ciudadesOrigenList = [];
+                                if (row.paisOrigen && value) {
+                                  const res = await fetch(API_CITIES, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ country: row.paisOrigen, state: value })
+                                  });
+                                  const data = await res.json();
+                                  newRows[idx].ciudadesOrigenList = data.data;
+                                }
+                                setVuelos(newRows);
+                              }} disabled={!row.paisOrigen}>
+                                <option value="">Estado/Depto...</option>
+                                {(row.estadosOrigenList || []).map(e => <option key={e} value={e}>{e}</option>)}
+                              </select>
+                            </td>
+                            <td>
+                              <select className="form-control" style={{minWidth:140}} value={row.ciudadOrigen || ''} onChange={e => handleVueloChange(idx, "ciudadOrigen", e.target.value)} disabled={!row.estadoOrigen}>
+                                <option value="">Ciudad...</option>
+                                {(row.ciudadesOrigenList || []).map(c => <option key={c} value={c}>{c}</option>)}
+                              </select>
+                            </td>
+                            <td>
+                              <select className="form-control" style={{minWidth:140}} value={row.paisDestino || ''} onChange={async e => {
+                                const value = e.target.value;
+                                await handleVueloChange(idx, "paisDestino", value);
+                                // Cargar estados para el país destino seleccionado
+                                let newRows = [...vuelos];
+                                newRows[idx].estadoDestino = '';
+                                newRows[idx].ciudadDestino = '';
+                                newRows[idx].estadosDestinoList = [];
+                                newRows[idx].ciudadesDestinoList = [];
+                                if (value) {
+                                  const res = await fetch(API_STATES, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ country: value })
+                                  });
+                                  const data = await res.json();
+                                  newRows[idx].estadosDestinoList = data.data.states.map(s => s.name);
+                                }
+                                setVuelos(newRows);
+                              }}>
+                                <option value="">País...</option>
+                                {paisesVuelo.map(p => <option key={p} value={p}>{p}</option>)}
+                              </select>
+                            </td>
+                            <td>
+                              <select className="form-control" style={{minWidth:140}} value={row.estadoDestino || ''} onChange={async e => {
+                                const value = e.target.value;
+                                await handleVueloChange(idx, "estadoDestino", value);
+                                // Cargar ciudades para el estado destino seleccionado
+                                let newRows = [...vuelos];
+                                newRows[idx].ciudadDestino = '';
+                                newRows[idx].ciudadesDestinoList = [];
+                                if (row.paisDestino && value) {
+                                  const res = await fetch(API_CITIES, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ country: row.paisDestino, state: value })
+                                  });
+                                  const data = await res.json();
+                                  newRows[idx].ciudadesDestinoList = data.data;
+                                }
+                                setVuelos(newRows);
+                              }} disabled={!row.paisDestino}>
+                                <option value="">Estado/Depto...</option>
+                                {(row.estadosDestinoList || []).map(e => <option key={e} value={e}>{e}</option>)}
+                              </select>
+                            </td>
+                            <td>
+                              <select className="form-control" style={{minWidth:140}} value={row.ciudadDestino || ''} onChange={e => handleVueloChange(idx, "ciudadDestino", e.target.value)} disabled={!row.estadoDestino}>
+                                <option value="">Ciudad...</option>
+                                {(row.ciudadesDestinoList || []).map(c => <option key={c} value={c}>{c}</option>)}
+                              </select>
                             </td>
                             <td>
                               <Input type="select" value={row.clase} style={{minWidth:120}} onChange={e => handleVueloChange(idx, "clase", e.target.value)}>
@@ -600,7 +1038,7 @@ const FormularioHuella = ({ onFormComplete }) => {
                               </Input>
                             </td>
                             <td><Input type="number" value={row.personas} style={{minWidth:120}} onChange={e => handleVueloChange(idx, "personas", e.target.value)} min="1" /></td>
-                            <td><Input value={row.distancia} readOnly tabIndex={-1} style={{background:'#e9ecef', minWidth:120}} /></td>
+                            <td><Input value={row.distancia || ''} readOnly tabIndex={-1} style={{background:'#e9ecef', minWidth:120}} /></td>
                             <td><Input value={row.factor} readOnly tabIndex={-1} style={{background:'#e9ecef', minWidth:120}} /></td>
                             <td><Input value={row.emisionTon} readOnly tabIndex={-1} style={{background:'#e9ecef', minWidth:120}} /></td>
                             <td><Input value={row.emisionKg} readOnly tabIndex={-1} style={{background:'#e9ecef', minWidth:120}} /></td>

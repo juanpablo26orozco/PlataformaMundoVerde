@@ -140,21 +140,20 @@ const DocumentViewer = ({
           </div>
         </div>
 
-        <div className="d-flex flex-wrap gap-2">
-          <Button color="success" onClick={togglePreview}>
-            <FeatherIcon icon="eye" size={16} className="me-2" />
-            {buttonText}
-          </Button>
-          
-          <Button color="outline-primary" onClick={openPDFInNewTab}>
-            <FeatherIcon icon="external-link" size={16} className="me-2" />
-            {newTabText}
-          </Button>
-          
-          <Button color="outline-secondary" onClick={downloadPDF}>
-            <FeatherIcon icon="download" size={16} className="me-2" />
-            {downloadText}
-          </Button>
+        <div className="mt-3 mb-2">
+          <div className="d-flex flex-row justify-content-center gap-2 mb-2">
+            <Button color="success" onClick={togglePreview} size="sm" style={{ minWidth: '100px' }}>
+              <FeatherIcon icon="eye" size={16} className="me-1" /> {buttonText}
+            </Button>
+            <Button color="outline-success" onClick={openPDFInNewTab} size="sm" style={{ minWidth: '100px' }}>
+              <FeatherIcon icon="external-link" size={16} className="me-1" /> {newTabText}
+            </Button>
+          </div>
+          <div className="d-flex justify-content-center">
+            <Button color="outline-secondary" onClick={downloadPDF} size="sm" style={{ minWidth: '210px' }}>
+              <FeatherIcon icon="download" size={16} className="me-1" /> {downloadText}
+            </Button>
+          </div>
         </div>
 
         <SimplePDFModal
