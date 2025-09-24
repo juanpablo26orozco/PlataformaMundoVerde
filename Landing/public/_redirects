@@ -1,0 +1,4 @@
+# Servir PDFs directamente sin redirección
+/Documentation/*.pdf  /Documentation/:splat  200
+# Resto de rutas van a React
+/*    /index.html   200

@@ -9,11 +9,16 @@
     "@testing-library/user-event": "^14.5.2",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.5.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "feather-icons-react": "^0.7.0",
     "gh-pages": "^6.3.0",
+    "pdfjs-dist": "^5.4.149",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-file-viewer": "^1.2.1",
     "react-modal": "^3.16.1",
+    "react-pdf": "^10.1.0",
     "react-router-dom": "^6.28.0",
     "react-scripts": "^5.0.1",
     "react-scrollspy": "^3.4.3",
@@ -46,6 +51,7 @@
       "last 1 safari version"
     ]
   },
+  "proxy": "http://localhost:3001",
   "devDependencies": {
     "@iconify-icons/uim": "^1.0.0",
     "@iconify/react": "^1.1.3"

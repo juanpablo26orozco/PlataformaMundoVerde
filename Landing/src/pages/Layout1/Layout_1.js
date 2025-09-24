@@ -8,7 +8,7 @@ import Switch from "../../component/Switch";
 
 // Importing Section
 const Section = React.lazy(() => import("./Section"));
-const Modules = React.lazy(() => import("../../component/Services"));
+const Modules = React.lazy(() => import("../../component/Modules"));
 const Contact = React.lazy(() => import("../../component/Contact"));
 const AliadosSection = React.lazy(() => import("../../component/Aliados"));
 const Contribuyentes = React.lazy(() => import("../../component/Contribuyentes"));

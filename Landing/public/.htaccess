@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# Servir PDFs directamente (no redireccionar a React)
+RewriteRule ^Concepts_docs/.*\.pdf$ - [L]
+RewriteRule ^Documentation/.*\.pdf$ - [L]
+RewriteRule ^Autodiagnostico_docs/.*\.pdf$ - [L]
+
+# Resto de rutas van a React
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

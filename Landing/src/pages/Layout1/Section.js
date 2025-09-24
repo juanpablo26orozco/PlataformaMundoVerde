@@ -34,9 +34,19 @@ class Section extends Component {
                   que beneficien tanto a nuestras empresas como al medio ambiente.
                   Construyamos juntos un futuro más verde y próspero.
                 </p>
-                <Link to="#modules" className="btn btn-lg btn-light rounded-pill me-2">
+                <a 
+                  href="#modules" 
+                  className="btn btn-lg btn-light rounded-pill me-2"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById('modules');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }}
+                >
                   Comenzar Ahora
-                </Link>
+                </a>
               </Col>
               <Col lg={6} sm={10} className="mx-auto ms-lg-auto me-lg-0">
                 <div className="mt-lg-0 mt-4 hero-image-container">
