@@ -50,34 +50,20 @@ export default class HuellaCarbono extends Component {
           </Container>
         </section>
 
-        {/* Sección Introducción: Problemas Medio Ambientales */}
+        {/* Sección Introducción: Problemas Medio Ambientales (Lectura a la izquierda, documento a la derecha) */}
         <section className="section bg-light" id="problemas-ambientales">
           <Container>
-            <Row className="justify-content-center">
-              <Col lg={12} className="text-center mb-5">
-                <FeatherIcon icon="alert-triangle" className="text-mundo-verde mb-3" size={48} />
-                <h2 className="text-mundo-verde mb-4">Problemas Medio Ambientales</h2>
-                <p className="text-muted">
-                  Comprende los principales desafíos ambientales que enfrentamos y su impacto en el cambio climático global.
-                </p>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col lg={8}>
-                <DocumentViewer 
-                  pdfPath="/Concepts_docs/1.Los_Problemas_medio_ambientales.pdf"
-                  title="Los Problemas Medio Ambientales"
-                  description="Documento introductorio que explica los principales problemas ambientales actuales, sus causas y consecuencias para el planeta y la sociedad."
-                  icon="alert-triangle"
-                  buttonText="Ver Documento Completo"
-                  cardStyle="featured"
-                />
-              </Col>
-            </Row>
-            <Row className="mt-5">
-              <Col lg={12}>
-                <Card className="shadow border-0">
+            <Row className="align-items-stretch justify-content-center">
+              <Col lg={7} md={12} className="mb-4">
+                <Card className="shadow border-0 h-100">
                   <CardBody className="p-5">
+                    <div className="text-center mb-4">
+                      <FeatherIcon icon="alert-triangle" className="text-mundo-verde mb-3" size={48} />
+                      <h2 className="text-mundo-verde mb-3">Problemas Medio Ambientales</h2>
+                      <p className="text-muted">
+                        Comprende los principales desafíos ambientales que enfrentamos y su impacto en el cambio climático global.
+                      </p>
+                    </div>
                     <h5 className="text-mundo-verde mb-4">
                       <FeatherIcon icon="info" className="me-2" />
                       Problemas Ambientales Clave
@@ -132,6 +118,18 @@ export default class HuellaCarbono extends Component {
                     </Row>
                   </CardBody>
                 </Card>
+              </Col>
+              <Col lg={5} md={12} className="mb-4 d-flex align-items-stretch">
+                <div className="w-100">
+                  <DocumentViewer 
+                    pdfPath="/Concepts_docs/1.Los_Problemas_medio_ambientales.pdf"
+                    title="Los Problemas Medio Ambientales"
+                    description="Documento introductorio que explica los principales problemas ambientales actuales, sus causas y consecuencias para el planeta y la sociedad."
+                    icon="alert-triangle"
+                    buttonText="Ver Documento Completo"
+                    cardStyle="featured"
+                  />
+                </div>
               </Col>
             </Row>
           </Container>
