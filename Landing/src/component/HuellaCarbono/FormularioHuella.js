@@ -3,7 +3,6 @@ import departamentosMunicipios from "../../data/departamentos_municipios.json";
 import { Container, Row, Col, Card, CardBody, Button, Table, FormGroup, Label, Input } from "reactstrap";
 import FeatherIcon from "feather-icons-react";
 import "../../assets/css/formulario.css";
-import rutasVuelos from "../../data/rutas_vuelos.json";
 // Endpoints API countriesnow.space
 const API_COUNTRIES = "https://countriesnow.space/api/v0.1/countries/positions";
 const API_STATES = "https://countriesnow.space/api/v0.1/countries/states";
@@ -48,14 +47,6 @@ async function getCoords(city, state, country) {
   }
   return null;
 }
-
-// Factores de emisión para vuelos corporativos (ejemplo, debes completar con los valores reales)
-const FACTORES_VUELOS = [
-  { tipo: "Nacional", clase: "Económica", factor: 0.158 },
-  { tipo: "Nacional", clase: "Ejecutiva", factor: 0.237 },
-  { tipo: "Internacional", clase: "Económica", factor: 0.146 },
-  { tipo: "Internacional", clase: "Ejecutiva", factor: 0.218 },
-];
 
 // Factores de ejemplo para combustibles gaseosos
 const FACTORES_GASEOSOS = [
@@ -129,131 +120,10 @@ const getToday = () => {
   return d.toISOString().slice(0, 10);
 };
 
+// Factor eléctrico
+const FACTOR_ELECTRICO = 0.391;
+
 const FormularioHuella = ({ onFormComplete }) => {
-  // Estados para selects encadenados del formulario de prueba
-  const [paisesTest, setPaisesTest] = useState([]);
-  const [estadosOrigenTest, setEstadosOrigenTest] = useState([]);
-  const [ciudadesOrigenTest, setCiudadesOrigenTest] = useState([]);
-  const [estadosDestinoTest, setEstadosDestinoTest] = useState([]);
-  const [ciudadesDestinoTest, setCiudadesDestinoTest] = useState([]);
-
-  const [paisOrigenTest, setPaisOrigenTest] = useState("");
-  const [estadoOrigenTest, setEstadoOrigenTest] = useState("");
-  const [ciudadOrigenTest, setCiudadOrigenTest] = useState("");
-  const [paisDestinoTest, setPaisDestinoTest] = useState("");
-  const [estadoDestinoTest, setEstadoDestinoTest] = useState("");
-  const [ciudadDestinoTest, setCiudadDestinoTest] = useState("");
-  const [distanciaKmTest, setDistanciaKmTest] = useState("");
-
-  // Cargar países al montar (prueba)
-  React.useEffect(() => {
-    fetch(API_COUNTRIES)
-      .then(res => res.json())
-      .then(data => {
-        if (data.data) setPaisesTest(data.data.map(p => p.name));
-      });
-  }, []);
-
-  // Cargar estados/departamentos cuando cambia país (prueba)
-
-  React.useEffect(() => {
-    if (estadoOrigenTest && paisOrigenTest) {
-      fetch(API_CITIES, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: paisOrigenTest, state: estadoOrigenTest })
-      })
-        .then(res => res.json())
-        .then(data => {
-          setCiudadesOrigenTest(data.data);
-        });
-    } else {
-      setCiudadesOrigenTest([]);
-    }
-    setCiudadOrigenTest("");
-  }, [estadoOrigenTest, paisOrigenTest]);
-
-  // Destino (prueba)
-  React.useEffect(() => {
-    if (paisDestinoTest) {
-      fetch(API_STATES, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: paisDestinoTest })
-      })
-        .then(res => res.json())
-        .then(data => {
-          setEstadosDestinoTest(data.data.states.map(s => s.name));
-        });
-    } else {
-      setEstadosDestinoTest([]);
-    }
-    setEstadoDestinoTest("");
-    setCiudadesDestinoTest([]);
-    setCiudadDestinoTest("");
-  }, [paisDestinoTest]);
-
-  React.useEffect(() => {
-    if (estadoDestinoTest && paisDestinoTest) {
-      fetch(API_CITIES, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: paisDestinoTest, state: estadoDestinoTest })
-      })
-        .then(res => res.json())
-        .then(data => {
-          setCiudadesDestinoTest(data.data);
-        });
-    } else {
-      setCiudadesDestinoTest([]);
-    }
-    setCiudadDestinoTest("");
-  }, [estadoDestinoTest, paisDestinoTest]);
-
-  // Calcular distancia cuando ambas ciudades están seleccionadas (prueba)
-  React.useEffect(() => {
-    const calcular = async () => {
-      if (ciudadOrigenTest && ciudadDestinoTest) {
-        setDistanciaKmTest("Calculando...");
-        const coordsOrigen = await getCoords(ciudadOrigenTest);
-        const coordsDestino = await getCoords(ciudadDestinoTest);
-        if (coordsOrigen && coordsDestino) {
-          const km = haversineDistance(coordsOrigen.lat, coordsOrigen.lon, coordsDestino.lat, coordsDestino.lon);
-          setDistanciaKmTest(km);
-        } else {
-          setDistanciaKmTest("No encontrado");
-        }
-      } else {
-        setDistanciaKmTest("");
-      }
-    };
-    calcular();
-  }, [ciudadOrigenTest, ciudadDestinoTest]);
-  // Formulario de prueba: solo origen, destino y distancia
-  const [ciudadOrigen, setCiudadOrigen] = useState("");
-  const [ciudadDestino, setCiudadDestino] = useState("");
-  const [distanciaKm, setDistanciaKm] = useState("");
-
-  // Calcula distancia cuando cambian las ciudades
-  React.useEffect(() => {
-    const calcular = async () => {
-      if (ciudadOrigen && ciudadDestino) {
-        setDistanciaKm("Calculando...");
-        const coordsOrigen = await getCoords(ciudadOrigen);
-        const coordsDestino = await getCoords(ciudadDestino);
-        if (coordsOrigen && coordsDestino) {
-          const km = haversineDistance(coordsOrigen.lat, coordsOrigen.lon, coordsDestino.lat, coordsDestino.lon);
-          setDistanciaKm(km);
-        } else {
-          setDistanciaKm("No encontrado");
-        }
-      } else {
-        setDistanciaKm("");
-      }
-    };
-    calcular();
-  }, [ciudadOrigen, ciudadDestino]);
-
   // Estado para datosEmpresa debe ir al inicio del componente
   const [datosEmpresa, setDatosEmpresa] = useState({
     nombreEmpresa: "",
@@ -268,6 +138,52 @@ const FormularioHuella = ({ onFormComplete }) => {
     personaElabora: "",
     cargo: ""
   });
+
+  // =============== TODOS LOS ESTADOS DE FORMULARIOS ===============
+  // Estados para vuelos
+  const [vuelos, setVuelos] = useState([
+    { origen: "", destino: "", clase: "", personas: "", tipoVuelo: "", factor: "", distancia: "", emisionKg: "", emisionTon: "" }
+  ]);
+  
+  // Estados para extintores
+  const [extintores, setExtintores] = useState([
+    { tipo: '', cantidad: '', pcg: '', emisionesParciales: '' }
+  ]);
+  
+  // Estados para sólidos
+  const [solidos, setSolidos] = useState([
+    { tipo: '', consumo: '', factor: '', emision: '' }
+  ]);
+  
+  // Estados para líquidos estacionarios
+  const [liquidos, setLiquidos] = useState([
+    { tipo: '', consumo: '', factor: '', emision: '' }
+  ]);
+  
+  // Estados para líquidos móviles
+  const [liquidosMoviles, setLiquidosMoviles] = useState([
+    { tipo: '', consumo: '', factor: '', emision: '' }
+  ]);
+  
+  // Estados para gaseosos
+  const [gaseosos, setGaseosos] = useState([
+    { tipo: '', consumo: '', factor: '', emision: '' }
+  ]);
+  
+  // Estados para gaseosos móviles
+  const [gaseososMoviles, setGaseososMoviles] = useState([
+    { tipo: '', consumo: '', factor: '', emision: '' }
+  ]);
+  
+  // Estados para electricidad
+  const [electricidad, setElectricidad] = useState([
+    { sede: '', consumo: '', factor: 0.4239, emision: '' }
+  ]);
+
+  // Estados para el control de pasos y cálculos
+  const [step, setStep] = useState(1);
+  const [resumenCalculado, setResumenCalculado] = useState(false);
+  const resumenRef = useRef(null);
 
   // Datos generales
   // Estado para datosEmpresa debe ir antes de municipiosFiltrados
@@ -285,12 +201,7 @@ const FormularioHuella = ({ onFormComplete }) => {
   const [ciudadOrigenVuelo, setCiudadOrigenVuelo] = useState("");
   const [paisDestinoVuelo, setPaisDestinoVuelo] = useState("");
   const [estadoDestinoVuelo, setEstadoDestinoVuelo] = useState("");
-  const [ciudadDestinoVuelo, setCiudadDestinoVuelo] = useState("");
   const [paisesVuelo, setPaisesVuelo] = useState([]);
-  const [estadosOrigenVueloList, setEstadosOrigenVueloList] = useState([]);
-  const [ciudadesOrigenVueloList, setCiudadesOrigenVueloList] = useState([]);
-  const [estadosDestinoVueloList, setEstadosDestinoVueloList] = useState([]);
-  const [ciudadesDestinoVueloList, setCiudadesDestinoVueloList] = useState([]);
 
   // Cargar países al montar
   React.useEffect(() => {
@@ -311,14 +222,10 @@ const FormularioHuella = ({ onFormComplete }) => {
       })
         .then(res => res.json())
         .then(data => {
-          setEstadosOrigenVueloList(data.data.states.map(s => s.name));
+          // Estados de origen cargados pero no se usan en formulario simplificado
         });
-    } else {
-      setEstadosOrigenVueloList([]);
     }
     setEstadoOrigenVuelo("");
-    setCiudadesOrigenVueloList([]);
-    setCiudadOrigenVuelo("");
   }, [paisOrigenVuelo]);
 
   React.useEffect(() => {
@@ -330,12 +237,9 @@ const FormularioHuella = ({ onFormComplete }) => {
       })
         .then(res => res.json())
         .then(data => {
-          setCiudadesOrigenVueloList(data.data);
+          // Ciudades de origen cargadas pero no se usan en formulario simplificado
         });
-    } else {
-      setCiudadesOrigenVueloList([]);
     }
-    setCiudadOrigenVuelo("");
   }, [estadoOrigenVuelo, paisOrigenVuelo]);
 
   // Destino
@@ -348,14 +252,10 @@ const FormularioHuella = ({ onFormComplete }) => {
       })
         .then(res => res.json())
         .then(data => {
-          setEstadosDestinoVueloList(data.data.states.map(s => s.name));
+          // Estados de destino cargados pero no se usan en formulario simplificado
         });
-    } else {
-      setEstadosDestinoVueloList([]);
     }
     setEstadoDestinoVuelo("");
-    setCiudadesDestinoVueloList([]);
-    setCiudadDestinoVuelo("");
   }, [paisDestinoVuelo]);
 
   React.useEffect(() => {
@@ -367,12 +267,9 @@ const FormularioHuella = ({ onFormComplete }) => {
       })
         .then(res => res.json())
         .then(data => {
-          setCiudadesDestinoVueloList(data.data);
+          // Ciudades de destino cargadas pero no se usan en formulario simplificado
         });
-    } else {
-      setCiudadesDestinoVueloList([]);
     }
-    setCiudadDestinoVuelo("");
   }, [estadoDestinoVuelo, paisDestinoVuelo]);
 
   // Factores de extintores (ejemplo)
@@ -404,17 +301,72 @@ const FormularioHuella = ({ onFormComplete }) => {
   // Resumen de emisiones (dummy para que compile)
   // Resumen de emisiones (tabla ejemplo) y riesgos
 
-  // Estado para mostrar el resultado final
-  const [mostrarResultadoFinal, setMostrarResultadoFinal] = useState(false);
-  const [resumenCalculado, setResumenCalculado] = useState(false);
-  const resumenRef = useRef(null);
+  // Función para calcular emisiones dinámicamente basado en los datos del formulario
+  const calcularEmisionesTotales = () => {
+    // Emisiones de vuelos (Alcance 3)
+    const emisionesVuelos = vuelos.reduce((total, vuelo) => {
+      const emision = parseFloat(vuelo.emisionTon) || 0;
+      return total + emision;
+    }, 0);
 
-  // Ejemplo de datos de emisiones por alcance (reemplazar con los reales)
-  const emisiones = {
-    alcance1: 1200, // kg CO2e
-    alcance2: 800,
-    alcance3: 500,
+    // Emisiones de combustibles sólidos estacionarios (Alcance 1)
+    const emisionesSolidos = solidos.reduce((total, solido) => {
+      const emision = parseFloat(solido.emisionesTotales) || 0;
+      return total + emision;
+    }, 0);
+
+    // Emisiones de combustibles líquidos estacionarios (Alcance 1)
+    const emisionesLiquidos = liquidos.reduce((total, liquido) => {
+      const emision = parseFloat(liquido.emisionesTotales) || 0;
+      return total + emision;
+    }, 0);
+
+    // Emisiones de combustibles gaseosos estacionarios (Alcance 1) 
+    const emisionesGaseosos = gaseosos.reduce((total, gaseoso) => {
+      const emision = parseFloat(gaseoso.emisionesTotales) || 0;
+      return total + emision;
+    }, 0);
+
+    // Emisiones de combustibles líquidos móviles (Alcance 1)
+    const emisionesLiquidosMoviles = liquidosMoviles.reduce((total, liquido) => {
+      const emision = parseFloat(liquido.emisionesTotales) || 0;
+      return total + emision;
+    }, 0);
+
+    // Emisiones de combustibles gaseosos móviles (Alcance 1)
+    const emisionesGaseososMoviles = gaseososMoviles.reduce((total, gaseoso) => {
+      const emision = parseFloat(gaseoso.emisionesTotales) || 0;
+      return total + emision;
+    }, 0);
+
+    // Emisiones de extintores (Alcance 1 - Fugitivas)
+    const emisionesExtintores = extintores.reduce((total, extintor) => {
+      const emision = parseFloat(extintor.emisionesParciales) || 0;
+      return total + (emision / 1000); // Convertir de kg a toneladas
+    }, 0);
+
+    // Emisiones de electricidad (Alcance 2)
+    const emisionesElectricidad = electricidad.reduce((total, item) => {
+      const consumo = parseFloat(item.consumoAnual) || 0;
+      const emision = (consumo * FACTOR_ELECTRICO) / 1000; // kg a toneladas
+      return total + emision;
+    }, 0);
+
+    // Totales por alcance en toneladas CO2e
+    const alcance1 = emisionesSolidos + emisionesLiquidos + emisionesGaseosos + 
+                     emisionesLiquidosMoviles + emisionesGaseososMoviles + emisionesExtintores;
+    const alcance2 = emisionesElectricidad;
+    const alcance3 = emisionesVuelos;
+
+    return {
+      alcance1: alcance1,
+      alcance2: alcance2, 
+      alcance3: alcance3,
+    };
   };
+
+  // Calcular emisiones dinámicamente
+  const emisiones = calcularEmisionesTotales();
   const totalEmisiones = emisiones.alcance1 + emisiones.alcance2 + emisiones.alcance3;
   // Evaluación simple (puedes ajustar los umbrales)
   let evaluacion = "";
@@ -425,61 +377,7 @@ const FormularioHuella = ({ onFormComplete }) => {
   const arboles = Math.ceil(totalEmisiones / 21);
 
   // Función para descargar pantallazo del resumen
-  // Descargar pantallazo usando window.print() para toda la página de resultados
-  const descargarPantallazo = () => {
-    window.print();
-  };
-
-  // Componente de resultado final con mejor UI
-  const ResultadoFinal = () => (
-    <div style={{
-      maxWidth: 700,
-      margin: '40px auto',
-      background: 'linear-gradient(135deg, #e0f7fa 0%, #fff 100%)',
-      borderRadius: 16,
-      boxShadow: '0 4px 24px #0002',
-      padding: 32,
-      textAlign: 'center',
-      fontFamily: 'inherit',
-    }}>
-      <h2 style={{color:'#009688', fontWeight:700, marginBottom:16}}>¡Resumen de tu Huella de Carbono!</h2>
-      <table style={{width:'100%', borderCollapse:'collapse', margin:'24px 0', fontSize:18}}>
-        <thead>
-          <tr style={{background:'#b2dfdb', color:'#004d40'}}>
-            <th style={{padding:8}}>Tipo</th>
-            <th style={{padding:8}}>Fuente</th>
-            <th style={{padding:8}}>Ton CO₂ eq</th>
-            <th style={{padding:8}}>%</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td style={{padding:8}}>Alcance 1</td><td>Estacionaria</td><td>1</td><td>8%</td></tr>
-          <tr><td></td><td>Móvil</td><td>1</td><td>3%</td></tr>
-          <tr><td></td><td>Fugitiva</td><td>16</td><td>89%</td></tr>
-          <tr style={{fontWeight:'bold', background:'#e0f2f1'}}><td colSpan={2}>Total Alcance 1</td><td>17</td><td>0%</td></tr>
-          <tr><td>Alcance 2</td><td>Electricidad</td><td>11637</td><td>100%</td></tr>
-          <tr style={{fontWeight:'bold', background:'#e0f2f1'}}><td colSpan={2}>Total Alcance 2</td><td>11637</td><td>100%</td></tr>
-          <tr style={{fontWeight:'bold', background:'#b2dfdb', color:'#004d40'}}><td colSpan={2}>Total Emisiones</td><td>11654</td><td>100%</td></tr>
-        </tbody>
-      </table>
-      <div style={{margin:'24px 0', fontSize:20, color:'#00796b', fontWeight:600}}>
-        <span style={{fontSize:32, verticalAlign:'middle'}}>🌎</span> ¡Gracias por calcular tu huella!<br/>
-        <span style={{fontSize:16, color:'#555'}}>Revisa los resultados y toma acción para reducir tus emisiones.</span>
-      </div>
-    </div>
-  );
-  // Estado para extintores
-  const [extintores, setExtintores] = useState([
-    { tipo: '', cantidad: '', pcg: '', emisionesParciales: '' }
-  ]);
   const addExtintorRow = () => setExtintores([...extintores, { tipo: '', cantidad: '', pcg: '', emisionesParciales: '' }]);
-  // Estado para vuelos
-  const [vuelos, setVuelos] = useState([
-    { origen: "", destino: "", clase: "", personas: "", tipoVuelo: "", factor: "", distancia: "", emisionKg: "", emisionTon: "" }
-  ]);
-  // Estados principales
-  const [step, setStep] = useState(1);
-
 
   const handleVueloChange = async (idx, field, value) => {
     let newRows = [...vuelos];
@@ -520,10 +418,7 @@ const FormularioHuella = ({ onFormComplete }) => {
   const addVueloRow = () => setVuelos([...vuelos, { origen: "", destino: "", clase: "", personas: "", tipoVuelo: "", factor: "", distancia: "", emisionKg: "", emisionTon: "" }]);
   const removeVueloRow = idx => setVuelos(vuelos.filter((_, i) => i !== idx));
 
-  // Sólidos
-  const [solidos, setSolidos] = useState([
-    { combustible: "", consumo: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "" }
-  ]);
+  // Sólidos - funciones para manejar cambios
   const handleSolidoChange = (idx, field, value) => {
     let newRows = [...solidos];
     if (field === "combustible") {
@@ -557,10 +452,7 @@ const FormularioHuella = ({ onFormComplete }) => {
   const addSolidoRow = () => setSolidos([...solidos, { combustible: "", consumo: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "" }]);
   const removeSolidoRow = idx => setSolidos(solidos.filter((_, i) => i !== idx));
 
-  // Líquidos
-  const [liquidos, setLiquidos] = useState([
-    { combustible: "", consumo: "", densidad: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "", masa: "", energia: "", emisionCO2: "", emisionCH4: "", emisionN2O: "", emisionSO2: "", emisionesTotales: "" }
-  ]);
+  // Líquidos - funciones para manejar cambios
   const handleLiquidoChange = (idx, field, value) => {
     let newRows = [...liquidos];
     if (field === "combustible") {
@@ -596,10 +488,7 @@ const FormularioHuella = ({ onFormComplete }) => {
   const addLiquidoRow = () => setLiquidos([...liquidos, { combustible: "", consumo: "", densidad: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "", masa: "", energia: "", emisionCO2: "", emisionCH4: "", emisionN2O: "", emisionSO2: "", emisionesTotales: "" }]);
   const removeLiquidoRow = idx => setLiquidos(liquidos.filter((_, i) => i !== idx));
 
-  // Gaseosos
-  const [gaseosos, setGaseosos] = useState([
-    { combustible: "", consumo: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "" }
-  ]);
+  // Gaseosos - funciones para manejar cambios
   const handleGaseosoChange = (idx, field, value) => {
     let newRows = [...gaseosos];
     if (field === "combustible") {
@@ -634,9 +523,6 @@ const FormularioHuella = ({ onFormComplete }) => {
   const removeGaseosoRow = idx => setGaseosos(gaseosos.filter((_, i) => i !== idx));
 
   // Nuevo formulario: Alcance 1 - Emisiones Directas por Consumo de Combustibles Líquidos de Fuentes Móviles
-  const [liquidosMoviles, setLiquidosMoviles] = useState([
-    { combustible: "", consumo: "", densidad: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "", masa: "", energia: "", emisionCO2: "", emisionCH4: "", emisionN2O: "", emisionSO2: "", emisionesTotales: "" }
-  ]);
   const handleLiquidoMovilChange = (idx, field, value) => {
     let newRows = [...liquidosMoviles];
     if (field === "combustible") {
@@ -673,9 +559,6 @@ const FormularioHuella = ({ onFormComplete }) => {
   const removeLiquidoMovilRow = idx => setLiquidosMoviles(liquidosMoviles.filter((_, i) => i !== idx));
 
   // Nuevo formulario: Alcance 1 - Emisiones Directas por Consumo de Combustibles Gaseosos de Fuentes Móviles
-  const [gaseososMoviles, setGaseososMoviles] = useState([
-    { combustible: "", consumo: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", emisionCO2: "", emisionCH4: "", emisionN2O: "", emisionesTotales: "" }
-  ]);
   const handleGaseosoMovilChange = (idx, field, value) => {
     let newRows = [...gaseososMoviles];
     if (field === "combustible") {
@@ -724,12 +607,8 @@ const FormularioHuella = ({ onFormComplete }) => {
   const removeGaseosoMovilRow = idx => setGaseososMoviles(gaseososMoviles.filter((_, i) => i !== idx));
 
   // Estado y lógica para Alcance 2: Electricidad
-  const FACTOR_ELECTRICO = 0.391;
-  const [electricidad, setElectricidad] = useState([
-    {
-      año: '2024',
-    }
-  ]);
+  
+  // Funciones para manejar electricidad
 
   // Handler de datos generales
   const handleDatosEmpresa = e => {
@@ -1597,11 +1476,6 @@ const FormularioHuella = ({ onFormComplete }) => {
                         <FeatherIcon icon="plus" size={16} className="me-1" /> Agregar fila
                       </Button>
                     </div>
-                    <div className="d-flex justify-content-end mt-4">
-                      <Button color="primary" type="submit">
-                        Guardar <FeatherIcon icon="save" className="ms-2" />
-                      </Button>
-                    </div>
                   </form>
                 )}
                 {/* RESUMEN Y GRÁFICO DE EMISIONES GEI */}
@@ -1620,69 +1494,137 @@ const FormularioHuella = ({ onFormComplete }) => {
                   )}
                   {/* Mostrar resumen solo después de calcular */}
                   {resumenCalculado && (
-                    <div ref={resumenRef} style={{ maxWidth: 900, margin: '2rem auto', background: '#f8fafc', borderRadius: 28, boxShadow: '0 8px 32px #b2dfdb', padding: 48, textAlign: 'center' }}>
-                      <h2 style={{ color: '#009688', fontWeight: 800, marginBottom: 32, fontSize: '2.5rem' }}>Resumen de Consumo de la Empresa</h2>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 32, gap: 32, flexWrap: 'wrap' }}>
-                        <div style={{ flex: 1, minWidth: 260, background: '#e0f2f1', borderRadius: 16, padding: 24, marginBottom: 16 }}>
-                          <h4 style={{ color: '#00796b', fontWeight: 700 }}>Datos de la Empresa</h4>
-                          <div style={{ textAlign: 'left', fontSize: '1.1rem', color: '#333', marginTop: 12 }}>
-                            <strong>Nombre:</strong> {datosEmpresa.nombreEmpresa || '-'}<br/>
-                            <strong>NIT:</strong> {datosEmpresa.nit || '-'}<br/>
-                            <strong>Dirección:</strong> {datosEmpresa.direccion || '-'}<br/>
-                            <strong>Departamento:</strong> {datosEmpresa.departamento || '-'}<br/>
-                            <strong>Municipio:</strong> {datosEmpresa.municipio || '-'}<br/>
-                            <strong>Año Base:</strong> {datosEmpresa.añoBase || '-'}<br/>
-                            <strong>Fecha Reporte:</strong> {datosEmpresa.fechaReporte || '-'}<br/>
-                            <strong>Teléfono:</strong> {datosEmpresa.telefono || '-'}<br/>
-                            <strong>Correo:</strong> {datosEmpresa.correo || '-'}<br/>
-                            <strong>Responsable:</strong> {datosEmpresa.personaElabora || '-'}<br/>
-                            <strong>Cargo:</strong> {datosEmpresa.cargo || '-'}
-                          </div>
-                        </div>
-                        <div style={{ flex: 2, minWidth: 320, background: '#fff', borderRadius: 16, padding: 24, marginBottom: 16, border: '1px solid #b2dfdb' }}>
-                          <h4 style={{ color: '#00796b', fontWeight: 700 }}>Emisiones por Alcance</h4>
-                          <table style={{ width: '100%', marginBottom: 24, fontSize: '1.2rem' }}>
-                            <thead>
-                              <tr style={{ background: '#e0f2f1', color: '#00695c' }}>
-                                <th>Alcance</th>
-                                <th>Emisiones (kg CO₂e)</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr><td>Alcance 1</td><td>{emisiones.alcance1}</td></tr>
-                              <tr><td>Alcance 2</td><td>{emisiones.alcance2}</td></tr>
-                              <tr><td>Alcance 3</td><td>{emisiones.alcance3}</td></tr>
-                              <tr style={{ fontWeight: 700, background: '#b2dfdb' }}>
-                                <td>Total</td><td>{totalEmisiones}</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          <div style={{ fontSize: '1.3rem', marginBottom: 18, color: '#00796b', fontWeight: 700 }}>{evaluacion}</div>
-                          <div style={{ fontSize: '1.15rem', marginBottom: 24 }}>
-                            Para compensar estas emisiones, deberías plantar al menos <span style={{ color: '#388e3c', fontWeight: 700 }}>{arboles}</span> árboles.
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        className="btn btn-info"
-                        onClick={() => {
-                          // Mostrar solo la sección de resultados y cálculos al imprimir
-                          const originalTitle = document.title;
-                          document.title = 'Resumen y Cálculos Huella de Carbono';
-                          const printContents = document.getElementById('resultados-totales').innerHTML;
-                          const originalContents = document.body.innerHTML;
-                          document.body.innerHTML = printContents;
-                          window.print();
-                          document.body.innerHTML = originalContents;
-                          document.title = originalTitle;
-                          window.location.reload();
-                        }}
-                        style={{ fontSize: '1.2rem', padding: '0.7rem 2.5rem', borderRadius: '1.5rem', marginTop: 24 }}
-                      >
-                        Descargar Pantallazo
-                      </button>
-                    </div>
-                  )}
+                    <div ref={resumenRef} style={{ maxWidth: 900, margin: '2rem auto', background: '#f6fff7', borderRadius: 28, boxShadow: '0 8px 32px #b7e4c7', border: '2px solid #b7e4c7', padding: 48, textAlign: 'center' }}>
+                      <div style={{display:'flex', alignItems:'center', justifyContent:'center', marginBottom:24}}>
+      <div style={{background:'#d8f3dc', borderRadius:'50%', width:60, height:60, display:'flex', alignItems:'center', justifyContent:'center', marginRight:16, boxShadow:'0 2px 8px #b7e4c7'}}>
+        <FeatherIcon icon="activity" size={36} color="#1b5e20" />
+      </div>
+      <div>
+        <h2 style={{color:'#1b5e20', fontWeight:800, margin:0, fontSize:32, letterSpacing:0.5}}>Resumen de Consumo de la Empresa</h2>
+      </div>
+    </div>
+    <div style={{display:'flex', flexWrap:'wrap', gap:32, justifyContent:'center'}}>
+      <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #d8f3dc', padding:24, minWidth:260, maxWidth:320, flex:1, border:'2px solid #b7e4c7'}}>
+        <h3 style={{color:'#1b5e20', fontWeight:700, marginBottom:16, fontSize:20}}>Datos de la Empresa</h3>
+        <div style={{fontSize:16, lineHeight:1.7, textAlign:'left'}}>
+          <b>Nombre:</b> {datosEmpresa.nombreEmpresa || '-'}<br/>
+          <b>NIT:</b> {datosEmpresa.nit || '-'}<br/>
+          <b>Dirección:</b> {datosEmpresa.direccion || '-'}<br/>
+          <b>Departamento:</b> {datosEmpresa.departamento || '-'}<br/>
+          <b>Municipio:</b> {datosEmpresa.municipio || '-'}<br/>
+          <b>Año Base:</b> {datosEmpresa.añoBase || '-'}<br/>
+          <b>Fecha Reporte:</b> {datosEmpresa.fechaReporte || '-'}<br/>
+          <b>Teléfono:</b> {datosEmpresa.telefono || '-'}<br/>
+          <b>Correo:</b> {datosEmpresa.correo || '-'}<br/>
+          <b>Responsable:</b> {datosEmpresa.personaElabora || '-'}<br/>
+          <b>Cargo:</b> {datosEmpresa.cargo || '-'}
+        </div>
+      </div>
+      <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #0001', padding:24, minWidth:320, flex:1, border:'1.5px solid #e0f2f1'}}>
+        <h3 style={{color:'#009688', fontWeight:700, marginBottom:16, fontSize:20, textAlign:'center'}}>Emisiones por Alcance</h3>
+        <table style={{width:'100%', borderCollapse:'collapse', margin:'0 0 18px 0', fontSize:17}}>
+          <thead>
+            <tr style={{background:'#b7e4c7', color:'#1b5e20'}}>
+              <th style={{padding:8, borderRadius:'8px 0 0 0'}}>Alcance</th>
+              <th style={{padding:8, borderRadius:'0 8px 0 0'}}>Emisiones (Ton CO₂e)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style={{background:'#d8f3dc'}}>
+              <td style={{padding:8}}>Alcance 1</td>
+              <td style={{padding:8, textAlign:'right'}}>{emisiones.alcance1.toFixed(3)}</td>
+            </tr>
+            <tr style={{background:'#fff'}}>
+              <td style={{padding:8}}>Alcance 2</td>
+              <td style={{padding:8, textAlign:'right'}}>{emisiones.alcance2.toFixed(3)}</td>
+            </tr>
+            <tr style={{background:'#d8f3dc'}}>
+              <td style={{padding:8}}>Alcance 3</td>
+              <td style={{padding:8, textAlign:'right'}}>{emisiones.alcance3.toFixed(3)}</td>
+            </tr>
+            <tr style={{fontWeight:'bold', background:'#b7e4c7', color:'#1b5e20'}}>
+              <td style={{padding:8}}>Total</td>
+              <td style={{padding:8, textAlign:'right'}}>{totalEmisiones.toFixed(3)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style={{
+          margin:'18px 0 0 0',
+          fontSize:20,
+          fontWeight:800,
+          textAlign:'center',
+          color: totalEmisiones < 1000 ? '#388e3c' : totalEmisiones < 3000 ? '#43a047' : '#b7e4c7',
+          background: totalEmisiones < 1000 ? '#d8f3dc' : totalEmisiones < 3000 ? '#b7e4c7' : '#f6fff7',
+          borderRadius: 12,
+          padding: '12px 0',
+          boxShadow: '0 2px 8px #b7e4c7',
+          border: '1.5px solid #b7e4c7',
+          letterSpacing: 0.2
+        }}>
+          {evaluacion}
+        </div>
+        <div style={{
+          margin:'12px 0 0 0',
+          fontSize:16,
+          color:'#1b5e20',
+          background:'#e9fbe5',
+          borderRadius: 10,
+          padding: '8px 0',
+          fontWeight:600,
+          textAlign:'center',
+          boxShadow:'0 1px 4px #b7e4c7',
+          border:'1px solid #b7e4c7'
+        }}>
+          <FeatherIcon icon="tree" size={18} color="#43a047" style={{marginRight:8, marginBottom:-3}} />
+          Para compensar estas emisiones, deberías plantar al menos <b style={{color:'#388e3c'}}>{arboles}</b> árboles.
+        </div>
+      </div>
+    </div>
+    <div style={{display:'flex', justifyContent:'center', marginTop:32}}>
+      <button
+        className="btn-download-green"
+        style={{
+          fontWeight: 800,
+          fontSize: 17,
+          borderRadius: 24,
+          padding: '12px 36px',
+          background: 'linear-gradient(90deg, #43a047 0%, #388e3c 100%)',
+          color: '#fff',
+          border: 'none',
+          boxShadow: '0 2px 12px #b7e4c7',
+          transition: 'background 0.2s, box-shadow 0.2s',
+          cursor: 'pointer',
+          outline: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8
+        }}
+        onMouseOver={e => {
+          e.currentTarget.style.background = 'linear-gradient(90deg, #388e3c 0%, #1b5e20 100%)';
+          e.currentTarget.style.boxShadow = '0 4px 18px #43a047';
+        }}
+        onMouseOut={e => {
+          e.currentTarget.style.background = 'linear-gradient(90deg, #43a047 0%, #388e3c 100%)';
+          e.currentTarget.style.boxShadow = '0 2px 12px #b7e4c7';
+        }}
+        onClick={() => {
+          // Mostrar solo la sección de resultados y cálculos al imprimir
+          const originalTitle = document.title;
+          document.title = 'Resumen y Cálculos Huella de Carbono';
+          const printContents = document.getElementById('resultados-totales').innerHTML;
+          const originalContents = document.body.innerHTML;
+          document.body.innerHTML = printContents;
+          window.print();
+          document.body.innerHTML = originalContents;
+          document.title = originalTitle;
+          window.location.reload();
+        }}
+      >
+        <FeatherIcon icon="download" className="me-2" color="#fff" /> Descargar Pantallazo
+      </button>
+    </div>
+  </div>
+)}
                 </div>
               </CardBody>
             </Card>

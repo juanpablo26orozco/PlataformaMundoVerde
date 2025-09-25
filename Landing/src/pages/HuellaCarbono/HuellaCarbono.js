@@ -66,7 +66,7 @@ export default class HuellaCarbono extends Component {
                     </div>
                     <h5 className="text-mundo-verde mb-4">
                       <FeatherIcon icon="info" className="me-2" />
-                      Problemas Ambientales Clave
+                      Problemas Ambientales Claves
                     </h5>
                     <Row>
                       <Col lg={6}>

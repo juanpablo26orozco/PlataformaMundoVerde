@@ -1,7 +1,11 @@
+import SidebarNav from "../../component/Calculadora/SidebarNav";
+
 import React from "react";
 import CalculadoraSection from "../../component/Calculadora/CalculadoraSection";
 import Footer from "../../component/Footer/Footer";
 import Switch from "../../component/Switch";
+import FeatherIcon from "feather-icons-react";
+import { Container, Row, Col, Card, CardBody } from "reactstrap";
 
 const CalculadoraPage = () => {
   React.useEffect(() => {
@@ -12,6 +16,7 @@ const CalculadoraPage = () => {
 
   return (
     <React.Fragment>
+      <SidebarNav />
       {/* Hero institucional */}
       <section style={{
         minHeight: '340px',
@@ -42,7 +47,69 @@ const CalculadoraPage = () => {
         {/* Efecto decorativo */}
         <div style={{position: 'absolute', top: -80, right: -120, width: 320, height: 320, background: 'radial-gradient(circle, #4caf50 0%, #66bb6a 100%)', opacity: 0.15, borderRadius: '50%'}}></div>
       </section>
-      <CalculadoraSection />
+      {/* Sección informativa: ¿Qué es la Huella de Carbono? */}
+  <section className="section" id="conceptos-basicos-content">
+        <Container>
+          <Row className="justify-content-center">
+            <Col lg={12} className="text-center mb-5">
+              <FeatherIcon icon="info" className="text-mundo-verde mb-3" size={48} />
+              <h2 className="text-mundo-verde mb-4">¿Qué es la Huella de Carbono?</h2>
+              <p className="text-muted">
+                Conoce los fundamentos de la medición de gases de efecto invernadero y su impacto en el cambio climático.
+              </p>
+            </Col>
+          </Row>
+          <Row className="justify-content-center">
+            <Col lg={10}>
+              <Card className="shadow border-0 mb-4">
+                <CardBody className="p-5">
+                  <p className="text-muted mb-4 lead">
+                    La <strong>huella de carbono</strong> es una medida del total de emisiones de gases
+                    de efecto invernadero (GEI) causadas directa o indirectamente por una actividad,
+                    organización, evento o producto, expresada como equivalente de dióxido de carbono (CO2eq).
+                  </p>
+                  <Row className="mt-4">
+                    <Col lg={6}>
+                      <div className="feature-icon mb-4">
+                        <FeatherIcon icon="globe" className="text-mundo-verde me-2" size={24} />
+                        <h5 className="d-inline text-mundo-verde">Importancia Global</h5>
+                      </div>
+                      <p className="text-muted">
+                        El cálculo de la huella de carbono es fundamental para entender nuestro
+                        impacto en el cambio climático y tomar medidas para reducirlo.
+                      </p>
+                    </Col>
+                    <Col lg={6}>
+                      <div className="feature-icon mb-4">
+                        <FeatherIcon icon="trending-up" className="text-mundo-verde me-2" size={24} />
+                        <h5 className="d-inline text-mundo-verde">Beneficios Empresariales</h5>
+                      </div>
+                      <p className="text-muted">
+                        Las empresas que miden y reducen su huella de carbono mejoran su
+                        reputación, reducen costos operativos y se preparan para futuras regulaciones.
+                      </p>
+                    </Col>
+                  </Row>
+                  <div className="alert alert-mundo-verde mt-4" role="alert">
+                    <FeatherIcon icon="lightbulb" className="me-2" size={18} />
+                    <strong>Dato Importante:</strong> Colombia se comprometió a reducir sus emisiones
+                    de GEI en un 51% para el 2030 según el Acuerdo de París.
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+          <div className="text-center mt-4">
+            <a href="#calculadora-huella" className="btn btn-success btn-lg rounded-pill" style={{fontWeight:700, fontSize:18, padding:'12px 36px', boxShadow:'0 2px 8px #b7e4c7'}}>
+              Ir a la Calculadora
+              <FeatherIcon icon="arrow-down" className="ms-2" />
+            </a>
+          </div>
+        </Container>
+      </section>
+      <div id="calculadora-huella">
+        <CalculadoraSection />
+      </div>
       <Footer />
       <Switch />
     </React.Fragment>
