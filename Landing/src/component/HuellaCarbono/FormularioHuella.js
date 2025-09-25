@@ -72,7 +72,6 @@ const FACTORES_GASEOSOS = [
   { nombre: "Gas de Pozo Cupiagua", poderCalorifico: 40.5725, factorCO2: 56225.4566, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 0.1 }
 ];
 
-// Factores de ejemplo para combustibles sólidos
 const FACTORES_SOLIDOS = [
   { nombre: "Carbón Genérico", poderCalorifico: 28.7600, factorCO2: 88136.0630, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 3101.7541 },
   { nombre: "Carbón Guajira - Cesar", poderCalorifico: 26.6220, factorCO2: 81163.1560, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 1133.7889 },
@@ -156,24 +155,6 @@ const FormularioHuella = ({ onFormComplete }) => {
   }, []);
 
   // Cargar estados/departamentos cuando cambia país (prueba)
-  React.useEffect(() => {
-    if (paisOrigenTest) {
-      fetch(API_STATES, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: paisOrigenTest })
-      })
-        .then(res => res.json())
-        .then(data => {
-          setEstadosOrigenTest(data.data.states.map(s => s.name));
-        });
-    } else {
-      setEstadosOrigenTest([]);
-    }
-    setEstadoOrigenTest("");
-    setCiudadesOrigenTest([]);
-    setCiudadOrigenTest("");
-  }, [paisOrigenTest]);
 
   React.useEffect(() => {
     if (estadoOrigenTest && paisOrigenTest) {
@@ -761,60 +742,7 @@ const FormularioHuella = ({ onFormComplete }) => {
       <Container>
         {/* Formulario de prueba: selects encadenados país, estado, ciudad (sin conflictos) */}
         <Row className="justify-content-center mb-4">
-          <Col md={7}>
-            <Card className="shadow p-4 mb-4">
-              <h4 className="mb-3">Prueba: Distancia entre ciudades (Selects encadenados)</h4>
-              <form>
-                <div className="mb-3">
-                  <label className="form-label">País de Origen</label>
-                  <select className="form-control" value={paisOrigenTest} onChange={e => setPaisOrigenTest(e.target.value)}>
-                    <option value="">Seleccione país...</option>
-                    {paisesTest.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Estado/Departamento de Origen</label>
-                  <select className="form-control" value={estadoOrigenTest} onChange={e => setEstadoOrigenTest(e.target.value)} disabled={!paisOrigenTest}>
-                    <option value="">Seleccione estado/departamento...</option>
-                    {estadosOrigenTest.map(e => <option key={e} value={e}>{e}</option>)}
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Ciudad de Origen</label>
-                  <select className="form-control" value={ciudadOrigenTest} onChange={e => setCiudadOrigenTest(e.target.value)} disabled={!estadoOrigenTest}>
-                    <option value="">Seleccione ciudad...</option>
-                    {ciudadesOrigenTest.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                <hr />
-                <div className="mb-3">
-                  <label className="form-label">País de Destino</label>
-                  <select className="form-control" value={paisDestinoTest} onChange={e => setPaisDestinoTest(e.target.value)}>
-                    <option value="">Seleccione país...</option>
-                    {paisesTest.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Estado/Departamento de Destino</label>
-                  <select className="form-control" value={estadoDestinoTest} onChange={e => setEstadoDestinoTest(e.target.value)} disabled={!paisDestinoTest}>
-                    <option value="">Seleccione estado/departamento...</option>
-                    {estadosDestinoTest.map(e => <option key={e} value={e}>{e}</option>)}
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Ciudad de Destino</label>
-                  <select className="form-control" value={ciudadDestinoTest} onChange={e => setCiudadDestinoTest(e.target.value)} disabled={!estadoDestinoTest}>
-                    <option value="">Seleccione ciudad...</option>
-                    {ciudadesDestinoTest.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Distancia (km)</label>
-                  <input type="text" className="form-control" value={distanciaKmTest} readOnly />
-                </div>
-              </form>
-            </Card>
-          </Col>
+
         </Row>
         {/* ...existing code... */}
         <Row className="justify-content-center">
@@ -922,11 +850,11 @@ const FormularioHuella = ({ onFormComplete }) => {
                       <tbody>
                         {vuelos.map((row, idx) => (
                           <tr key={idx}>
+                            {/* ...existing code... */}
                             <td>
                               <select className="form-control" style={{minWidth:140}} value={row.paisOrigen || ''} onChange={async e => {
                                 const value = e.target.value;
                                 await handleVueloChange(idx, "paisOrigen", value);
-                                // Cargar estados para el país seleccionado
                                 let newRows = [...vuelos];
                                 newRows[idx].estadoOrigen = '';
                                 newRows[idx].ciudadOrigen = '';
@@ -951,7 +879,6 @@ const FormularioHuella = ({ onFormComplete }) => {
                               <select className="form-control" style={{minWidth:140}} value={row.estadoOrigen || ''} onChange={async e => {
                                 const value = e.target.value;
                                 await handleVueloChange(idx, "estadoOrigen", value);
-                                // Cargar ciudades para el estado seleccionado
                                 let newRows = [...vuelos];
                                 newRows[idx].ciudadOrigen = '';
                                 newRows[idx].ciudadesOrigenList = [];
@@ -980,7 +907,6 @@ const FormularioHuella = ({ onFormComplete }) => {
                               <select className="form-control" style={{minWidth:140}} value={row.paisDestino || ''} onChange={async e => {
                                 const value = e.target.value;
                                 await handleVueloChange(idx, "paisDestino", value);
-                                // Cargar estados para el país destino seleccionado
                                 let newRows = [...vuelos];
                                 newRows[idx].estadoDestino = '';
                                 newRows[idx].ciudadDestino = '';
@@ -1005,7 +931,6 @@ const FormularioHuella = ({ onFormComplete }) => {
                               <select className="form-control" style={{minWidth:140}} value={row.estadoDestino || ''} onChange={async e => {
                                 const value = e.target.value;
                                 await handleVueloChange(idx, "estadoDestino", value);
-                                // Cargar ciudades para el estado destino seleccionado
                                 let newRows = [...vuelos];
                                 newRows[idx].ciudadDestino = '';
                                 newRows[idx].ciudadesDestinoList = [];
@@ -1051,6 +976,14 @@ const FormularioHuella = ({ onFormComplete }) => {
                         ))}
                       </tbody>
                     </Table>
+                    {/* Total acumulado de emisiones de vuelos */}
+                    <div className="resultado-emisiones mb-3">
+                      <strong>Total emisiones de vuelos:</strong> {
+                        vuelos.reduce((acc, row) => acc + (parseFloat(row.emisionTon) || 0), 0).toFixed(4)
+                      } Ton CO₂e / {
+                        vuelos.reduce((acc, row) => acc + (parseFloat(row.emisionKg) || 0), 0).toFixed(2)
+                      } kg CO₂e
+                    </div>
                     <Button color="success" outline size="sm" onClick={addVueloRow} className="mb-3">
                       <FeatherIcon icon="plus" size={16} className="me-1" /> Agregar fila
                     </Button>
