@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/PlataformaMundoVerde/static/css/main.a0563c9c.css",
-    "main.js": "/PlataformaMundoVerde/static/js/main.d226dab8.js",
+    "main.js": "/PlataformaMundoVerde/static/js/main.e49b3ade.js",
     "static/js/356.12b55779.chunk.js": "/PlataformaMundoVerde/static/js/356.12b55779.chunk.js",
     "static/js/302.6ceeffa5.chunk.js": "/PlataformaMundoVerde/static/js/302.6ceeffa5.chunk.js",
     "static/js/910.659e877b.chunk.js": "/PlataformaMundoVerde/static/js/910.659e877b.chunk.js",
@@ -42,7 +42,7 @@
     "static/media/hero-5-bg-dark.png": "/PlataformaMundoVerde/static/media/hero-5-bg-dark.47879615476b009de6b4.png",
     "index.html": "/PlataformaMundoVerde/index.html",
     "main.a0563c9c.css.map": "/PlataformaMundoVerde/static/css/main.a0563c9c.css.map",
-    "main.d226dab8.js.map": "/PlataformaMundoVerde/static/js/main.d226dab8.js.map",
+    "main.e49b3ade.js.map": "/PlataformaMundoVerde/static/js/main.e49b3ade.js.map",
     "356.12b55779.chunk.js.map": "/PlataformaMundoVerde/static/js/356.12b55779.chunk.js.map",
     "302.6ceeffa5.chunk.js.map": "/PlataformaMundoVerde/static/js/302.6ceeffa5.chunk.js.map",
     "910.659e877b.chunk.js.map": "/PlataformaMundoVerde/static/js/910.659e877b.chunk.js.map",
@@ -53,6 +53,6 @@
   },
   "entrypoints": [
     "static/css/main.a0563c9c.css",
-    "static/js/main.d226dab8.js"
+    "static/js/main.e49b3ade.js"
   ]
 }
