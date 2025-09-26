@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 // Import Logo
 import logopositive from "../../assets/images/logo-positive.png";
 import logolight from "../../assets/images/logo-light.png";
+import logodark from "../../assets/images/logo-dark.png";
 
 //import icon
 import FeatherIcon from "feather-icons-react";
@@ -20,15 +21,28 @@ import { useLocation } from "react-router-dom";
 
 
 import useNavbarScroll from '../../hooks/useNavbarScroll';
+// Custom hook to detect mobile/tablet (width < 992px)
+function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth < 992);
+  React.useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < 992);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return isMobile;
+}
+
+
 
 const NavbarPage = ({ navItems }) => {
   const [isOpenMenu, setIsOpenMenu] = React.useState(false);
   const { navClass, imglight } = useNavbarScroll();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const toggle = () => setIsOpenMenu(!isOpenMenu);
-
-
 
   return (
     <React.Fragment>
@@ -41,10 +55,14 @@ const NavbarPage = ({ navItems }) => {
         <Container fluid style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>
           <NavbarBrand className="logo" style={{ marginRight: 'auto' }}>
             <Link to="/">
-              {imglight ? (
-                <img src={logolight} alt="Mundo Verde" height="80" />
+              {isMobile ? (
+                <img src={logodark} alt="Mundo Verde" height="56" />
               ) : (
-                <img src={logopositive} alt="Mundo Verde" height="80" />
+                imglight ? (
+                  <img src={logolight} alt="Mundo Verde" height="80" />
+                ) : (
+                  <img src={logopositive} alt="Mundo Verde" height="80" />
+                )
               )}
             </Link>
           </NavbarBrand>

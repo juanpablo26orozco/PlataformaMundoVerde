@@ -1,3 +1,58 @@
+/* Forzar fondo y texto oscuro en .bg-light en dark mode, incluyendo hijos */
+[data-bs-theme="dark"] .bg-light,
+[data-bs-theme="dark"] .bg-light * {
+  background-color: #232f38 !important;
+  color: #e0f7fa !important;
+  border-color: #26323a !important;
+}
+/* Corrige fondo claro de .bg-light en dark mode */
+[data-bs-theme="dark"] .bg-light {
+  background-color: #232f38 !important;
+  color: #e0f7fa !important;
+}
+/* Forzar todos los feature cards de la fila inferior en dark mode */
+[data-bs-theme="dark"] .calculadora-feature-card,
+[data-bs-theme="dark"] .calculadora-feature-card *,
+[data-bs-theme="dark"] .calculadora-feature-card h5,
+[data-bs-theme="dark"] .calculadora-feature-card p {
+  background: #232f38 !important;
+  color: #e0f7fa !important;
+  border-color: #26323a !important;
+  box-shadow: 0 4px 24px #111b22bb !important;
+}
+[data-bs-theme="dark"] .calculadora-feature-card .text-success,
+[data-bs-theme="dark"] .calculadora-feature-card .text-info,
+[data-bs-theme="dark"] .calculadora-feature-card .text-warning,
+[data-bs-theme="dark"] .calculadora-feature-card .text-primary {
+  color: #b2dfdb !important;
+}
+[data-bs-theme="dark"] .calculadora-feature-card .fw-bold,
+[data-bs-theme="dark"] .calculadora-feature-card h5 {
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .calculadora-feature-card div[style*="background: #eaf7ea"],
+[data-bs-theme="dark"] .calculadora-feature-card div[style*="background: #e9f6fa"],
+[data-bs-theme="dark"] .calculadora-feature-card div[style*="background: #f7fbe9"] {
+  background: #26323a !important;
+  box-shadow: 0 2px 8px #111b22bb !important;
+}
+/* Ajuste para feature cards de la calculadora en dark mode */
+[data-bs-theme="dark"] .calculadora-feature-card,
+[data-bs-theme="dark"] .calculadora-feature-card h5,
+[data-bs-theme="dark"] .calculadora-feature-card p {
+  background: #232f38 !important;
+  color: #e0f7fa !important;
+  border-color: #26323a !important;
+}
+[data-bs-theme="dark"] .calculadora-feature-card .text-success,
+[data-bs-theme="dark"] .calculadora-feature-card .text-info,
+[data-bs-theme="dark"] .calculadora-feature-card .text-warning {
+  color: #b2dfdb !important;
+}
+[data-bs-theme="dark"] .calculadora-feature-card .fw-bold,
+[data-bs-theme="dark"] .calculadora-feature-card h5 {
+  color: #e0f7fa !important;
+}
 .App {
   text-align: center;
 }
@@ -27,6 +82,106 @@
 .App-link {
   color: #61dafb;
 }
+
+/* --- DARK MODE GLOBAL STYLES --- */
+/* --- DARK MODE GLOBAL STYLES --- */
+[data-bs-theme="dark"] {
+  background-color: #151c23 !important;
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .shadow,
+[data-bs-theme="dark"] .calculadora-card,
+[data-bs-theme="dark"] .calculadora-feature-card {
+  background: #232f38 !important;
+  color: #e0f7fa !important;
+  border-color: #26323a !important;
+  box-shadow: 0 4px 24px #111b22bb !important;
+}
+[data-bs-theme="dark"] .card-body {
+  background: transparent !important;
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .alert,
+[data-bs-theme="dark"] .alert-info,
+[data-bs-theme="dark"] .alert-mundo-verde {
+  background: #1a232a !important;
+  color: #b2dfdb !important;
+  border-color: #26323a !important;
+}
+[data-bs-theme="dark"] .modal-content {
+  background: #232f38 !important;
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .btn,
+[data-bs-theme="dark"] .btn-success {
+  background: #217a3a !important;
+  color: #e0f7fa !important;
+  border-color: #217a3a !important;
+}
+[data-bs-theme="dark"] .text-mundo-verde {
+  color: #b2dfdb !important;
+}
+[data-bs-theme="dark"] .fw-bold {
+  color: #e0f7fa !important;
+}
+
+/* Ajuste para bloques internos claros en dark mode */
+[data-bs-theme="dark"] .border.rounded-4.px-4.py-3 {
+  background: #26323a !important;
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .border.rounded-4.px-4.py-3 .fw-bold {
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .border.rounded-4.px-4.py-3 span {
+  color: #e0f7fa !important;
+}
+/* --- END DARK MODE GLOBAL STYLES --- */
+[data-bs-theme="dark"] body,
+[data-bs-theme="dark"] .section,
+[data-bs-theme="dark"] .container,
+[data-bs-theme="dark"] .calculadora-bg {
+  background-color: #151c23 !important;
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .shadow,
+[data-bs-theme="dark"] .calculadora-card,
+[data-bs-theme="dark"] .calculadora-feature-card {
+  background: #232f38 !important;
+  color: #e0f7fa !important;
+  border-color: #26323a !important;
+  box-shadow: 0 4px 24px #111b22bb !important;
+}
+[data-bs-theme="dark"] .card-body {
+  background: transparent !important;
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .alert,
+[data-bs-theme="dark"] .alert-info,
+[data-bs-theme="dark"] .alert-mundo-verde {
+  background: #1a232a !important;
+  color: #b2dfdb !important;
+  border-color: #26323a !important;
+}
+[data-bs-theme="dark"] .modal-content {
+  background: #232f38 !important;
+  color: #e0f7fa !important;
+}
+[data-bs-theme="dark"] .btn,
+[data-bs-theme="dark"] .btn-success {
+  background: #217a3a !important;
+  color: #e0f7fa !important;
+  border-color: #217a3a !important;
+}
+[data-bs-theme="dark"] .text-mundo-verde {
+  color: #b2dfdb !important;
+}
+[data-bs-theme="dark"] .fw-bold {
+  color: #e0f7fa !important;
+}
+/* --- END DARK MODE GLOBAL STYLES --- */
 
 @keyframes App-logo-spin {
   from {

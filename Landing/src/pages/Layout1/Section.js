@@ -8,13 +8,13 @@ import herolight from "../../assets/images/hero-1-bottom-shape.png";
 import herodark from "../../assets/images/hero-1-bottom-shape-dark.png";
 import HeroImage from "../../assets/images/mundo-verde/iot-de-agricultura-inteligente-con-fondo-de-arbol-de-plantacion-manual.jpg";
 
-import ConceptSidebarNav from '../../component/ConceptSection/ConceptSidebarNav';
+
 
 class Section extends Component {
   render() {
     return (
       <div className="mundo-verde-theme">
-        <ConceptSidebarNav />
+  {/* <ConceptSidebarNav /> eliminado para quitar el navbar lateral derecho */}
         {/* Hero Start */}
         <section
           className="hero-1 bg-center  position-relative"

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { createRef } from "react";
 import { Container, Row, Col, Card, CardBody } from "reactstrap";
 import { Link } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
@@ -10,14 +11,39 @@ import DocumentViewer from "../../component/DocumentViewer";
 import ConceptSidebarNav from '../../component/ConceptSection/ConceptSidebarNav';
 
 export default class HuellaCarbono extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { showSidebar: true };
+    this.infoWebRef = createRef();
+    this.handleScroll = this.handleScroll.bind(this);
+  }
+
   componentDidMount() {
     document.body.classList = "";
+    window.addEventListener("scroll", this.handleScroll);
+    this.handleScroll();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  }
+
+  handleScroll() {
+    const infoWeb = document.getElementById("informacion-web");
+    if (infoWeb) {
+      const rect = infoWeb.getBoundingClientRect();
+      // Si la parte superior de la sección está visible en el viewport, ocultar sidebar
+      const shouldHide = rect.top < window.innerHeight && rect.bottom > 0;
+      if (shouldHide !== !this.state.showSidebar) {
+        this.setState({ showSidebar: !shouldHide });
+      }
+    }
   }
 
   render() {
     return (
       <React.Fragment>
-        <ConceptSidebarNav />
+        {this.state.showSidebar && <ConceptSidebarNav />}
         {/* CSS Variables for Light/Dark Mode */}
         <style>{`
           :root {
@@ -95,10 +121,10 @@ export default class HuellaCarbono extends Component {
   <section className="section" id="problemas-ambientales" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
           <Container fluid>
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
-                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Problemas Medio Ambientales</h2>
-                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
+                <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Problemas Medio Ambientales</h2>
+                  <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
                     Comprende los principales desafíos ambientales que enfrentamos y su impacto en el cambio climático global.
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
@@ -168,10 +194,10 @@ export default class HuellaCarbono extends Component {
         <section className="section" id="guia-reportes-sostenibilidad" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
           <Container fluid>
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
-                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Guía para Elaborar Reportes de Sostenibilidad</h2>
-                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
+                <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Guía para Elaborar Reportes de Sostenibilidad</h2>
+                  <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
                     Aprende cómo comunicar el desempeño ambiental, social y económico de tu organización y fortalecer la transparencia y sostenibilidad.
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
@@ -246,10 +272,10 @@ export default class HuellaCarbono extends Component {
   <section className="section" id="componentes-socioambientales" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
     <Container fluid>
       <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-        <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
-          <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-            <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Componentes Sociambientales de una Organización</h2>
-            <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+        <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
+          <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+            <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Componentes Sociambientales de una Organización</h2>
+            <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
               Descubre cómo los componentes sociales y ambientales interactúan en la gestión sostenible de una organización.
             </p>
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
@@ -314,10 +340,10 @@ export default class HuellaCarbono extends Component {
         <section className="section" id="amenazas-impactos-aspectos" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
           <Container fluid>
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
-                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Amenazas, Impactos y Aspectos Ambientales</h2>
-                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
+                <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Amenazas, Impactos y Aspectos Ambientales</h2>
+                  <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
                     Aprende a identificar, evaluar y gestionar los riesgos y consecuencias ambientales en tu organización para impulsar la sostenibilidad.
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
@@ -382,10 +408,10 @@ export default class HuellaCarbono extends Component {
         <section className="section" id="consumo-responsable" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
           <Container fluid>
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
-                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Acciones para el Consumo Responsable</h2>
-                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
+                <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Acciones para el Consumo Responsable</h2>
+                  <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
                     El consumo responsable implica tomar decisiones informadas y conscientes sobre los productos y servicios que adquirimos, considerando su impacto ambiental, social y económico. Adoptar hábitos de consumo responsable es fundamental para reducir la huella de carbono y promover la sostenibilidad.
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
@@ -444,10 +470,10 @@ export default class HuellaCarbono extends Component {
         <section className="section" id="uso-agua" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
           <Container fluid>
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
-                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Uso Eficiente y Ahorro de Agua</h2>
-                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
+                <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Uso Eficiente y Ahorro de Agua</h2>
+                  <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
                     El agua es un recurso vital y limitado. Su uso eficiente y el ahorro son fundamentales para la sostenibilidad ambiental, la reducción de costos y la protección de los ecosistemas. Adoptar buenas prácticas permite garantizar su disponibilidad para las generaciones presentes y futuras.
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
@@ -514,10 +540,10 @@ export default class HuellaCarbono extends Component {
         <section className="section" id="uso-energia" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
           <Container fluid>
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
-                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Uso Eficiente y Ahorro de Energía</h2>
-                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
+                <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Uso Eficiente y Ahorro de Energía</h2>
+                  <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
                     El uso eficiente de la energía es clave para reducir costos, disminuir la huella de carbono y proteger el medio ambiente. Adoptar buenas prácticas y tecnologías eficientes permite optimizar el consumo energético en hogares, empresas e instituciones.
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
@@ -581,6 +607,93 @@ export default class HuellaCarbono extends Component {
           </Container>
         </section>
 
+
+
+        {/* Sección: Información Web */}
+        <section className="section" id="informacion-web" style={{ background: 'var(--section-bg)', paddingTop: '1.2rem', paddingBottom: '1.2rem' }}>
+          <Container fluid>
+            <Row className="justify-content-center mb-3">
+              <Col lg={12} className="text-center">
+                <h2 className="fw-bold mb-2" style={{ color: 'var(--section-text)' }}>Información Web y Recursos de Referencia</h2>
+                <p className="mb-3" style={{ color: 'var(--section-subtext)', fontSize: '1.08rem' }}>
+                  Accede a fuentes oficiales, herramientas, normativas y recursos internacionales para profundizar en sostenibilidad, cambio climático y huella de carbono.
+                </p>
+              </Col>
+            </Row>
+            <Row className="justify-content-center">
+              <Col lg={12}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                  gap: '16px',
+                  justifyContent: 'center',
+                  alignItems: 'stretch',
+                  width: '100%'
+                }}>
+                  {/* Lista de links */}
+                  {[
+                    { url: 'https://www.ipcc.ch/report/ar6/wg3/chapter/chapter-10/', desc: 'Grupo de Trabajo III del Sexto Informe de Evaluación del IPCC: Mitigación del cambio climático.' },
+                    { url: 'https://www.epa.gov/climateleadership/ghg-emission-factors-hub', desc: 'Centro de factores de emisión de GEI (EPA).' },
+                    { url: 'http://www.siac.gov.co/vulnerabilidad', desc: 'Sistema de Información Ambiental de Colombia.' },
+                    { url: 'https://unfccc.int/es/kyoto_protocol', desc: 'Información sobre el Protocolo de Kyoto.' },
+                    { url: 'https://ghgprotocol.org/about-us', desc: 'Protocolo de Gases de Efecto Invernadero: estándares y herramientas.' },
+                    { url: 'https://www.aec.es/conocimiento/centro-del-conocimiento/norma-pas-2050', desc: 'Norma PAS 2050:2008 Verificación de la Huella de Carbono.' },
+                    { url: 'https://www.ipcc.ch/languages-2/spanish', desc: 'IPCC: Ciencia del cambio climático (ONU).' },
+                    { url: 'https://www.ipcc-nggip.iges.or.jp/public/2019rf/vol4.html', desc: 'Directrices del IPCC de 2006 para inventarios nacionales de GEI.' },
+                    { url: 'https://www.undp.org/es/sustainable-development-goals', desc: '17 Objetivos de Desarrollo Sostenible (ONU).' },
+                    { url: 'https://www.cepal.org/es/temas/agenda-2030-desarrollo-sostenible/foro-paises-america-latina-caribe-desarrollo-sostenible', desc: 'Foro de los Países de América Latina y el Caribe sobre Desarrollo Sostenible.' },
+                    { url: 'https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=1LA-twZopnh0o8EfhCi2CM9rOksQiT80MbztFzUEzQUI&font=Default&lang=en&initial_zoom=2&height=650', desc: 'Historia del Desarrollo Sostenible.' },
+                    { url: 'https://www.minambiente.gov.co/cambio-climatico-y-gestion-del-riesgo/inventario-nacional-de-emisiones-y-absorciones-de-gases-de-efecto-invernadero-ingei', desc: 'Inventario Nacional de Emisiones y Absorciones de GEI - MinAmbiente Colombia.' },
+                    { url: 'https://repositorio.cepal.org/bitstream/handle/11362/39781/S1501265_es.pdf', desc: 'Medidas de adaptación y mitigación frente al cambio climático en América Latina y el Caribe.' },
+                    { url: 'https://www.ipcc.ch/report/ar6/wg3/chapter/chapter-2', desc: 'Sexto reporte del IPCC.' },
+                    { url: 'https://espanol.epa.gov/la-energia-y-el-medioambiente/calculadora-de-equivalencias-de-gases-de-efecto-invernadero-calculos', desc: 'Calculadora de equivalencias de GEI (EPA).' },
+                    { url: 'https://www.epa.gov/climateleadership/ghg-emission-factors-hub', desc: 'EPA GHG Emission Factors Hub.' },
+                    { url: 'https://www1.upme.gov.co/siame/Paginas/calculo-factor-de-emision-de-Co2-del-SIN.aspx', desc: 'UPME Colombia: Cálculo factor de emisión de CO2 del SIN.' },
+                    { url: 'https://www1.upme.gov.co/Normatividad/705_2024.pdf', desc: 'RESOLUCIÓN No. 000705 de 2024.' },
+                    { url: 'https://www1.upme.gov.co/Normatividad/1198_2024.pdf', desc: 'RESOLUCIÓN No. 001198 de 2024.' },
+                    { url: 'https://www.andi.com.co/Uploads/1198_2024.pdf', desc: 'RESOLUCIÓN No. 001198 de 26-12-2024: Actualización factor de emisión del SIN 2023.' },
+                    { url: 'https://ghgprotocol.org/calculation-tools-and-guidance#cross_sector_tools_id', desc: 'Herramientas del Protocolo de GEI para inventarios y seguimiento climático.' },
+                    { url: 'https://ghgprotocol.org/life-cycle-databases', desc: 'Bases de datos del ciclo de vida para inventarios de GEI.' },
+                    { url: 'https://ghgprotocol.org/calculation-tools-and-guidance', desc: 'Calculation Tools and Guidance (GHG Protocol).' },
+                    { url: 'https://www.cepal.org/es/publicaciones/46728-economia-circular-oportunidad-america-latina-caribe', desc: 'CEPAL: Economía circular en América Latina y el Caribe.' },
+                    { url: 'https://www.ellenmacarthurfoundation.org', desc: 'Fundación Ellen MacArthur: Economía circular.' },
+                    { url: 'https://www.gob.mx/inecc', desc: 'INECC México: Manual para la evaluación de la huella de carbono.' },
+                    { url: 'https://doi.org/10.3390/su8090937', desc: 'Sustainability: Marco conceptual para el diseño circular.' },
+                    { url: 'https://www.unido.org', desc: 'ONUDI: Guía de producción y consumo sostenible.' },
+                    { url: 'https://www.unep.org', desc: 'PNUMA: Impulsando el consumo sostenible en América Latina y el Caribe.' },
+                  ].map((item, idx) => (
+                    <a
+                      key={item.url + idx}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        background: 'var(--section-box)',
+                        borderRadius: 12,
+                        padding: '0.85rem 1.1rem',
+                        minWidth: 0,
+                        width: '100%',
+                        boxShadow: '0 1px 4px rgba(33, 122, 58, 0.07)',
+                        textDecoration: 'none',
+                        color: 'var(--section-text)',
+                        transition: 'box-shadow 0.18s, background 0.18s',
+                        fontSize: '1.01rem',
+                        margin: 0
+                      }}
+                      title={item.desc}
+                    >
+                      <span style={{ fontWeight: 700, fontSize: '1.04rem', marginBottom: 4, color: 'var(--section-list)' }}>{item.desc}</span>
+                      <span style={{ fontSize: '0.93rem', color: 'var(--section-subtext)', wordBreak: 'break-all' }}>{item.url}</span>
+                    </a>
+                  ))}
+                </div>
+              </Col>
+            </Row>
+          </Container>
+        </section>
 
         {/* Call to Action */}
         <section className="section bg-mundo-verde">

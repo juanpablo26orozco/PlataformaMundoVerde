@@ -11,11 +11,11 @@ import {
   ModalBody,
   ModalFooter
 } from "reactstrap";
+
 import FeatherIcon from "feather-icons-react";
 import FormularioHuella from "../HuellaCarbono/FormularioHuella";
 import ResultadosHuella from "../HuellaCarbono/ResultadosHuella";
-
-
+import DocumentViewer from "../DocumentViewer";
 import BosqueVerdeImage from "../../assets/images/mundo-verde/vista-de-los-arboles-del-bosque-verde-con-co2.jpg";
 
 
@@ -274,39 +274,26 @@ const CalculadoraSection = () => {
                     borderRadius: 20,
                     background: '#fff',
                     boxShadow: '0 4px 24px rgba(33, 122, 58, 0.10)',
-                    border: '1.5px solid #e0e0e0'
+                    border: '1.5px solid #e0e0e0',
+                    width: '100%',
+                    maxWidth: 340,
+                    padding: '2.5rem 2rem 2rem 2rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                   }}>
-                      <div style={{
-                        background: '#eaf7ea',
-                        borderRadius: '50%',
-                        width: 64,
-                        height: 64,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginBottom: 18,
-                        boxShadow: '0 2px 8px rgba(33, 122, 58, 0.08)'
-                      }}>
-                        <FeatherIcon icon="award" size={32} style={{ color: '#217a3a' }} />
-                      </div>
-                      <h5 style={{
-                        fontWeight: 700,
-                        color: '#217a3a',
-                        marginBottom: 10,
-                        textAlign: 'center'
-                      }}>Metodología Certificada</h5>
-                      <p style={{
-                        color: '#4b5c4b',
-                        fontSize: '1.08rem',
-                        textAlign: 'center',
-                        marginBottom: 0
-                      }}>
-                        Basado en el GHG Protocol y factores de emisión oficiales de Colombia
-                      </p>
+                    {/* Solo visor PDF */}
+                      <DocumentViewer
+                        pdfPath="/Huella_docs/1.Huella_de_Carbono.pdf"
+                        title="Metodología Certificada - Huella de Carbono"
+                        showDescription={false}
+                        cardStyle="buttons-only"
+                        buttonText="Ver documento"
+                      />
                   </div>
                 </Col>
                 <Col xs={12} lg={4} className="text-center mb-4 d-flex justify-content-center">
-                  <div style={{
+                  <div className="calculadora-feature-card" style={{
                     background: '#fff',
                     borderRadius: 20,
                     boxShadow: '0 4px 24px rgba(33, 122, 58, 0.10)',
@@ -320,33 +307,14 @@ const CalculadoraSection = () => {
                     border: '1.5px solid #e0e0e0',
                     transition: 'box-shadow 0.2s',
                   }}>
-                    <div style={{
-                      background: '#e9f6fa',
-                      borderRadius: '50%',
-                      width: 64,
-                      height: 64,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: 18,
-                      boxShadow: '0 2px 8px rgba(33, 122, 58, 0.08)'
-                    }}>
-                      <FeatherIcon icon="file-text" size={32} className="text-info" />
-                    </div>
-                    <h5 style={{
-                      fontWeight: 700,
-                      color: '#217a3a',
-                      marginBottom: 10,
-                      textAlign: 'center'
-                    }}>Reporte Detallado</h5>
-                    <p style={{
-                      color: '#4b5c4b',
-                      fontSize: '1.08rem',
-                      textAlign: 'center',
-                      marginBottom: 0
-                    }}>
-                      Obtén un análisis completo con recomendaciones para reducir emisiones
-                    </p>
+                    {/* Solo visor PDF */}
+                      <DocumentViewer
+                        pdfPath="/Huella_docs/2.Factores_de_Emision.pdf"
+                        title="Factores de Emisión"
+                        showDescription={false}
+                        cardStyle="buttons-only"
+                        buttonText="Ver documento"
+                      />
                   </div>
           {/* Modal instructivo (fuera del Col) */}
           <Modal isOpen={showInstructivo} toggle={handleCloseInstructivo} size="lg">
@@ -387,7 +355,7 @@ const CalculadoraSection = () => {
           </Modal>
                 </Col>
                 <Col xs={12} lg={4} className="d-flex justify-content-center mb-4">
-                  <div style={{
+                  <div className="calculadora-feature-card" style={{
                     background: '#fff',
                     borderRadius: 20,
                     boxShadow: '0 4px 24px rgba(33, 122, 58, 0.10)',
@@ -401,33 +369,14 @@ const CalculadoraSection = () => {
                     border: '1.5px solid #e0e0e0',
                     transition: 'box-shadow 0.2s',
                   }}>
-                    <div style={{ 
-                      background: '#f7fbe9',
-                      borderRadius: '50%',
-                      width: 64,
-                      height: 64,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: 18,
-                      boxShadow: '0 2px 8px rgba(33, 122, 58, 0.08)'
-                    }}>
-                      <FeatherIcon icon="trending-down" size={32} className="text-warning" />
-                    </div>
-                    <h5 style={{
-                      fontWeight: 700,
-                      color: '#217a3a',
-                      marginBottom: 10,
-                      textAlign: 'center'
-                    }}>Plan de Reducción</h5>
-                    <p style={{
-                      color: '#4b5c4b',
-                      fontSize: '1.08rem',
-                      textAlign: 'center',
-                      marginBottom: 0
-                    }}>
-                      Estrategias personalizadas para minimizar tu impacto ambiental
-                    </p>
+                    {/* Solo visor PDF */}
+                      <DocumentViewer
+                        pdfPath="/Huella_docs/3.Acciones_para_reducir_la_Huella_de_CO2.pdf"
+                        title="Plan de Reducción - Acciones para reducir la Huella de CO2"
+                        showDescription={false}
+                        cardStyle="buttons-only"
+                        buttonText="Ver documento"
+                      />
                   </div>
                 </Col>
               </Row>
