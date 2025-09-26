@@ -1,18 +1,20 @@
 import React, { Component } from "react";
-
 import { Container, Row, Col } from "reactstrap";
+import { Link } from "react-router-dom";
 
 // Import Background Image
 import Background from "../../assets/images/hero-1-bg.png";
 import herolight from "../../assets/images/hero-1-bottom-shape.png";
-import herodark from "../../assets/images/hero-1-bottom-shape-dark.png"
-import { Link } from "react-router-dom";
+import herodark from "../../assets/images/hero-1-bottom-shape-dark.png";
 import HeroImage from "../../assets/images/mundo-verde/iot-de-agricultura-inteligente-con-fondo-de-arbol-de-plantacion-manual.jpg";
+
+import ConceptSidebarNav from '../../component/ConceptSection/ConceptSidebarNav';
 
 class Section extends Component {
   render() {
     return (
       <div className="mundo-verde-theme">
+        <ConceptSidebarNav />
         {/* Hero Start */}
         <section
           className="hero-1 bg-center  position-relative"

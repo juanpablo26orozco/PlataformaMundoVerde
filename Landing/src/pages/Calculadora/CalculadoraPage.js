@@ -100,16 +100,257 @@ const CalculadoraPage = () => {
             </Col>
           </Row>
           <div className="text-center mt-4">
-            <a href="#calculadora-huella" className="btn btn-success btn-lg rounded-pill" style={{fontWeight:700, fontSize:18, padding:'12px 36px', boxShadow:'0 2px 8px #b7e4c7'}}>
+            <a href="#calculadora-huella" className="btn btn-success btn-lg rounded-pill" style={{fontWeight:700, fontSize:18, padding:'12px 36px', boxShadow:'none'}}>
               Ir a la Calculadora
               <FeatherIcon icon="arrow-down" className="ms-2" />
             </a>
           </div>
         </Container>
       </section>
+
       <div id="calculadora-huella">
         <CalculadoraSection />
       </div>
+
+
+      {/* Factores de Emisión para Colombia - Rediseñado */}
+
+      <section
+        className="section py-5"
+        id="factores-emision"
+        style={{
+          background: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+            ? '#151c23'
+            : '#fff',
+          transition: 'background 0.3s',
+        }}
+      >
+        <Container>
+          <Row className="justify-content-center mb-4">
+            <Col lg={12} className="text-center">
+              <div
+                style={{
+                  display: 'inline-block',
+                  background:
+                    typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                      ? 'linear-gradient(135deg,#1a232a 60%,#26323a 100%)'
+                      : 'linear-gradient(135deg,#e0f7fa 60%,#e8f5e9 100%)',
+                  borderRadius: 60,
+                  padding: 18,
+                  marginBottom: 18,
+                  boxShadow:
+                    typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                      ? '0 4px 24px #111b22bb'
+                      : '0 4px 24px #b2dfdb55',
+                }}
+              >
+                <FeatherIcon icon="cloud" size={48} className={typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? 'text-info' : 'text-info'} />
+              </div>
+              <h2
+                className="fw-bold mb-2"
+                style={{
+                  color:
+                    typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                      ? '#e0f7fa'
+                      : '#217a3a',
+                  fontSize: '2.3rem',
+                  letterSpacing: '-1px',
+                }}
+              >
+                Factores de Emisión para Colombia
+              </h2>
+              <p
+                className="mb-0"
+                style={{
+                  fontSize: '1.18rem',
+                  color:
+                    typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                      ? '#b2dfdb'
+                      : '#4a4a4a',
+                }}
+              >
+                Valores oficiales y metodologías para convertir datos de actividad en emisiones de GEI.
+              </p>
+            </Col>
+          </Row>
+          <Row className="justify-content-center">
+            <Col lg={10}>
+              <Card
+                className="shadow border-0"
+                style={{
+                  borderRadius: 28,
+                  overflow: 'hidden',
+                  background:
+                    typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                      ? 'linear-gradient(120deg,#1a232a 60%,#232f38 100%)'
+                      : 'linear-gradient(120deg,#f8fff8 60%,#e0f7fa 100%)',
+                  color:
+                    typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                      ? '#e0f7fa'
+                      : undefined,
+                }}
+              >
+                <CardBody className="p-4 p-md-5">
+                  <Row>
+                    <Col
+                      md={5}
+                      className="mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start justify-content-center"
+                    >
+                      <div className="d-flex align-items-center mb-3">
+                        <FeatherIcon icon="zap" className="text-success me-2" size={32} />
+                        <span
+                          className="fw-bold"
+                          style={{
+                            fontSize: '1.25rem',
+                            color:
+                              typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                                ? '#b2dfdb'
+                                : '#217a3a',
+                          }}
+                        >
+                          Electricidad
+                        </span>
+                      </div>
+                      <div
+                        className="border rounded-4 px-4 py-3 mb-3 w-100"
+                        style={{
+                          background:
+                            typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                              ? '#232f38'
+                              : '#f8fff8',
+                          borderColor:
+                            typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                              ? '#26323a'
+                              : undefined,
+                          maxWidth: 340,
+                        }}
+                      >
+                        <span
+                          className="d-block mb-1"
+                          style={{
+                            fontSize: '1.05rem',
+                            color:
+                              typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                                ? '#b2dfdb'
+                                : '#4a4a4a',
+                          }}
+                        >
+                          Factor de emisión (SIN):
+                        </span>
+                        <span
+                          className="fw-bold"
+                          style={{
+                            fontSize: '1.35rem',
+                            color:
+                              typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                                ? '#e0f7fa'
+                                : '#217a3a',
+                          }}
+                        >
+                          0.164 kg CO₂e/kWh
+                        </span>
+                        <span className="badge bg-success ms-2 align-middle">UPME 2023</span>
+                      </div>
+                      <div className="d-flex align-items-center mb-2 mt-4">
+                        <FeatherIcon icon="droplet" className="text-info me-2" size={26} />
+                        <span
+                          className="fw-bold"
+                          style={{
+                            fontSize: '1.18rem',
+                            color:
+                              typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                                ? '#b2dfdb'
+                                : '#217a3a',
+                          }}
+                        >
+                          Combustibles Fósiles
+                        </span>
+                      </div>
+                      <div className="w-100" style={{ maxWidth: 340 }}>
+                        <div className="d-flex align-items-center mb-2">
+                          <FeatherIcon icon="truck" className="text-warning me-2" size={18} />
+                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>Gasolina:</b> 2.296 kg CO₂e/litro</span>
+                        </div>
+                        <div className="d-flex align-items-center mb-2">
+                          <FeatherIcon icon="settings" className="text-secondary me-2" size={18} />
+                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>Diésel:</b> 2.671 kg CO₂e/litro</span>
+                        </div>
+                        <div className="d-flex align-items-center mb-2">
+                          <FeatherIcon icon="wind" className="text-info me-2" size={18} />
+                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>Gas Natural:</b> 2.108 kg CO₂e/m³</span>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md={7} className="d-flex flex-column justify-content-center align-items-center align-items-md-start">
+                      <div className="d-flex align-items-center mb-3">
+                        <FeatherIcon icon="book-open" className="text-primary me-2" size={28} />
+                        <span
+                          className="fw-bold"
+                          style={{
+                            fontSize: '1.18rem',
+                            color:
+                              typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                                ? '#b2dfdb'
+                                : '#217a3a',
+                          }}
+                        >
+                          Fuentes Oficiales
+                        </span>
+                      </div>
+                      <div className="mb-3">
+                        <span className="badge bg-success me-2 mb-2">UPME</span>
+                        <span className="badge bg-info me-2 mb-2">IDEAM</span>
+                        <span className="badge bg-primary me-2 mb-2">FECOC</span>
+                      </div>
+                      <div
+                        className="alert alert-info d-flex align-items-center mt-2"
+                        role="alert"
+                        style={{
+                          borderRadius: 16,
+                          background:
+                            typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                              ? '#1a232a'
+                              : '#e3f7fd',
+                          color:
+                            typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                              ? '#b2dfdb'
+                              : '#217a3a',
+                          fontSize: '1.05rem',
+                          boxShadow:
+                            typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                              ? '0 2px 12px #111b22bb'
+                              : '0 2px 12px #b2ebf255',
+                        }}
+                      >
+                        <FeatherIcon icon="info" className="me-2" size={20} />
+                        <span>
+                          <b>Nota:</b> Los factores de emisión se actualizan periódicamente. Consulta siempre las fuentes oficiales más recientes.
+                        </span>
+                      </div>
+                      <div className="mt-4">
+                        <FeatherIcon icon="award" className="text-warning me-2" size={22} />
+                        <span
+                          className="text-muted"
+                          style={{
+                            fontSize: '1.08rem',
+                            color:
+                              typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark'
+                                ? '#b2dfdb'
+                                : undefined,
+                          }}
+                        >
+                          Basado en estándares internacionales y datos nacionales.
+                        </span>
+                      </div>
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+
       <Footer />
       <Switch />
     </React.Fragment>

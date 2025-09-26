@@ -7,6 +7,7 @@ import FeatherIcon from "feather-icons-react";
 import Footer from "../../component/Footer/Footer";
 import Switch from "../../component/Switch";
 import DocumentViewer from "../../component/DocumentViewer";
+import ConceptSidebarNav from '../../component/ConceptSection/ConceptSidebarNav';
 
 export default class HuellaCarbono extends Component {
   componentDidMount() {
@@ -16,6 +17,44 @@ export default class HuellaCarbono extends Component {
   render() {
     return (
       <React.Fragment>
+        <ConceptSidebarNav />
+        {/* CSS Variables for Light/Dark Mode */}
+        <style>{`
+          :root {
+            --section-bg-light: #f6f8fa;
+            --section-bg-dark: #23272f;
+            --section-text-light: #1a2e22;
+            --section-text-dark: #e0f2f1;
+            --section-subtext-light: #4b5c53;
+            --section-subtext-dark: #b2dfdb;
+            --section-box-light: #F1F8E9;
+            --section-box-dark: #2e3a2f;
+            --section-list-light: #2E7D32;
+            --section-list-dark: #81c784;
+            --section-list2-light: #183D2D;
+            --section-list2-dark: #b2dfdb;
+            --section-alert-light: #D32F2F;
+            --section-alert-dark: #ef9a9a;
+          }
+          [data-bs-theme="dark"] {
+            --section-bg: var(--section-bg-dark);
+            --section-text: var(--section-text-dark);
+            --section-subtext: var(--section-subtext-dark);
+            --section-box: var(--section-box-dark);
+            --section-list: var(--section-list-dark);
+            --section-list2: var(--section-list2-dark);
+            --section-alert: var(--section-alert-dark);
+          }
+          [data-bs-theme="light"], :root {
+            --section-bg: var(--section-bg-light);
+            --section-text: var(--section-text-light);
+            --section-subtext: var(--section-subtext-light);
+            --section-box: var(--section-box-light);
+            --section-list: var(--section-list-light);
+            --section-list2: var(--section-list2-light);
+            --section-alert: var(--section-alert-light);
+          }
+        `}</style>
         {/* Hero Section */}
         <section className="bg-half-170 bg-mundo-verde d-table w-100" id="conceptos-basicos">
           <Container>
@@ -50,681 +89,498 @@ export default class HuellaCarbono extends Component {
           </Container>
         </section>
 
-        {/* Sección Introducción: Problemas Medio Ambientales (Lectura a la izquierda, documento a la derecha) */}
-        <section className="section bg-light" id="problemas-ambientales">
-          <Container>
-            <Row className="align-items-stretch justify-content-center">
-              <Col lg={7} md={12} className="mb-4">
-                <Card className="shadow border-0 h-100">
-                  <CardBody className="p-5">
-                    <div className="text-center mb-4">
-                      <FeatherIcon icon="alert-triangle" className="text-mundo-verde mb-3" size={48} />
-                      <h2 className="text-mundo-verde mb-3">Problemas Medio Ambientales</h2>
-                      <p className="text-muted">
-                        Comprende los principales desafíos ambientales que enfrentamos y su impacto en el cambio climático global.
-                      </p>
+
+
+        {/* Sección 1: Problemas Medio Ambientales (split-screen, sin pérdida de espacio) */}
+  <section className="section" id="problemas-ambientales" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
+          <Container fluid>
+            <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
+                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Problemas Medio Ambientales</h2>
+                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+                    Comprende los principales desafíos ambientales que enfrentamos y su impacto en el cambio climático global.
+                  </p>
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                        <FeatherIcon icon="alert-triangle" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>¿Qué son los problemas medioambientales?</span>
+                      </div>
+                      <div style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                        Son alteraciones negativas en el entorno natural causadas principalmente por actividades humanas. Estos problemas afectan el clima, la biodiversidad, la salud y la calidad de vida en el planeta.
+                      </div>
+                      <ul style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
+                        <li><b>Calentamiento Global:</b> Aumento de la temperatura media del planeta por emisiones de gases de efecto invernadero.</li>
+                        <li><b>Contaminación del Aire y Agua:</b> Presencia de sustancias tóxicas que dañan la salud y los ecosistemas.</li>
+                        <li><b>Deforestación:</b> Pérdida de bosques por tala y expansión agrícola, reduciendo la biodiversidad.</li>
+                        <li><b>Generación de Residuos:</b> Acumulación de basura y plásticos que contaminan suelos y océanos.</li>
+                        <li><b>Consumo Energético:</b> Uso excesivo de energía proveniente de fuentes no renovables.</li>
+                      </ul>
                     </div>
-                    <h5 className="text-mundo-verde mb-4">
-                      <FeatherIcon icon="info" className="me-2" />
-                      Problemas Ambientales Claves
-                    </h5>
-                    <Row>
-                      <Col lg={6}>
-                        <div className="feature-item mb-4">
-                          <FeatherIcon icon="thermometer" className="text-danger me-2" size={20} />
-                          <h6 className="d-inline text-dark">Calentamiento Global</h6>
-                          <p className="text-muted mt-2 ms-4">
-                            Aumento de la temperatura promedio de la Tierra debido a las emisiones de gases de efecto invernadero.
-                          </p>
-                        </div>
-                        <div className="feature-item mb-4">
-                          <FeatherIcon icon="droplet" className="text-primary me-2" size={20} />
-                          <h6 className="d-inline text-dark">Contaminación del Agua</h6>
-                          <p className="text-muted mt-2 ms-4">
-                            Degradación de la calidad del agua por desechos industriales, agrícolas y urbanos.
-                          </p>
-                        </div>
-                        <div className="feature-item mb-4">
-                          <FeatherIcon icon="wind" className="text-info me-2" size={20} />
-                          <h6 className="d-inline text-dark">Contaminación del Aire</h6>
-                          <p className="text-muted mt-2 ms-4">
-                            Emisión de contaminantes que afectan la calidad del aire y la salud humana.
-                          </p>
-                        </div>
-                      </Col>
-                      <Col lg={6}>
-                        <div className="feature-item mb-4">
-                          <FeatherIcon icon="trash-2" className="text-warning me-2" size={20} />
-                          <h6 className="d-inline text-dark">Generación de Residuos</h6>
-                          <p className="text-muted mt-2 ms-4">
-                            Acumulación excesiva de desechos que impactan negativamente el medio ambiente.
-                          </p>
-                        </div>
-                        <div className="feature-item mb-4">
-                          <FeatherIcon icon="tree-pine" className="text-success me-2" size={20} />
-                          <h6 className="d-inline text-dark">Deforestación</h6>
-                          <p className="text-muted mt-2 ms-4">
-                            Pérdida de bosques que reduce la capacidad de absorción de CO2 del planeta.
-                          </p>
-                        </div>
-                        <div className="feature-item mb-4">
-                          <FeatherIcon icon="zap" className="text-secondary me-2" size={20} />
-                          <h6 className="d-inline text-dark">Consumo Energético</h6>
-                          <p className="text-muted mt-2 ms-4">
-                            Uso excesivo de energía no renovable que incrementa las emisiones de GEI.
-                          </p>
-                        </div>
-                      </Col>
-                    </Row>
-                  </CardBody>
-                </Card>
+                    <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Causas principales:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Quema de combustibles fósiles (carbón, petróleo, gas).</li>
+                        <li>Deforestación y cambio de uso del suelo.</li>
+                        <li>Uso excesivo de recursos naturales.</li>
+                        <li>Producción y consumo desmedido.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: 'var(--section-alert)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Consecuencias:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Incremento de fenómenos climáticos extremos (huracanes, sequías, inundaciones).</li>
+                        <li>Pérdida de biodiversidad y especies.</li>
+                        <li>Problemas de salud pública (enfermedades respiratorias, falta de agua potable).</li>
+                        <li>Desplazamiento de comunidades y aumento de la pobreza.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
+                      <b>Dato clave:</b> Más del 70% de los gases de efecto invernadero provienen de la energía, la industria y la agricultura.<br/>
+                      <b>¿Sabías que?</b> Cada año se pierden millones de hectáreas de bosque y se generan más de 300 millones de toneladas de plástico.
+                    </div>
+                  </div>
+                </div>
               </Col>
-              <Col lg={5} md={12} className="mb-4 d-flex align-items-center justify-content-center">
-                <div className="w-100" style={{ maxWidth: '400px' }}>
-                  <DocumentViewer 
-                    pdfPath="/Concepts_docs/1.Los_Problemas_medio_ambientales.pdf"
-                    title="Los Problemas Medio Ambientales"
-                    description="Documento introductorio que explica los principales problemas ambientales actuales, sus causas y consecuencias para el planeta y la sociedad."
-                    icon="alert-triangle"
-                    buttonText="Ver Documento Completo"
-                    cardStyle="featured"
-                    customCardStyle={{ paddingTop: '1.5rem', paddingBottom: '1.5rem' }}
-                  />
+              <Col xl={4} lg={4} md={10} sm={12} className="d-flex justify-content-center align-items-center" style={{ paddingRight: '2vw', paddingLeft: '1vw' }}>
+                <div style={{ width: '100%', maxWidth: 400 }}>
+                  <Card className="shadow border-0" style={{ background: '#e8f5e9', borderTop: '4px solid #43a047', borderRadius: '18px' }}>
+                    <CardBody className="p-4">
+                      <DocumentViewer 
+                        pdfPath="/Concepts_docs/1.Los_Problemas_medio_ambientales.pdf"
+                        title="Los Problemas Medio Ambientales"
+                        description="Documento introductorio que explica los principales problemas ambientales actuales, sus causas y consecuencias para el planeta y la sociedad."
+                        icon="alert-triangle"
+                        buttonText="Ver Documento Completo"
+                        cardStyle="featured"
+                        customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
+                      />
+                    </CardBody>
+                  </Card>
                 </div>
               </Col>
             </Row>
           </Container>
         </section>
 
-        {/* Sección 1: Conceptos Básicos de Huella de Carbono */}
-        <section className="section" id="conceptos-basicos-content">
-          <Container>
-            <Row className="justify-content-center">
-              <Col lg={12} className="text-center mb-5">
-                <FeatherIcon icon="info" className="text-mundo-verde mb-3" size={48} />
-                <h2 className="text-mundo-verde mb-4">¿Qué es la Huella de Carbono?</h2>
-                <p className="text-muted">
-                  Conoce los fundamentos de la medición de gases de efecto invernadero y su impacto en el cambio climático.
-                </p>
+        {/* Sección 2: Guía para Elaborar Reportes de Sostenibilidad (rediseñada, info sin card, full-width, UI moderna) */}
+        <section className="section" id="guia-reportes-sostenibilidad" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
+          <Container fluid>
+            <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
+                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Guía para Elaborar Reportes de Sostenibilidad</h2>
+                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+                    Aprende cómo comunicar el desempeño ambiental, social y económico de tu organización y fortalecer la transparencia y sostenibilidad.
+                  </p>
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                        <FeatherIcon icon="clipboard" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>¿Qué es un Reporte de Sostenibilidad?</span>
+                      </div>
+                      <p style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                        Es un documento que comunica el desempeño ambiental, social y económico de una organización. Informa a los grupos de interés sobre el impacto de las actividades y el compromiso con el desarrollo sostenible.
+                      </p>
+                      <ul style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
+                        <li><b>Contexto Organizacional:</b> Descripción de la empresa, misión, visión y valores.</li>
+                        <li><b>Materialidad:</b> Temas relevantes para la organización y sus grupos de interés.</li>
+                        <li><b>Desempeño Ambiental:</b> Consumo de recursos, emisiones, gestión de residuos y acciones ambientales.</li>
+                        <li><b>Desempeño Social:</b> Condiciones laborales, derechos humanos, diversidad, salud y seguridad.</li>
+                        <li><b>Desempeño Económico:</b> Resultados financieros, generación de valor y desarrollo local.</li>
+                        <li><b>Gobernanza:</b> Estructura de gobierno, ética y transparencia.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Beneficios de elaborar un reporte:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Mejora la transparencia y la confianza con los grupos de interés.</li>
+                        <li>Identifica riesgos y oportunidades.</li>
+                        <li>Facilita la toma de decisiones estratégicas.</li>
+                        <li>Contribuye al cumplimiento de normativas y estándares internacionales (GRI).</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Pasos para elaborar el reporte:</b>
+                      <ol style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li><b>Planificación:</b> Definir equipo responsable y alcance.</li>
+                        <li><b>Identificación de temas materiales:</b> Consultar a los grupos de interés y priorizar temas.</li>
+                        <li><b>Recolección de información:</b> Recopilar datos cuantitativos y cualitativos.</li>
+                        <li><b>Redacción y validación:</b> Elaborar y validar el documento internamente.</li>
+                        <li><b>Comunicación:</b> Publicar y difundir el reporte.</li>
+                      </ol>
+                    </div>
+                    <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
+                      <b>Estándares y referencias:</b> El marco GRI (Global Reporting Initiative) es el más utilizado. Integra los ODS (Objetivos de Desarrollo Sostenible) en la estrategia y el reporte.
+                    </div>
+                  </div>
+                </div>
+              </Col>
+              <Col xl={4} lg={4} md={10} sm={12} className="d-flex justify-content-center align-items-center" style={{ paddingRight: '2vw', paddingLeft: '1vw' }}>
+                <div style={{ width: '100%', maxWidth: 400 }}>
+                  <Card className="shadow border-0" style={{ background: '#e8f5e9', borderTop: '4px solid #43a047', borderRadius: '18px' }}>
+                    <CardBody className="p-4">
+                      <DocumentViewer 
+                        pdfPath="/Concepts_docs/2.Guía_para_elaborar_el_reporte_de_Sostenibilidad.docx.pdf"
+                        title="Guía para Elaborar Reportes de Sostenibilidad"
+                        description="Manual práctico para diseñar estrategias de sostenibilidad alineadas con los ODS, con pasos, ejemplos y recomendaciones."
+                        icon="clipboard"
+                        buttonText="Ver Guía Completa"
+                        cardStyle="featured"
+                        customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
+                      />
+                    </CardBody>
+                  </Card>
+                </div>
               </Col>
             </Row>
-            <Row className="justify-content-center">
-              <Col lg={10}>
-          <Card className="shadow border-0 mb-4">
-            <CardBody className="p-5">
-              <p className="text-muted mb-4 lead">
-                La <strong>huella de carbono</strong> es una medida del total de emisiones de gases 
-                de efecto invernadero (GEI) causadas directa o indirectamente por una actividad, 
-                organización, evento o producto, expresada como equivalente de dióxido de carbono (CO2eq).
-              </p>
-              
-              <Row className="mt-4">
-                <Col lg={6}>
-                  <div className="feature-icon mb-4">
-                    <FeatherIcon icon="globe" className="text-mundo-verde me-2" size={24} />
-                    <h5 className="d-inline text-mundo-verde">Importancia Global</h5>
-                  </div>
-                  <p className="text-muted">
-                    El cálculo de la huella de carbono es fundamental para entender nuestro 
-                    impacto en el cambio climático y tomar medidas para reducirlo.
-                  </p>
-                </Col>
-                <Col lg={6}>
-                  <div className="feature-icon mb-4">
-                    <FeatherIcon icon="trending-up" className="text-mundo-verde me-2" size={24} />
-                    <h5 className="d-inline text-mundo-verde">Beneficios Empresariales</h5>
-                  </div>
-                  <p className="text-muted">
-                    Las empresas que miden y reducen su huella de carbono mejoran su 
-                    reputación, reducen costos operativos y se preparan para futuras regulaciones.
-                  </p>
-                </Col>
-              </Row>
+          </Container>
+        </section>
 
-              <div className="alert alert-mundo-verde mt-4" role="alert">
-                <FeatherIcon icon="lightbulb" className="me-2" size={18} />
-                <strong>Dato Importante:</strong> Colombia se comprometió a reducir sus emisiones 
-                de GEI en un 51% para el 2030 según el Acuerdo de París.
+
+
+
+
+  {/* Sección: Componentes Socioambientales */}
+  <section className="section" id="componentes-socioambientales" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
+    <Container fluid>
+      <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+        <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
+          <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+            <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Componentes Sociambientales de una Organización</h2>
+            <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+              Descubre cómo los componentes sociales y ambientales interactúan en la gestión sostenible de una organización.
+            </p>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                  <FeatherIcon icon="users" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
+                  <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>¿Qué son los componentes sociambientales?</span>
+                </div>
+                <div style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                  Son los elementos sociales y ambientales que conforman la estructura y funcionamiento de una organización, y que influyen en su sostenibilidad y responsabilidad.
+                </div>
+                <ul style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
+                  <li><b>Componente social:</b> Personas, cultura organizacional, relaciones laborales, bienestar, equidad, diversidad e inclusión. Implica promover un ambiente de trabajo saludable, participación y responsabilidad social.</li>
+                  <li><b>Componente ambiental:</b> Recursos naturales utilizados (agua, energía, materiales), emisiones, residuos y el impacto de las actividades sobre el entorno. Busca minimizar el impacto negativo, promover la eficiencia y el cumplimiento normativo.</li>
+                </ul>
               </div>
-            </CardBody>
-          </Card>
-              </Col>
-            </Row>
-          </Container>
-        </section>
-
-        {/* Sección 2: Alcances y Límites */}
-        <section className="section bg-light" id="alcances-limites">
-          <Container>
-            <Row className="justify-content-center">
-              <Col lg={12} className="text-center mb-5">
-                <FeatherIcon icon="layers" className="text-mundo-verde mb-3" size={48} />
-                <h2 className="text-mundo-verde mb-4">Alcances y Límites de Medición</h2>
-                <p className="text-muted">
-                  Comprende la clasificación de emisiones según el Protocolo de Gases de Efecto Invernadero (GHG Protocol).
-                </p>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col lg={12}>
-          <Row>
-            <Col lg={4} className="mb-4">
-              <Card className="card-mundo-verde h-100 shadow">
-                <CardBody className="text-center p-4">
-                  <div className="icon-mono service-icon avatar-lg mx-auto mb-4">
-                    <FeatherIcon icon="home" className="text-mundo-verde" size={32} />
-                  </div>
-                  <h4 className="text-mundo-verde mb-3">Alcance 1</h4>
-                  <h6 className="text-muted mb-3">Emisiones Directas</h6>
-                  <p className="text-muted">
-                    Emisiones que ocurren de fuentes que son propiedad o están controladas 
-                    por la organización:
-                  </p>
-                  <ul className="list-unstyled text-start">
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Combustión estacionaria
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Combustión móvil
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Emisiones fugitivas
-                    </li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </Col>
-
-            <Col lg={4} className="mb-4">
-              <Card className="card-mundo-verde h-100 shadow">
-                <CardBody className="text-center p-4">
-                  <div className="icon-mono service-icon avatar-lg mx-auto mb-4">
-                    <FeatherIcon icon="zap" className="text-mundo-verde" size={32} />
-                  </div>
-                  <h4 className="text-mundo-verde mb-3">Alcance 2</h4>
-                  <h6 className="text-muted mb-3">Emisiones Indirectas por Energía</h6>
-                  <p className="text-muted">
-                    Emisiones indirectas de GEI por la generación de electricidad, 
-                    vapor, calefacción y refrigeración adquirida:
-                  </p>
-                  <ul className="list-unstyled text-start">
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Electricidad comprada
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Vapor adquirido
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Calefacción/refrigeración
-                    </li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </Col>
-
-            <Col lg={4} className="mb-4">
-              <Card className="card-mundo-verde h-100 shadow">
-                <CardBody className="text-center p-4">
-                  <div className="icon-mono service-icon avatar-lg mx-auto mb-4">
-                    <FeatherIcon icon="truck" className="text-mundo-verde" size={32} />
-                  </div>
-                  <h4 className="text-mundo-verde mb-3">Alcance 3</h4>
-                  <h6 className="text-muted mb-3">Otras Emisiones Indirectas</h6>
-                  <p className="text-muted">
-                    Todas las demás emisiones indirectas que ocurren en la 
-                    cadena de valor de la organización:
-                  </p>
-                  <ul className="list-unstyled text-start">
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Transporte y distribución
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Bienes y servicios comprados
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={16} />
-                      Viajes de negocios
-                    </li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-              </Col>
-            </Row>
-          </Container>
-        </section>
-
-        {/* Sección 3: Factores de Emisión */}
-        <section className="section" id="factores-emision">
-          <Container>
-            <Row className="justify-content-center">
-              <Col lg={12} className="text-center mb-5">
-                <FeatherIcon icon="database" className="text-mundo-verde mb-3" size={48} />
-                <h2 className="text-mundo-verde mb-4">Factores de Emisión para Colombia</h2>
-                <p className="text-muted">
-                  Conoce los valores oficiales y metodologías para convertir datos de actividad en emisiones de GEI.
-                </p>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col lg={10}>
-          <Card className="shadow border-0">
-            <CardBody className="p-5">
-              <Row>
-                <Col lg={6}>
-                  <h5 className="text-mundo-verde mb-3">
-                    <FeatherIcon icon="zap" className="me-2" />
-                    Factor de Emisión Eléctrico
-                  </h5>
-                  <p className="text-muted">
-                    Para Colombia, el Sistema Interconectado Nacional (SIN) tiene un factor 
-                    de emisión de aproximadamente <strong>0.164 kg CO2eq/kWh</strong> (UPME, 2023).
-                  </p>
-                  
-                  <h5 className="text-mundo-verde mb-3 mt-4">
-                    <FeatherIcon icon="droplet" className="me-2" />
-                    Combustibles Fósiles
-                  </h5>
-                  <ul className="list-unstyled">
-                    <li className="mb-2">
-                      <strong>Gasolina:</strong> 2.296 kg CO2eq/litro
-                    </li>
-                    <li className="mb-2">
-                      <strong>Diésel:</strong> 2.671 kg CO2eq/litro
-                    </li>
-                    <li className="mb-2">
-                      <strong>Gas Natural:</strong> 2.108 kg CO2eq/m³
-                    </li>
-                  </ul>
-                </Col>
-                
-                <Col lg={6}>
-                  <h5 className="text-mundo-verde mb-3">
-                    <FeatherIcon icon="activity" className="me-2" />
-                    Fuentes de Información
-                  </h5>
-                  <div className="mb-3">
-                    <span className="badge bg-mundo-verde me-2 mb-2">UPME</span>
-                    <span className="badge bg-mundo-verde me-2 mb-2">IDEAM</span>
-                    <span className="badge bg-mundo-verde me-2 mb-2">FECOC</span>
-                  </div>
-                  
-                  <div className="alert alert-info" role="alert">
-                    <FeatherIcon icon="info" className="me-2" size={18} />
-                    <strong>Nota:</strong> Los factores de emisión se actualizan periódicamente. 
-                    Siempre consulta las fuentes oficiales más recientes.
-                  </div>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-              </Col>
-            </Row>
-          </Container>
-        </section>
-
-        {/* Sección Nueva: Componentes Socioambientales */}
-        <section className="section bg-light" id="componentes-socioambientales">
-          <Container>
-            <Row className="justify-content-center">
-              <Col lg={12} className="text-center mb-5">
-                <FeatherIcon icon="users" className="text-mundo-verde mb-3" size={48} />
-                <h2 className="text-mundo-verde mb-4">Componentes Socioambientales</h2>
-                <p className="text-muted">
-                  Explora los elementos sociales y ambientales que toda organización debe considerar para su sostenibilidad integral.
-                </p>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col lg={6} className="mb-4">
+              <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                <b>Importancia:</b>
+                <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                  <li>Integrar ambos componentes permite a la organización ser sostenible, mejorar su reputación y cumplir con regulaciones.</li>
+                  <li>La sostenibilidad requiere equilibrio entre el desarrollo económico, el bienestar social y la protección ambiental.</li>
+                </ul>
+              </div>
+              <div style={{ color: '#1976D2', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                <b>Acciones clave:</b>
+                <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                  <li>Diagnóstico de aspectos sociales y ambientales.</li>
+                  <li>Implementación de políticas de responsabilidad social y ambiental.</li>
+                  <li>Educación y sensibilización interna.</li>
+                  <li>Medición y reporte de indicadores de desempeño.</li>
+                </ul>
+              </div>
+              <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
+                <b>Dato clave:</b> Una gestión sociambiental efectiva impulsa la sostenibilidad, la innovación y la competitividad organizacional.
+              </div>
+            </div>
+          </div>
+        </Col>
+        <Col xl={4} lg={4} md={10} sm={12} className="d-flex justify-content-center align-items-center" style={{ paddingRight: '2vw', paddingLeft: '1vw' }}>
+          <div style={{ width: '100%', maxWidth: 400 }}>
+            <Card className="shadow border-0" style={{ background: '#e8f5e9', borderTop: '4px solid #43a047', borderRadius: '18px' }}>
+              <CardBody className="p-4">
                 <DocumentViewer 
                   pdfPath="/Concepts_docs/3.Componentes_sociambientales_de_una_organización.pdf"
-                  title="Componentes Socioambientales"
+                  title="Componentes Sociambientales"
                   description="Marco conceptual sobre los elementos sociales y ambientales que integran la gestión sostenible de una organización."
                   icon="users"
+                  buttonText="Ver Documento"
                   cardStyle="featured"
+                  customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
                 />
+              </CardBody>
+            </Card>
+          </div>
+        </Col>
+      </Row>
+    </Container>
+  </section>
+
+
+        {/* Sección: Amenazas, Impactos y Aspectos Ambientales */}
+        <section className="section" id="amenazas-impactos-aspectos" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
+          <Container fluid>
+            <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
+                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Amenazas, Impactos y Aspectos Ambientales</h2>
+                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+                    Aprende a identificar, evaluar y gestionar los riesgos y consecuencias ambientales en tu organización para impulsar la sostenibilidad.
+                  </p>
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                        <FeatherIcon icon="shield" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>¿Qué son las amenazas, impactos y aspectos ambientales?</span>
+                      </div>
+                      <div style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                        <b>Amenazas Ambientales:</b> Factores o actividades que pueden causar daño al medio ambiente, como la contaminación, la deforestación, el uso excesivo de recursos naturales y el cambio climático.<br/>
+                        <b>Impactos Ambientales:</b> Consecuencias directas o indirectas de las amenazas, como la pérdida de biodiversidad, la degradación del suelo, la contaminación del agua y del aire, y el calentamiento global.<br/>
+                        <b>Aspectos Ambientales:</b> Elementos de las actividades, productos o servicios de una organización que pueden interactuar con el medio ambiente, por ejemplo, el consumo de energía, la generación de residuos, las emisiones atmosféricas y el uso del agua.
+                      </div>
+                    </div>
+                    <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Gestión de Amenazas e Impactos:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Identificar y evaluar los aspectos ambientales significativos.</li>
+                        <li>Implementar controles y buenas prácticas para minimizar los impactos negativos.</li>
+                        <li>Adoptar políticas de sostenibilidad y tecnologías limpias.</li>
+                        <li>Fomentar la educación y la sensibilización ambiental.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: '#1976D2', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Beneficios de una gestión ambiental efectiva:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Reducción de riesgos y cumplimiento normativo.</li>
+                        <li>Mejora de la reputación y competitividad organizacional.</li>
+                        <li>Conservación de recursos y reducción de costos.</li>
+                        <li>Contribución a la protección del planeta y el bienestar social.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
+                      <b>Dato clave:</b> La gestión proactiva de amenazas y aspectos ambientales es fundamental para lograr la sostenibilidad y prevenir daños irreversibles al entorno.
+                    </div>
+                  </div>
+                </div>
               </Col>
-              <Col lg={6} className="mb-4">
-                <DocumentViewer 
-                  pdfPath="/Concepts_docs/4.Amenazas_impactos_y_aspectos_ambientales.pdf"
-                  title="Amenazas, Impactos y Aspectos Ambientales"
-                  description="Guía para identificar y evaluar amenazas, impactos y aspectos ambientales en el contexto organizacional."
-                  icon="shield"
-                  cardStyle="featured"
-                />
-              </Col>
-            </Row>
-            <Row className="mt-4">
-              <Col lg={12}>
-                <Card className="shadow border-0">
-                  <CardBody className="p-5">
-                    <h5 className="text-mundo-verde mb-4">
-                      <FeatherIcon icon="target" className="me-2" />
-                      Dimensiones de la Sostenibilidad Organizacional
-                    </h5>
-                    <Row>
-                      <Col lg={4} className="mb-4">
-                        <div className="text-center">
-                          <div className="icon-mono service-icon avatar-md mx-auto mb-3">
-                            <FeatherIcon icon="heart" className="text-success" size={24} />
-                          </div>
-                          <h6 className="text-success mb-3">Dimensión Social</h6>
-                          <ul className="list-unstyled text-start">
-                            <li className="text-muted mb-2">• Bienestar de empleados</li>
-                            <li className="text-muted mb-2">• Impacto en comunidades</li>
-                            <li className="text-muted mb-2">• Derechos humanos</li>
-                            <li className="text-muted mb-2">• Inclusión y diversidad</li>
-                          </ul>
-                        </div>
-                      </Col>
-                      <Col lg={4} className="mb-4">
-                        <div className="text-center">
-                          <div className="icon-mono service-icon avatar-md mx-auto mb-3">
-                            <FeatherIcon icon="leaf" className="text-mundo-verde" size={24} />
-                          </div>
-                          <h6 className="text-mundo-verde mb-3">Dimensión Ambiental</h6>
-                          <ul className="list-unstyled text-start">
-                            <li className="text-muted mb-2">• Gestión de recursos</li>
-                            <li className="text-muted mb-2">• Control de emisiones</li>
-                            <li className="text-muted mb-2">• Manejo de residuos</li>
-                            <li className="text-muted mb-2">• Biodiversidad</li>
-                          </ul>
-                        </div>
-                      </Col>
-                      <Col lg={4} className="mb-4">
-                        <div className="text-center">
-                          <div className="icon-mono service-icon avatar-md mx-auto mb-3">
-                            <FeatherIcon icon="trending-up" className="text-primary" size={24} />
-                          </div>
-                          <h6 className="text-primary mb-3">Dimensión Económica</h6>
-                          <ul className="list-unstyled text-start">
-                            <li className="text-muted mb-2">• Viabilidad financiera</li>
-                            <li className="text-muted mb-2">• Creación de valor</li>
-                            <li className="text-muted mb-2">• Innovación sostenible</li>
-                            <li className="text-muted mb-2">• Cadena de suministro</li>
-                          </ul>
-                        </div>
-                      </Col>
-                    </Row>
-                  </CardBody>
-                </Card>
+              <Col xl={4} lg={4} md={10} sm={12} className="d-flex justify-content-center align-items-center" style={{ paddingRight: '2vw', paddingLeft: '1vw' }}>
+                <div style={{ width: '100%', maxWidth: 400 }}>
+                  <Card className="shadow border-0" style={{ background: '#e8f5e9', borderTop: '4px solid #43a047', borderRadius: '18px' }}>
+                    <CardBody className="p-4">
+                      <DocumentViewer 
+                        pdfPath="/Concepts_docs/4.Amenazas_impactos_y_aspectos_ambientales.pdf"
+                        title="Amenazas, Impactos y Aspectos Ambientales"
+                        description="Guía para identificar y evaluar amenazas, impactos y aspectos ambientales en el contexto organizacional."
+                        icon="shield"
+                        buttonText="Ver Documento"
+                        cardStyle="featured"
+                        customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
+                      />
+                    </CardBody>
+                  </Card>
+                </div>
               </Col>
             </Row>
           </Container>
         </section>
 
-        {/* Sección 4: Acciones para Reducir */}
-        <section className="section" id="acciones-reduccion">
-          <Container>
-            <Row className="justify-content-center">
-              <Col lg={12} className="text-center mb-5">
-                <FeatherIcon icon="trending-down" className="text-mundo-verde mb-3" size={48} />
-                <h2 className="text-mundo-verde mb-4">Acciones para Reducir las Emisiones</h2>
-                <p className="text-muted">
-                  Implementa estrategias efectivas para reducir la huella de carbono de tu organización.
-                </p>
-              </Col>
-            </Row>
-            <Row className="justify-content-center mb-5">
-              <Col lg={4} className="mb-4">
-                <DocumentViewer 
-                  pdfPath="/Concepts_docs/5.Acciones_consumo_responsable.pdf"
-                  title="Acciones de Consumo Responsable"
-                  description="Estrategias y recomendaciones para implementar prácticas de consumo responsable."
-                  icon="shopping-cart"
-                  cardStyle="compact"
-                />
-              </Col>
-              <Col lg={4} className="mb-4">
-                <DocumentViewer 
-                  pdfPath="/Concepts_docs/6.Uso_eficiente_y_ahorro_de_agua.pdf"
-                  title="Uso Eficiente y Ahorro de Agua"
-                  description="Guía práctica para optimizar el uso del agua y reducir el desperdicio."
-                  icon="droplet"
-                  cardStyle="compact"
-                />
-              </Col>
-              <Col lg={4} className="mb-4">
-                <DocumentViewer 
-                  pdfPath="/Concepts_docs/7.Uso_eficiente_y_ahorro_de_energia.pdf"
-                  title="Uso Eficiente y Ahorro de Energía"
-                  description="Técnicas y mejores prácticas para reducir el consumo energético."
-                  icon="zap"
-                  cardStyle="compact"
-                />
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col lg={12}>
-          <Row>
-            <Col lg={6} className="mb-4">
-              <Card className="h-100 shadow border-0">
-                <CardBody className="p-4">
-                  <div className="feature-icon mb-3">
-                    <FeatherIcon icon="sun" className="text-mundo-verde me-2" size={24} />
-                    <h5 className="d-inline text-mundo-verde">Energías Renovables</h5>
-                  </div>
-                  <ul className="list-unstyled">
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Instalación de paneles solares
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Compra de energía verde certificada
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Sistemas de energía eólica
-                    </li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </Col>
 
-            <Col lg={6} className="mb-4">
-              <Card className="h-100 shadow border-0">
-                <CardBody className="p-4">
-                  <div className="feature-icon mb-3">
-                    <FeatherIcon icon="zap-off" className="text-mundo-verde me-2" size={24} />
-                    <h5 className="d-inline text-mundo-verde">Eficiencia Energética</h5>
+        {/* Sección: Acciones de Consumo Responsable (rediseñada, info sin card, full-width, UI moderna) */}
+        <section className="section" id="consumo-responsable" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
+          <Container fluid>
+            <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
+                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Acciones para el Consumo Responsable</h2>
+                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+                    El consumo responsable implica tomar decisiones informadas y conscientes sobre los productos y servicios que adquirimos, considerando su impacto ambiental, social y económico. Adoptar hábitos de consumo responsable es fundamental para reducir la huella de carbono y promover la sostenibilidad.
+                  </p>
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                        <FeatherIcon icon="shopping-cart" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>Principales acciones:</span>
+                      </div>
+                      <ul style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
+                        <li><b>Reducir el consumo innecesario:</b> Antes de comprar, pregúntate si realmente lo necesitas.</li>
+                        <li><b>Elegir productos locales y sostenibles:</b> Prefiere productos con bajo impacto ambiental, de origen local y con certificaciones ecológicas.</li>
+                        <li><b>Reutilizar y reciclar:</b> Da una segunda vida a los objetos y separa correctamente los residuos para su reciclaje.</li>
+                        <li><b>Ahorrar energía y agua:</b> Apaga luces y dispositivos cuando no los uses, y utiliza el agua de manera eficiente.</li>
+                        <li><b>Optar por transporte sostenible:</b> Camina, usa bicicleta o transporte público para reducir emisiones.</li>
+                        <li><b>Consumir alimentos de temporada:</b> Favorece la agricultura local y reduce la huella de transporte.</li>
+                        <li><b>Evitar productos de un solo uso:</b> Prefiere envases reutilizables y reduce el uso de plásticos.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Beneficios del consumo responsable:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Disminución de residuos y contaminación.</li>
+                        <li>Ahorro de recursos naturales.</li>
+                        <li>Fomento de economías locales y justas.</li>
+                        <li>Reducción de la huella de carbono personal y colectiva.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
+                      <b>Dato clave:</b> Cada pequeña acción cuenta. El consumo responsable es una herramienta poderosa para cuidar el planeta y construir una sociedad más justa y sostenible.
+                    </div>
                   </div>
-                  <ul className="list-unstyled">
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      LED y iluminación eficiente
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Equipos con certificación ENERGY STAR
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Sistemas de climatización eficientes
-                    </li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </Col>
-
-            <Col lg={6} className="mb-4">
-              <Card className="h-100 shadow border-0">
-                <CardBody className="p-4">
-                  <div className="feature-icon mb-3">
-                    <FeatherIcon icon="users" className="text-mundo-verde me-2" size={24} />
-                    <h5 className="d-inline text-mundo-verde">Movilidad Sostenible</h5>
-                  </div>
-                  <ul className="list-unstyled">
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Teletrabajo y reuniones virtuales
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Vehículos eléctricos o híbridos
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Incentivos para transporte público
-                    </li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </Col>
-
-            <Col lg={6} className="mb-4">
-              <Card className="h-100 shadow border-0">
-                <CardBody className="p-4">
-                  <div className="feature-icon mb-3">
-                    <FeatherIcon icon="refresh-cw" className="text-mundo-verde me-2" size={24} />
-                    <h5 className="d-inline text-mundo-verde">Economía Circular</h5>
-                  </div>
-                  <ul className="list-unstyled">
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Programas de reciclaje
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Reducción de residuos
-                    </li>
-                    <li className="text-muted mb-2">
-                      <FeatherIcon icon="arrow-right" className="text-mundo-verde me-2" size={16} />
-                      Proveedores sostenibles
-                    </li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+                </div>
+              </Col>
+              <Col xl={4} lg={4} md={10} sm={12} className="d-flex justify-content-center align-items-center" style={{ paddingRight: '2vw', paddingLeft: '1vw' }}>
+                <div style={{ width: '100%', maxWidth: 400 }}>
+                  <Card className="shadow border-0" style={{ background: '#e8f5e9', borderTop: '4px solid #43a047', borderRadius: '18px' }}>
+                    <CardBody className="p-4">
+                      <DocumentViewer 
+                        pdfPath="/Concepts_docs/5.Acciones_consumo_responsable.pdf"
+                        title="Acciones de Consumo Responsable"
+                        description="Estrategias y recomendaciones para implementar prácticas de consumo responsable."
+                        icon="shopping-cart"
+                        buttonText="Ver Documento"
+                        cardStyle="featured"
+                        customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
+                      />
+                    </CardBody>
+                  </Card>
+                </div>
               </Col>
             </Row>
           </Container>
         </section>
 
-        {/* Sección 5: Elaboración de Reportes */}
-        <section className="section" id="elaboracion-reportes">
-          <Container>
-            <Row className="justify-content-center">
-              <Col lg={12} className="text-center mb-5">
-                <FeatherIcon icon="file-text" className="text-mundo-verde mb-3" size={48} />
-                <h2 className="text-mundo-verde mb-4">Elaboración de Reportes de Huella de Carbono</h2>
-                <p className="text-muted">
-                  Aprende a crear reportes profesionales que faciliten la toma de decisiones en sostenibilidad.
-                </p>
+        {/* Sección: Uso Eficiente y Ahorro de Agua */}
+        <section className="section" id="uso-agua" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
+          <Container fluid>
+            <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
+                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Uso Eficiente y Ahorro de Agua</h2>
+                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+                    El agua es un recurso vital y limitado. Su uso eficiente y el ahorro son fundamentales para la sostenibilidad ambiental, la reducción de costos y la protección de los ecosistemas. Adoptar buenas prácticas permite garantizar su disponibilidad para las generaciones presentes y futuras.
+                  </p>
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                        <FeatherIcon icon="droplet" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>Principios clave para el uso eficiente del agua:</span>
+                      </div>
+                      <ul style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
+                        <li><b>Detectar y reparar fugas:</b> Revisa periódicamente instalaciones y equipos para evitar pérdidas.</li>
+                        <li><b>Optimizar procesos:</b> Utiliza tecnologías y métodos que reduzcan el consumo de agua en actividades diarias y productivas.</li>
+                        <li><b>Reutilizar y reciclar:</b> Implementa sistemas de recolección y reutilización de aguas grises o pluviales.</li>
+                        <li><b>Concientizar y educar:</b> Promueve campañas internas y externas sobre la importancia del ahorro de agua.</li>
+                        <li><b>Uso responsable en el hogar y la empresa:</b> Cierra grifos mientras no los uses, utiliza electrodomésticos eficientes y riega en horarios adecuados.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Beneficios del uso eficiente y el ahorro de agua:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Reducción de costos operativos y facturas.</li>
+                        <li>Disminución del impacto ambiental y preservación de fuentes hídricas.</li>
+                        <li>Mejora de la imagen y responsabilidad social de la organización.</li>
+                        <li>Contribución a la seguridad hídrica y adaptación al cambio climático.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: '#1976D2', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Acciones prácticas:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Instalar dispositivos ahorradores (aireadores, inodoros de bajo consumo, sensores).</li>
+                        <li>Capacitar al personal y a la comunidad sobre hábitos responsables.</li>
+                        <li>Monitorear y registrar el consumo para identificar oportunidades de mejora.</li>
+                        <li>Fomentar la innovación en el uso y tratamiento del agua.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: '#616161', fontSize: 15, background: '#F1F8E9', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
+                      <b>Dato clave:</b> Solo el 2.5% del agua del planeta es dulce y menos del 1% está disponible para consumo humano. Cada gota cuenta.
+                    </div>
+                  </div>
+                </div>
               </Col>
-            </Row>
-            <Row className="justify-content-center mb-5">
-              <Col lg={8}>
-                <DocumentViewer 
-                  pdfPath="/Concepts_docs/2.Guia_para_elaborar_el_reporte_de_Sostenibilidad.pdf"
-                  title="Guía para Elaborar Reportes de Sostenibilidad"
-                  description="Manual completo con metodologías, formatos y mejores prácticas para crear reportes de sostenibilidad efectivos."
-                  icon="clipboard"
-                  buttonText="Ver Guía Completa"
-                  cardStyle="featured"
-                />
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col lg={10}>
-          <Row className="mb-4">
-            <Col lg={4} className="mb-4">
-              <div className="process-step text-center">
-                <div className="process-circle mx-auto mb-3">
-                  <span className="text-white fw-bold">1</span>
+              <Col xl={4} lg={4} md={10} sm={12} className="d-flex justify-content-center align-items-center" style={{ paddingRight: '2vw', paddingLeft: '1vw' }}>
+                <div style={{ width: '100%', maxWidth: 400 }}>
+                  <Card className="shadow border-0" style={{ background: '#e8f5e9', borderTop: '4px solid #43a047', borderRadius: '18px' }}>
+                    <CardBody className="p-4">
+                      <DocumentViewer 
+                        pdfPath="/Concepts_docs/6.Uso_eficiente_y_ahorro_de_agua.pdf"
+                        title="Uso Eficiente y Ahorro de Agua"
+                        description="Guía práctica para optimizar el uso del agua y reducir el desperdicio."
+                        icon="droplet"
+                        buttonText="Ver Documento"
+                        cardStyle="featured"
+                        customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
+                      />
+                    </CardBody>
+                  </Card>
                 </div>
-                <h5 className="text-mundo-verde mb-3">Recolección de Datos</h5>
-                <p className="text-muted">
-                  Recopila información precisa sobre consumos energéticos, 
-                  combustibles, viajes y demás actividades emisoras.
-                </p>
-              </div>
-            </Col>
-
-            <Col lg={4} className="mb-4">
-              <div className="process-step text-center">
-                <div className="process-circle mx-auto mb-3">
-                  <span className="text-white fw-bold">2</span>
-                </div>
-                <h5 className="text-mundo-verde mb-3">Cálculo y Análisis</h5>
-                <p className="text-muted">
-                  Aplica los factores de emisión correspondientes y calcula 
-                  las emisiones por cada alcance y categoría.
-                </p>
-              </div>
-            </Col>
-
-            <Col lg={4} className="mb-4">
-              <div className="process-step text-center">
-                <div className="process-circle mx-auto mb-3">
-                  <span className="text-white fw-bold">3</span>
-                </div>
-                <h5 className="text-mundo-verde mb-3">Documentación</h5>
-                <p className="text-muted">
-                  Elabora un reporte detallado con metodología, resultados, 
-                  gráficos y recomendaciones de mejora.
-                </p>
-              </div>
-            </Col>
-          </Row>
-
-          <Card className="shadow border-0 mt-5">
-            <CardBody className="p-5">
-              <h5 className="text-mundo-verde mb-4">
-                <FeatherIcon icon="clipboard" className="me-2" />
-                Elementos Clave del Reporte
-              </h5>
-              <Row>
-                <Col lg={6}>
-                  <ul className="list-unstyled">
-                    <li className="mb-3">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={18} />
-                      <strong>Resumen Ejecutivo:</strong> Resultados principales y conclusiones
-                    </li>
-                    <li className="mb-3">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={18} />
-                      <strong>Metodología:</strong> Estándares y protocolos utilizados
-                    </li>
-                    <li className="mb-3">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={18} />
-                      <strong>Inventario:</strong> Detalle de fuentes de emisión por alcance
-                    </li>
-                  </ul>
-                </Col>
-                <Col lg={6}>
-                  <ul className="list-unstyled">
-                    <li className="mb-3">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={18} />
-                      <strong>Análisis:</strong> Comparación con años anteriores y benchmarks
-                    </li>
-                    <li className="mb-3">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={18} />
-                      <strong>Plan de Acción:</strong> Metas de reducción y estrategias
-                    </li>
-                    <li className="mb-3">
-                      <FeatherIcon icon="check-circle" className="text-mundo-verde me-2" size={18} />
-                      <strong>Verificación:</strong> Proceso de validación independiente
-                    </li>
-                  </ul>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
               </Col>
             </Row>
           </Container>
         </section>
+
+
+        {/* Sección: Uso Eficiente y Ahorro de Energía */}
+        <section className="section" id="uso-energia" style={{ background: 'var(--section-bg)', paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
+          <Container fluid>
+            <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+              <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center" style={{ paddingLeft: '2vw', paddingRight: '1vw' }}>
+                <div style={{ maxWidth: '100%', minWidth: 500, width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
+                  <h2 className="fw-bold mb-3" style={{ color: 'var(--section-text)', fontSize: '2.3rem', textAlign: 'center', width: '100%' }}>Uso Eficiente y Ahorro de Energía</h2>
+                  <p className="mb-4" style={{ color: 'var(--section-subtext)', fontSize: '1.18rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+                    El uso eficiente de la energía es clave para reducir costos, disminuir la huella de carbono y proteger el medio ambiente. Adoptar buenas prácticas y tecnologías eficientes permite optimizar el consumo energético en hogares, empresas e instituciones.
+                  </p>
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                        <FeatherIcon icon="zap" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>Principios clave para el uso eficiente de la energía:</span>
+                      </div>
+                      <ul style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
+                        <li><b>Apagar equipos y luces:</b> Desconecta dispositivos y apaga luces cuando no se utilicen.</li>
+                        <li><b>Aprovechar la luz natural:</b> Utiliza la iluminación natural siempre que sea posible.</li>
+                        <li><b>Usar electrodomésticos eficientes:</b> Prefiere equipos con certificación energética (A, A+ o superior).</li>
+                        <li><b>Mantenimiento preventivo:</b> Realiza revisiones periódicas a equipos eléctricos y sistemas de climatización.</li>
+                        <li><b>Optimizar el uso de aire acondicionado y calefacción:</b> Ajusta la temperatura y aísla espacios para evitar pérdidas de energía.</li>
+                        <li><b>Implementar tecnologías LED:</b> Sustituye bombillas tradicionales por LED de bajo consumo.</li>
+                        <li><b>Fomentar la cultura del ahorro:</b> Capacita y sensibiliza a colaboradores y familiares sobre la importancia del uso racional de la energía.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Beneficios del uso eficiente y el ahorro de energía:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Reducción de costos en facturas de energía.</li>
+                        <li>Disminución de emisiones de gases de efecto invernadero.</li>
+                        <li>Mayor vida útil de equipos y sistemas.</li>
+                        <li>Contribución a la sostenibilidad y al cuidado del planeta.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: '#1976D2', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
+                      <b>Acciones prácticas:</b>
+                      <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
+                        <li>Realizar auditorías energéticas para identificar oportunidades de mejora.</li>
+                        <li>Invertir en tecnologías limpias y renovables.</li>
+                        <li>Promover la movilidad sostenible y el teletrabajo.</li>
+                        <li>Establecer metas y monitorear el consumo energético.</li>
+                      </ul>
+                    </div>
+                    <div style={{ color: '#616161', fontSize: 15, background: '#F1F8E9', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
+                      <b>Dato clave:</b> El sector energético es responsable de más del 70% de las emisiones globales de gases de efecto invernadero. Cada acción cuenta para lograr la transición energética.
+                    </div>
+                  </div>
+                </div>
+              </Col>
+              <Col xl={4} lg={4} md={10} sm={12} className="d-flex justify-content-center align-items-center" style={{ paddingRight: '2vw', paddingLeft: '1vw' }}>
+                <div style={{ width: '100%', maxWidth: 400 }}>
+                  <Card className="shadow border-0" style={{ background: '#e8f5e9', borderTop: '4px solid #43a047', borderRadius: '18px' }}>
+                    <CardBody className="p-4">
+                      <DocumentViewer 
+                        pdfPath="/Concepts_docs/7.Uso_eficiente_y_ahorro_de_energia.pdf"
+                        title="Uso Eficiente y Ahorro de Energía"
+                        description="Recomendaciones y estrategias para optimizar el consumo energético y reducir el impacto ambiental."
+                        icon="zap"
+                        buttonText="Ver Documento"
+                        cardStyle="featured"
+                        customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
+                      />
+                    </CardBody>
+                  </Card>
+                </div>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+
 
         {/* Call to Action */}
         <section className="section bg-mundo-verde">
