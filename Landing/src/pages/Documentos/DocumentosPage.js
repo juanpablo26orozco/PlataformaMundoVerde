@@ -23,7 +23,8 @@ const seccionesSidebar = [
   { id: 'cat-5', label: 'Otras Herramientas', icon: 'folder' },
 ];
 
-const DocumentosSidebarNav = () => {
+// 1. Cambia DocumentosSidebarNav para recibir props 'open' y 'setOpen'
+const DocumentosSidebarNav = ({ open, setOpen }) => {
   const [active, setActive] = useState(seccionesSidebar[0].id);
   const [dark, setDark] = useState(false);
 
@@ -59,7 +60,8 @@ const DocumentosSidebarNav = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollTo = id => {
+  // Nueva función: scroll y abrir carpeta
+  const handleNavClick = (id, label) => {
     const el = document.getElementById(id);
     if (el) {
       window.scrollTo({
@@ -67,6 +69,7 @@ const DocumentosSidebarNav = () => {
         behavior: 'smooth',
       });
     }
+    setOpen(label); // Abre el Accordion de la carpeta
   };
 
   return (
@@ -90,43 +93,333 @@ const DocumentosSidebarNav = () => {
       className="d-none d-md-flex"
       aria-label="Navegación de categorías"
     >
-      {seccionesSidebar.map(sec => (
-        <button
-          key={sec.id}
-          onClick={() => scrollTo(sec.id)}
-          style={{
-            background: active === sec.id
-              ? (dark ? '#232f38' : '#e0f2f1')
-              : (dark ? '#1a232a' : '#f6fff7'),
-            color: dark
-              ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc')
-              : (active === sec.id ? '#1b5e20' : '#388e3c'),
-            border: active === sec.id
-              ? (dark ? '2px solid #b7e4c7' : '2px solid #43a047')
-              : (dark ? '1.2px solid #26323a' : '1.2px solid #e0f2f1'),
-            borderRadius: 12,
-            width: 170,
-            height: 70,
-            fontWeight: 600,
-            fontSize: 15,
-            boxShadow: active === sec.id
-              ? (dark ? '0 1px 4px #111b22cc' : '0 1px 4px #b7e4c7')
-              : 'none',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            outline: 'none',
-            transition: 'all 0.18s',
-            margin: 0,
-          }}
-          aria-current={active === sec.id ? 'section' : undefined}
-          aria-label={sec.label}
-        >
-          <FeatherIcon icon={sec.icon} size={22} style={{marginBottom:4, color: dark ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc') : undefined}} />
-          <span style={{fontSize:13, fontWeight:600}}>{sec.label}</span>
-        </button>
+      {seccionesSidebar.map((sec, idx) => (
+        idx === 0 ? (
+          <button
+            key={sec.id}
+            onClick={() => {
+              setOpen(categorias[0].nombre);
+              setTimeout(() => {
+                const el = document.getElementById('cat-0');
+                if (el) {
+                  window.scrollTo({
+                    top: el.getBoundingClientRect().top + window.scrollY - 80,
+                    behavior: 'smooth',
+                  });
+                }
+              }, 100);
+            }}
+            style={{
+              background: active === sec.id
+                ? (dark ? '#232f38' : '#e0f2f1')
+                : (dark ? '#1a232a' : '#f6fff7'),
+              color: dark
+                ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc')
+                : (active === sec.id ? '#1b5e20' : '#388e3c'),
+              border: active === sec.id
+                ? (dark ? '2px solid #b7e4c7' : '2px solid #43a047')
+                : (dark ? '1.2px solid #26323a' : '1.2px solid #e0f2f1'),
+              borderRadius: 12,
+              width: 170,
+              height: 70,
+              fontWeight: 600,
+              fontSize: 15,
+              boxShadow: active === sec.id
+                ? (dark ? '0 1px 4px #111b22cc' : '0 1px 4px #b7e4c7')
+                : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.18s',
+              margin: 0,
+            }}
+            aria-current={active === sec.id ? 'section' : undefined}
+            aria-label={sec.label}
+          >
+            <FeatherIcon icon={sec.icon} size={22} style={{marginBottom:4, color: dark ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc') : undefined}} />
+            <span style={{fontSize:13, fontWeight:600}}>{sec.label}</span>
+          </button>
+        ) : idx === 1 ? (
+          <button
+            key={sec.id}
+            onClick={() => {
+              setOpen(categorias[1].nombre);
+              setTimeout(() => {
+                const el = document.getElementById('cat-1');
+                if (el) {
+                  window.scrollTo({
+                    top: el.getBoundingClientRect().top + window.scrollY - 80,
+                    behavior: 'smooth',
+                  });
+                }
+              }, 100);
+            }}
+            style={{
+              background: active === sec.id
+                ? (dark ? '#232f38' : '#e0f2f1')
+                : (dark ? '#1a232a' : '#f6fff7'),
+              color: dark
+                ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc')
+                : (active === sec.id ? '#1b5e20' : '#388e3c'),
+              border: active === sec.id
+                ? (dark ? '2px solid #b7e4c7' : '2px solid #43a047')
+                : (dark ? '1.2px solid #26323a' : '1.2px solid #e0f2f1'),
+              borderRadius: 12,
+              width: 170,
+              height: 70,
+              fontWeight: 600,
+              fontSize: 15,
+              boxShadow: active === sec.id
+                ? (dark ? '0 1px 4px #111b22cc' : '0 1px 4px #b7e4c7')
+                : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.18s',
+              margin: 0,
+            }}
+            aria-current={active === sec.id ? 'section' : undefined}
+            aria-label={sec.label}
+          >
+            <FeatherIcon icon={sec.icon} size={22} style={{marginBottom:4, color: dark ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc') : undefined}} />
+            <span style={{fontSize:13, fontWeight:600}}>{sec.label}</span>
+          </button>
+        ) : idx === 2 ? (
+          <button
+            key={sec.id}
+            onClick={() => {
+              setOpen(categorias[2].nombre);
+              setTimeout(() => {
+                const el = document.getElementById('cat-2');
+                if (el) {
+                  window.scrollTo({
+                    top: el.getBoundingClientRect().top + window.scrollY - 80,
+                    behavior: 'smooth',
+                  });
+                }
+              }, 100);
+            }}
+            style={{
+              background: active === sec.id
+                ? (dark ? '#232f38' : '#e0f2f1')
+                : (dark ? '#1a232a' : '#f6fff7'),
+              color: dark
+                ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc')
+                : (active === sec.id ? '#1b5e20' : '#388e3c'),
+              border: active === sec.id
+                ? (dark ? '2px solid #b7e4c7' : '2px solid #43a047')
+                : (dark ? '1.2px solid #26323a' : '1.2px solid #e0f2f1'),
+              borderRadius: 12,
+              width: 170,
+              height: 70,
+              fontWeight: 600,
+              fontSize: 15,
+              boxShadow: active === sec.id
+                ? (dark ? '0 1px 4px #111b22cc' : '0 1px 4px #b7e4c7')
+                : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.18s',
+              margin: 0,
+            }}
+            aria-current={active === sec.id ? 'section' : undefined}
+            aria-label={sec.label}
+          >
+            <FeatherIcon icon={sec.icon} size={22} style={{marginBottom:4, color: dark ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc') : undefined}} />
+            <span style={{fontSize:13, fontWeight:600}}>{sec.label}</span>
+          </button>
+        ) : idx === 3 ? (
+          <button
+            key={sec.id}
+            onClick={() => {
+              setOpen(categorias[3].nombre);
+              setTimeout(() => {
+                const el = document.getElementById('cat-3');
+                if (el) {
+                  window.scrollTo({
+                    top: el.getBoundingClientRect().top + window.scrollY - 80,
+                    behavior: 'smooth',
+                  });
+                }
+              }, 100);
+            }}
+            style={{
+              background: active === sec.id
+                ? (dark ? '#232f38' : '#e0f2f1')
+                : (dark ? '#1a232a' : '#f6fff7'),
+              color: dark
+                ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc')
+                : (active === sec.id ? '#1b5e20' : '#388e3c'),
+              border: active === sec.id
+                ? (dark ? '2px solid #b7e4c7' : '2px solid #43a047')
+                : (dark ? '1.2px solid #26323a' : '1.2px solid #e0f2f1'),
+              borderRadius: 12,
+              width: 170,
+              height: 70,
+              fontWeight: 600,
+              fontSize: 15,
+              boxShadow: active === sec.id
+                ? (dark ? '0 1px 4px #111b22cc' : '0 1px 4px #b7e4c7')
+                : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.18s',
+              margin: 0,
+            }}
+            aria-current={active === sec.id ? 'section' : undefined}
+            aria-label={sec.label}
+          >
+            <FeatherIcon icon={sec.icon} size={22} style={{marginBottom:4, color: dark ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc') : undefined}} />
+            <span style={{fontSize:13, fontWeight:600}}>{sec.label}</span>
+          </button>
+        ) : idx === 4 ? (
+          <button
+            key={sec.id}
+            onClick={() => {
+              setOpen(categorias[4].nombre);
+              setTimeout(() => {
+                const el = document.getElementById('cat-4');
+                if (el) {
+                  window.scrollTo({
+                    top: el.getBoundingClientRect().top + window.scrollY - 80,
+                    behavior: 'smooth',
+                  });
+                }
+              }, 100);
+            }}
+            style={{
+              background: active === sec.id
+                ? (dark ? '#232f38' : '#e0f2f1')
+                : (dark ? '#1a232a' : '#f6fff7'),
+              color: dark
+                ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc')
+                : (active === sec.id ? '#1b5e20' : '#388e3c'),
+              border: active === sec.id
+                ? (dark ? '2px solid #b7e4c7' : '2px solid #43a047')
+                : (dark ? '1.2px solid #26323a' : '1.2px solid #e0f2f1'),
+              borderRadius: 12,
+              width: 170,
+              height: 70,
+              fontWeight: 600,
+              fontSize: 15,
+              boxShadow: active === sec.id
+                ? (dark ? '0 1px 4px #111b22cc' : '0 1px 4px #b7e4c7')
+                : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.18s',
+              margin: 0,
+            }}
+            aria-current={active === sec.id ? 'section' : undefined}
+            aria-label={sec.label}
+          >
+            <FeatherIcon icon={sec.icon} size={22} style={{marginBottom:4, color: dark ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc') : undefined}} />
+            <span style={{fontSize:13, fontWeight:600}}>{sec.label}</span>
+          </button>
+        ) : idx === 5 ? (
+          <button
+            key={sec.id}
+            onClick={() => {
+              setOpen(categorias[5].nombre);
+              setTimeout(() => {
+                const el = document.getElementById('cat-5');
+                if (el) {
+                  window.scrollTo({
+                    top: el.getBoundingClientRect().top + window.scrollY - 80,
+                    behavior: 'smooth',
+                  });
+                }
+              }, 100);
+            }}
+            style={{
+              background: active === sec.id
+                ? (dark ? '#232f38' : '#e0f2f1')
+                : (dark ? '#1a232a' : '#f6fff7'),
+              color: dark
+                ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc')
+                : (active === sec.id ? '#1b5e20' : '#388e3c'),
+              border: active === sec.id
+                ? (dark ? '2px solid #b7e4c7' : '2px solid #43a047')
+                : (dark ? '1.2px solid #26323a' : '1.2px solid #e0f2f1'),
+              borderRadius: 12,
+              width: 170,
+              height: 70,
+              fontWeight: 600,
+              fontSize: 15,
+              boxShadow: active === sec.id
+                ? (dark ? '0 1px 4px #111b22cc' : '0 1px 4px #b7e4c7')
+                : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.18s',
+              margin: 0,
+            }}
+            aria-current={active === sec.id ? 'section' : undefined}
+            aria-label={sec.label}
+          >
+            <FeatherIcon icon={sec.icon} size={22} style={{marginBottom:4, color: dark ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc') : undefined}} />
+            <span style={{fontSize:13, fontWeight:600}}>{sec.label}</span>
+          </button>
+        ) : (
+          <button
+            key={sec.id}
+            onClick={() => handleNavClick(sec.id, sec.label)}
+            style={{
+              background: active === sec.id
+                ? (dark ? '#232f38' : '#e0f2f1')
+                : (dark ? '#1a232a' : '#f6fff7'),
+              color: dark
+                ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc')
+                : (active === sec.id ? '#1b5e20' : '#388e3c'),
+              border: active === sec.id
+                ? (dark ? '2px solid #b7e4c7' : '2px solid #43a047')
+                : (dark ? '1.2px solid #26323a' : '1.2px solid #e0f2f1'),
+              borderRadius: 12,
+              width: 170,
+              height: 70,
+              fontWeight: 600,
+              fontSize: 15,
+              boxShadow: active === sec.id
+                ? (dark ? '0 1px 4px #111b22cc' : '0 1px 4px #b7e4c7')
+                : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.18s',
+              margin: 0,
+            }}
+            aria-current={active === sec.id ? 'section' : undefined}
+            aria-label={sec.label}
+          >
+            <FeatherIcon icon={sec.icon} size={22} style={{marginBottom:4, color: dark ? (active === sec.id ? '#b7e4c7' : '#b7e4c7cc') : undefined}} />
+            <span style={{fontSize:13, fontWeight:600}}>{sec.label}</span>
+          </button>
+        )
       ))}
     </nav>
   );
@@ -138,7 +431,7 @@ const DocumentosPage = () => {
 
   return (
     <React.Fragment>
-      <DocumentosSidebarNav />
+      <DocumentosSidebarNav open={open} setOpen={setOpen} />
       <section className="section" style={{background: '#4CAF50', minHeight: '420px', paddingTop: '120px', paddingBottom: '80px'}}>
         <Container>
           <Row className="justify-content-center">
@@ -169,7 +462,7 @@ const DocumentosPage = () => {
                             <div style={{ minWidth: 280, flex: 1 }}>
                               <DocumentViewer
                                 pdfPath="/Documentation/1.RIA/1.Herramientas_de_Sostenibilidad_y_PML.pdf"
-                                title="Herramientas de Sostenibilidad y PML"
+                                title="1. Herramientas de Sostenibilidad y PML"
                                 description="Manual y guía de herramientas para la gestión sostenible y Producción Más Limpia."
                                 icon="file-text"
                                 buttonText="Ver PDF"
@@ -196,36 +489,37 @@ const DocumentosPage = () => {
                           <div className="row g-4">
                             {/* PDFs */}
                             {[{
-                              file: '1.1Ejercicio_Ciclo_de_vida.pdf',
-                              title: 'Ejercicio Ciclo de Vida',
-                              desc: 'Ejercicio práctico sobre el análisis del ciclo de vida.'
-                            }, {
                               file: '1.EL_contexto_del_analisis_del_ciclo_de_vida.pdf',
-                              title: 'El Contexto del Análisis del Ciclo de Vida',
+                              title: '1. El Contexto del Análisis del Ciclo de Vida',
                               desc: 'Documento sobre el contexto y la importancia del análisis del ciclo de vida.'
                             }, {
-                              file: '2.1Ejercicio_analisis_ciclo_de_vida.pdf',
-                              title: 'Ejercicio Análisis Ciclo de Vida',
-                              desc: 'Ejercicio de análisis aplicado al ciclo de vida.'
+                              file: '1.1Ejercicio_Ciclo_de_vida.pdf',
+                              title: '1.1. Ejercicio Ciclo de Vida',
+                              desc: 'Ejercicio práctico sobre el análisis del ciclo de vida.'
                             }, {
                               file: '2.Metodologia_del_análisis_del_ciclo_de_vida.pdf',
-                              title: 'Metodología del Análisis del Ciclo de Vida',
+                              title: '2. Metodología del Análisis del Ciclo de Vida',
                               desc: 'Metodología detallada para el análisis del ciclo de vida.'
+                            }, {
+                              file: '2.1Ejercicio_analisis_ciclo_de_vida.pdf',
+                              title: '2.1. Ejercicio Análisis Ciclo de Vida',
+                              desc: 'Ejercicio de análisis aplicado al ciclo de vida.'
+                            }, {
+                              file: '3.Datos_Usados_en_el_analisis_de_ciclo_de_vida.pdf',
+                              title: 'Datos Usados en el Análisis de Ciclo de Vida',
+                              desc: 'Datos empleados en el análisis de ciclo de vida.'
+                              
                             }, {
                               file: '3.1Ejercicio_Datos_Usados_en_el_analisis_de_ciclo_de_vida.pdf',
                               title: 'Ejercicio Datos Usados en el Análisis de Ciclo de Vida',
                               desc: 'Ejercicio sobre los datos utilizados en el análisis de ciclo de vida.'
                             }, {
-                              file: '3.Datos_Usados_en_el_analisis_de_ciclo_de_vida.pdf',
-                              title: 'Datos Usados en el Análisis de Ciclo de Vida',
-                              desc: 'Datos empleados en el análisis de ciclo de vida.'
-                            }, {
                               file: '4.Conceptos_clave_del_ciclo_de_vida_un_producto.pdf',
-                              title: 'Conceptos Clave del Ciclo de Vida de un Producto',
+                              title: '4. Conceptos Clave del Ciclo de Vida de un Producto',
                               desc: 'Conceptos fundamentales sobre el ciclo de vida de un producto.'
                             }, {
                               file: '5.Guia_herramienta_ciclo_de_vida.pdf',
-                              title: 'Guía Herramienta Ciclo de Vida',
+                              title: '5. Guía Herramienta Ciclo de Vida',
                               desc: 'Guía para el uso de la herramienta de ciclo de vida.'
                             }].map((pdf, i) => (
                               <div className="col-md-6 col-lg-4" key={pdf.file}>
@@ -271,15 +565,15 @@ const DocumentosPage = () => {
                             {/* PDFs */}
                             {[{
                               file: '1.Criterios_de_PCC_y_CS.pdf',
-                              title: 'Criterios de PCC y CS',
+                              title: '1. Criterios de PCC y CS',
                               desc: 'Documento con los criterios de Producción más limpia y Consumo Sostenible.'
                             }, {
                               file: '2.Evaluacion_Operativa_de_la_organizacion.pdf',
-                              title: 'Evaluación Operativa de la Organización',
+                              title: '2. Evaluación Operativa de la Organización',
                               desc: 'Documento de evaluación operativa para organizaciones.'
                             }, {
                               file: '2.1Guia_para_el_uso_de_la_herramientas_de_Evaluacion_Operativa.pdf',
-                              title: 'Guía para el Uso de la Herramienta de Evaluación Operativa',
+                              title: '2.1 Guía para el Uso de la Herramienta de Evaluación Operativa',
                               desc: 'Guía de uso para la herramienta de evaluación operativa.'
                             }].map((pdf, i) => (
                               <div className="col-md-6 col-lg-4" key={pdf.file}>
@@ -296,11 +590,11 @@ const DocumentosPage = () => {
                             {/* Excels */}
                             {[{
                               file: '1.1.Herramienta_de_PCC_y_CS_de_una_organizacion.xlsx',
-                              title: 'Herramienta de PCC y CS de una Organización',
+                              title: '1.1. Herramienta de PCC y CS de una Organización',
                               desc: 'Plantilla Excel para aplicar criterios de PCC y CS.'
                             }, {
                               file: '2.1.1Evaluacion_Operativa_de_la_organizacion.xlsx',
-                              title: 'Evaluación Operativa de la Organización (Excel)',
+                              title: '2.1.1. Evaluación Operativa de la Organización (Excel)',
                               desc: 'Plantilla Excel para la evaluación operativa.'
                             }].map((excel, i) => (
                               <div className="col-md-6 col-lg-4" key={excel.file}>
@@ -325,11 +619,11 @@ const DocumentosPage = () => {
                             {/* PDFs */}
                             {[{
                               file: '1.Instructivo_para_diligenciar_Matriz_de_Valoracion_Economia_Circular.pdf',
-                              title: 'Instructivo para diligenciar Matriz de Valoración Economía Circular',
+                              title: '1. Instructivo para diligenciar Matriz de Valoración Economía Circular',
                               desc: 'Guía para completar la matriz de valoración de economía circular.'
                             }, {
                               file: '2.Gestion_de_residuos_Economia_circular.pdf',
-                              title: 'Gestión de residuos Economía Circular',
+                              title: '2. Gestión de residuos Economía Circular',
                               desc: 'Documento sobre la gestión de residuos en el contexto de economía circular.'
                             }].map((pdf, i) => (
                               <div className="col-md-6 col-lg-4" key={pdf.file}>
@@ -365,15 +659,15 @@ const DocumentosPage = () => {
                             {/* PDFs */}
                             {[{
                               file: '1.Costos_de_ineficiencia.pdf',
-                              title: 'Costos de Ineficiencia',
+                              title: '1. Costos de Ineficiencia',
                               desc: 'Documento sobre la estimación y análisis de costos de ineficiencia.'
                             }, {
                               file: '2.Analisis_de_CI.pdf',
-                              title: 'Análisis de CI',
+                              title: '2. Análisis de CI',
                               desc: 'Documento de análisis de costos de ineficiencia.'
                             }, {
                               file: '3.PARETO_Instructivo.pdf',
-                              title: 'PARETO Instructivo',
+                              title: '3. PARETO Instructivo',
                               desc: 'Instructivo para el análisis PARETO de costos de ineficiencia.'
                             }].map((pdf, i) => (
                               <div className="col-md-6 col-lg-4" key={pdf.file}>
@@ -390,15 +684,15 @@ const DocumentosPage = () => {
                             {/* Excels */}
                             {[{
                               file: '1.1.Estimacion_de_Costos_de_Ineficiencia.xlsx',
-                              title: 'Estimación de Costos de Ineficiencia (Excel)',
+                              title: '1.1 Estimación de Costos de Ineficiencia (Excel)',
                               desc: 'Plantilla Excel para estimar costos de ineficiencia.'
                             }, {
                               file: '2.1.Analisis_de_CI.xlsx',
-                              title: 'Análisis de CI (Excel)',
+                              title: '2.1. Análisis de CI (Excel)',
                               desc: 'Plantilla Excel para análisis de costos de ineficiencia.'
                             }, {
                               file: '3.PARETO_CI.xlsx',
-                              title: 'PARETO CI (Excel)',
+                              title: '3.1 PARETO CI (Excel)',
                               desc: 'Plantilla Excel para análisis PARETO de costos de ineficiencia.'
                             }].map((excel, i) => (
                               <div className="col-md-6 col-lg-4" key={excel.file}>
@@ -423,23 +717,23 @@ const DocumentosPage = () => {
                             {/* Excels */}
                             {[{
                               file: '1.Autodiagnostico de sostenibilidad_SuperSociedades_GRI.xlsx',
-                              title: 'Autodiagnóstico de Sostenibilidad SuperSociedades (Excel)',
+                              title: '1. Autodiagnóstico de Sostenibilidad SuperSociedades (Excel)',
                               desc: 'Plantilla Excel para autodiagnóstico de sostenibilidad según GRI.'
                             }, {
                               file: '2.Cuestionario_de_Sostenibilidad_Organizaciones.xls',
-                              title: 'Cuestionario de Sostenibilidad Organizaciones (Excel)',
+                              title: '2. Cuestionario de Sostenibilidad Organizaciones (Excel)',
                               desc: 'Cuestionario Excel para evaluar la sostenibilidad en organizaciones.'
                             }, {
                               file: '3.Formato_diagnostico_electricidad.xlsx',
-                              title: 'Formato Diagnóstico Electricidad (Excel)',
+                              title: '3. Formato Diagnóstico Electricidad (Excel)',
                               desc: 'Plantilla Excel para diagnóstico de consumo eléctrico.'
                             }, {
                               file: '4.Formato_diagnostico_Combustibles.xlsx',
-                              title: 'Formato Diagnóstico Combustibles (Excel)',
+                              title: '4. Formato Diagnóstico Combustibles (Excel)',
                               desc: 'Plantilla Excel para diagnóstico de consumo de combustibles.'
                             }, {
                               file: '5.formato_diagnostico_agua.xlsx',
-                              title: 'Formato Diagnóstico Agua (Excel)',
+                              title: '5. Formato Diagnóstico Agua (Excel)',
                               desc: 'Plantilla Excel para diagnóstico de consumo de agua.'
                             }].map((excel, i) => (
                               <div className="col-md-6 col-lg-4" key={excel.file}>

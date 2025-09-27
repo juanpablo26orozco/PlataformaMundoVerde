@@ -1,5 +1,5 @@
-
 import React, { useRef } from 'react';
+import FormularioAutogestion from '../../component/Autogestion/FormularioAutogestion';
 import { Container, Row, Col } from 'reactstrap';
 import Footer from '../../component/Footer/Footer';
 
@@ -76,7 +76,7 @@ const AutogestionPage = () => {
               <div style={{fontSize: 64, marginBottom: 16, color: '#fff', opacity: 0.9}}>
                 <FeatherIcon icon="activity" size={64} />
               </div>
-              <h1 className="fw-bold mb-3" style={{fontSize: '2.7rem', letterSpacing: '-1px'}}>Autogestión</h1>
+              <h1 className="fw-bold mb-3" style={{fontSize: '2.7rem', letterSpacing: '-1px'}}>Autogestión de sostenibilidad ambiental</h1>
               <p className="lead text-white-70 mb-4" style={{fontSize: '1.25rem', color: 'rgba(255,255,255,0.92)'}}>
                 Descarga los formatos y documentos necesarios para la autogestión de sostenibilidad en tu organización.
               </p>
@@ -86,6 +86,7 @@ const AutogestionPage = () => {
         {/* Efecto decorativo */}
         <div style={{position: 'absolute', top: -80, right: -120, width: 320, height: 320, background: 'radial-gradient(circle, #4caf50 0%, #66bb6a 100%)', opacity: 0.15, borderRadius: '50%'}}></div>
       </section>
+      <FormularioAutogestion />
       {/* Layout con barra lateral y contenido */}
       <section className="section" style={{background: 'linear-gradient(120deg, #e8f5e9 0%, #f8fafc 100%)', minHeight: 600}}>
         <Container fluid>
@@ -188,7 +189,7 @@ const AutogestionPage = () => {
           </Row>
         </Container>
       </section>
-      <Footer />
+  <Footer />
     </React.Fragment>
   );
 };
