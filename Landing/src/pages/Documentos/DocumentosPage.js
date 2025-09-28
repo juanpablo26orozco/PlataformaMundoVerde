@@ -506,12 +506,12 @@ const DocumentosPage = () => {
                               desc: 'Ejercicio de análisis aplicado al ciclo de vida.'
                             }, {
                               file: '3.Datos_Usados_en_el_analisis_de_ciclo_de_vida.pdf',
-                              title: 'Datos Usados en el Análisis de Ciclo de Vida',
+                              title: '3. Datos Usados en el Análisis de Ciclo de Vida',
                               desc: 'Datos empleados en el análisis de ciclo de vida.'
                               
                             }, {
                               file: '3.1Ejercicio_Datos_Usados_en_el_analisis_de_ciclo_de_vida.pdf',
-                              title: 'Ejercicio Datos Usados en el Análisis de Ciclo de Vida',
+                              title: '3.1. Ejercicio Datos Usados en el Análisis de Ciclo de Vida',
                               desc: 'Ejercicio sobre los datos utilizados en el análisis de ciclo de vida.'
                             }, {
                               file: '4.Conceptos_clave_del_ciclo_de_vida_un_producto.pdf',
