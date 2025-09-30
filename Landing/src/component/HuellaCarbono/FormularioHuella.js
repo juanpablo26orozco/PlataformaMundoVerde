@@ -143,7 +143,7 @@ const FormularioHuella = ({ onFormComplete }) => {
   // Estados para vuelos
   const [vuelos, setVuelos] = useState([
     { origen: "", destino: "", clase: "", personas: "", tipoVuelo: "", factor: "", distancia: "", emisionKg: "", emisionTon: "" }
-  ]);
+     ]);
   
   // Estados para extintores
   const [extintores, setExtintores] = useState([

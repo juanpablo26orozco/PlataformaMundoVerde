@@ -1,117 +1,84 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { Container, Row, Col } from "reactstrap";
-import FooterLink from "../Footer/Footer_link";
+import React from "react";
+import logo from "../../assets/images/logo-positive.png"; // Ajusta la ruta si tu logo está en otro lugar
 
-// Footer Image
-import footer_image from "../../assets/images/footer-bg.png";
-
-import logolight from "../../assets/images/logo-light.png";
-// Import Logo
-
-class Footer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      links: [
-        {
-          id: 1,
-          title: "Customer",
-          child: [
-            { title: "Works", link: "/" },
-            { title: "Strategy", link: "/" },
-            { title: "Releases", link: "/" },
-            { title: "Press", link: "/" },
-            { title: "Mission", link: "/" },
-          ],
-        },
-        {
-          id: 2,
-          title: "Product",
-          child: [
-            { title: "Tranding", link: "/" },
-            { title: "Popular", link: "/" },
-            { title: "Customers", link: "/" },
-            { title: "Features", link: "/" },
-          ],
-        },
-        {
-          id: 3,
-          title: "Information",
-          child: [
-            { title: "Developers", link: "/" },
-            { title: "Support", link: "/" },
-            { title: "Customer Service", link: "/" },
-            { title: "Get Started", link: "/" },
-            { title: "Guide", link: "/" },
-          ],
-        },
-        {
-          id: 3,
-          title: "Support",
-          child: [
-            { title: "FAQ", link: "/" },
-            { title: "Contact", link: "/" },
-            { title: "Disscusion", link: "/" },
-          ],
-        },
-      ],
-    };
-  }
-
-  render() {
-    return (
-      <React.Fragment>
-        {/* Footer Start */}
-        <footer
-          className="footer"
-          style={{ backgroundImage: "url(" + footer_image + ")" }}
+const Footer = () => (
+  <footer
+    style={{
+      background: "#217a3a",
+      color: "#fff",
+      padding: "32px 0 16px 0",
+      textAlign: "center",
+      fontSize: "1rem",
+      marginTop: 48,
+      borderTop: "2px solid #388e3c",
+    }}
+  >
+    <div
+      style={{
+        maxWidth: 900,
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <img
+        src={logo}
+        alt="Mundo Verde"
+        style={{ height: 128, marginBottom: 12 }}
+      />
+      <div
+        style={{
+          fontWeight: 700,
+          fontSize: "1.15rem",
+          marginBottom: 8,
+        }}
+      >
+        Mundo Verde
+      </div>
+      <div
+        style={{
+          maxWidth: 600,
+          margin: "0 auto 18px auto",
+          fontSize: "0.98rem",
+          opacity: 0.85,
+        }}
+      >
+        Plataforma para la gestión ambiental, medición de huella de carbono y
+        sostenibilidad en organizaciones.
+      </div>
+      <div
+        style={{
+          display: "flex",
+          gap: 24,
+          justifyContent: "center",
+          marginBottom: 18,
+        }}
+      >
+        <a
+          href="mailto:contacto@mundoverde.com"
+          style={{
+            color: "#fff",
+            textDecoration: "underline",
+            fontWeight: 500,
+          }}
         >
-          <Container>
-            <Row>
-              <Col lg={4}>
-                <div className="mb-4">
-                  <Link to="#">
-                    <img src={logolight} alt="" className="" height="30" />
-                  </Link>
-                  <p className="text-white-50 my-4">
-                    At vero eos et accusamus et iusto odio dignissimos ducimus
-                    qui blanditiis praesentium voluptatum deleniti.
-                  </p>
-                </div>
-              </Col>
-              <Col lg={7} className="ms-lg-auto">
-                <Row>
-                  {/* Render Footer Link */}
-                  {this.state.links.map((item, key) => (
-                    <Col lg={3} xs={6} key={key}>
-                      <div className="mt-4 mt-lg-0">
-                        <h4 className="text-white font-size-18 mb-3">
-                          {item.title}
-                        </h4>
-                        <ul className="list-unstyled footer-sub-menu">
-                          {item.child.map((linkItem, key) => (
-                            <li key={key}>
-                              <Link className="footer-link" to={linkItem.link}>
-                                {linkItem.title}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </Col>
-                  ))}
-                </Row>
-              </Col>
-            </Row>
-            {/* Render Footer Link End */}
-            <FooterLink />
-          </Container>
-        </footer>
-        {/* Footer End */}
-      </React.Fragment>
-    );
-  }
-}
+          Contacto
+        </a>
+        {/* <a href="/privacidad" style={{color: "#fff", textDecoration: "underline", fontWeight: 500}}>Aviso de privacidad</a> */}
+        {/* <a href="/terminos" style={{color: "#fff", textDecoration: "underline", fontWeight: 500}}>Términos y condiciones</a> */}
+      </div>
+    </div>
+    <div
+      style={{
+        marginTop: 18,
+        fontSize: "0.95rem",
+        opacity: 0.8,
+      }}
+    >
+      © 2025 Platform Develop By MIES GROUP.
+    </div>
+  </footer>
+);
 
 export default Footer;

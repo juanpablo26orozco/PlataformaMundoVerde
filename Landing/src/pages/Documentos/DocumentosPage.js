@@ -3,6 +3,7 @@ import { Container, Row, Col, Accordion, AccordionBody, AccordionHeader, Accordi
 import Footer from '../../component/Footer/Footer';
 import FeatherIcon from 'feather-icons-react';
 import DocumentViewer from '../../component/DocumentViewer';
+import { useLocation } from 'react-router-dom';
 
 // Estructura base de carpetas/categorías
 const categorias = [
@@ -425,9 +426,36 @@ const DocumentosSidebarNav = ({ open, setOpen }) => {
   );
 };
 
+const sectionIdToCategoria = {
+  'cat-0': categorias[0].nombre,
+  'cat-1': categorias[1].nombre,
+  'cat-2': categorias[2].nombre,
+  'cat-3': categorias[3].nombre,
+  'cat-4': categorias[4].nombre,
+  'cat-5': categorias[5].nombre,
+};
+
 const DocumentosPage = () => {
+  const location = useLocation();
   const [open, setOpen] = useState('');
   const toggle = id => setOpen(open === id ? '' : id);
+
+  useEffect(() => {
+    if (location.state && location.state.sectionId) {
+      const categoria = sectionIdToCategoria[location.state.sectionId];
+      if (categoria) {
+        setOpen(categoria);
+        // Opcional: scroll al marcador de la sección
+        const el = document.getElementById(location.state.sectionId);
+        if (el) {
+          window.scrollTo({
+            top: el.getBoundingClientRect().top + window.scrollY - 80,
+            behavior: 'smooth',
+          });
+        }
+      }
+    }
+  }, [location.state]);
 
   return (
     <React.Fragment>
@@ -641,7 +669,7 @@ const DocumentosPage = () => {
                             <div className="col-md-6 col-lg-4">
                               <div className="card shadow border-0 document-card" style={{ borderRadius: 12, padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                 <FeatherIcon icon="file" size={28} className="mb-2 text-success" />
-                                <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>Matriz Valoración Economía Circular (Excel)</div>
+                                <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>1.1. Matriz Valoración Economía Circular (Excel)</div>
                                 <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>Plantilla Excel para valoración de economía circular.</div>
                                 <a
                                   href={process.env.PUBLIC_URL + '/Documentation/4.Gestion_de_subproductos_EC/1.1 Matriz Valoración Economía Circular.xlsx'}

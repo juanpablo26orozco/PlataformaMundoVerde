@@ -1,0 +1,133 @@
+/* Pregunta faltante (no respondida) */
+.autogestion-question-missing {
+  border: 2px solid #c62828 !important;
+  background: #fff3f3 !important;
+  box-shadow: 0 0 0 2px #ffcdd2;
+}
+/* Modal emergente de error */
+.autogestion-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.25);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.autogestion-modal {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 32px 0 rgba(198,40,40,0.18);
+  padding: 32px 28px 22px 28px;
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+}
+.autogestion-modal-header {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #c62828;
+  margin-bottom: 18px;
+}
+.autogestion-modal-body {
+  font-size: 1.08rem;
+  color: #222;
+  margin-bottom: 22px;
+}
+.autogestion-modal-footer {
+  display: flex;
+  justify-content: center;
+}
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.autogestion-question-row {
+  margin-bottom: 18px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e7ff;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+.autogestion-question-text {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+.autogestion-question-options {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.autogestion-question-label {
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.autogestion-question-label:hover {
+  background: #e3f2fd;
+}
+.autogestion-radio {
+  margin-right: 6px;
+  accent-color: #388e3c;
+}
+.autogestion-question-score {
+  color: #388e3c;
+  font-weight: 700;
+}
+
+.autogestion-block-card {
+  border-radius: 16px !important;
+  box-shadow: 0 2px 12px 0 rgba(76,175,80,0.10);
+  margin-bottom: 24px;
+  background: #fff;
+}
+.autogestion-block-title {
+  color: #2E7D32;
+  font-weight: 800;
+  font-size: 1.15rem;
+  margin-bottom: 18px;
+}
+.autogestion-block-title-e {
+  color: #1565c0;
+}
+.autogestion-block-title-f {
+  color: #c0a115;
+}
+.autogestion-block-average {
+  margin-top: 18px;
+  font-weight: 600;
+  color: #388e3c;
+}
+.autogestion-block-average-e {
+  color: #1565c0;
+}
+.autogestion-block-average-f {
+  color: #c0a115;
+}
+
+body, .autogestion-question-row, .autogestion-block-card {
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .autogestion-question-row {
+    padding: 8px 2px;
+    border-radius: 6px;
+  }
+  .autogestion-block-card {
+    border-radius: 10px !important;
+    margin-bottom: 16px;
+  }
+  .autogestion-block-title {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+}

@@ -9,8 +9,9 @@ import Footer from "../../component/Footer/Footer";
 import Switch from "../../component/Switch";
 import DocumentViewer from "../../component/DocumentViewer";
 import ConceptSidebarNav from '../../component/ConceptSection/ConceptSidebarNav';
+import withRouter from '../../component/withRouter';
 
-export default class HuellaCarbono extends Component {
+class HuellaCarbono extends Component {
   constructor(props) {
     super(props);
     this.state = { showSidebar: true };
@@ -22,6 +23,17 @@ export default class HuellaCarbono extends Component {
     document.body.classList = "";
     window.addEventListener("scroll", this.handleScroll);
     this.handleScroll();
+
+    // Scroll automático si viene de búsqueda global
+    const sectionId = this.props.router && this.props.router.location && this.props.router.location.state && this.props.router.location.state.sectionId;
+    if (sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100); // Espera para asegurar que el DOM esté listo
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -248,7 +260,7 @@ export default class HuellaCarbono extends Component {
                   <Card className="shadow border-0" style={{ background: '#e8f5e9', borderTop: '4px solid #43a047', borderRadius: '18px' }}>
                     <CardBody className="p-4">
                       <DocumentViewer 
-                        pdfPath="/Concepts_docs/2.Guía_para_elaborar_el_reporte_de_Sostenibilidad.docx.pdf"
+                        pdfPath="/Concepts_docs/2.Guia_para_elaborar_el_reporte_de_sostenibilidad.pdf"
                         title="Guía para Elaborar Reportes de Sostenibilidad"
                         description="Manual práctico para diseñar estrategias de sostenibilidad alineadas con los ODS, con pasos, ejemplos y recomendaciones."
                         icon="clipboard"
@@ -730,3 +742,5 @@ export default class HuellaCarbono extends Component {
     );
   }
 }
+
+export default withRouter(HuellaCarbono);

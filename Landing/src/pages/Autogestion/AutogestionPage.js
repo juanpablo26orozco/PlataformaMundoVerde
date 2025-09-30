@@ -1,5 +1,8 @@
 import React, { useRef } from 'react';
+import SidebarNav from '../../component/Autogestion/SidebarNav';
 import FormularioAutogestion from '../../component/Autogestion/FormularioAutogestion';
+import { Card, CardBody } from 'reactstrap';
+import DocumentViewer from '../../component/DocumentViewer';
 import { Container, Row, Col } from 'reactstrap';
 import Footer from '../../component/Footer/Footer';
 
@@ -50,18 +53,15 @@ const glassStyle = {
     transition: 'transform 0.18s, box-shadow 0.18s, border 0.18s',
 };
 
-const AutogestionPage = () => {
-  // Refs para scroll suave
-  const docRefs = useRef(autogestionDocs.map(() => React.createRef()));
 
-  const handleNavClick = idx => {
-    docRefs.current[idx].current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+const AutogestionPage = () => {
+  const formRef = useRef(null);
 
   return (
     <React.Fragment>
-      {/* Hero innovador */}
-      <section style={{
+      <SidebarNav />
+  {/* Hero innovador */}
+  <section id="autogestion-hero" style={{
         minHeight: '340px',
         paddingTop: '120px',
         background: 'linear-gradient(120deg, #217a3a 0%, #28a745 100%)',
@@ -86,110 +86,108 @@ const AutogestionPage = () => {
         {/* Efecto decorativo */}
         <div style={{position: 'absolute', top: -80, right: -120, width: 320, height: 320, background: 'radial-gradient(circle, #4caf50 0%, #66bb6a 100%)', opacity: 0.15, borderRadius: '50%'}}></div>
       </section>
-      <FormularioAutogestion />
-      {/* Layout con barra lateral y contenido */}
-      <section className="section" style={{background: 'linear-gradient(120deg, #e8f5e9 0%, #f8fafc 100%)', minHeight: 600}}>
-        <Container fluid>
-          <Row className="justify-content-center">
-            {/* Barra lateral */}
-            <Col md={3} lg={2} className="d-none d-md-block" style={{paddingRight: 0}}>
-              <nav style={{
-                position: 'sticky',
-                top: 120,
-                zIndex: 10,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'stretch',
-                justifyContent: 'flex-start',
-              }}>
-                <div style={{
-                  background: '#fff',
-                  borderRadius: 18,
-                  boxShadow: '0 2px 16px 0 rgba(46,125,50,0.10)',
-                  padding: '44px 22px 44px 22px',
-                  margin: 0,
-                  minHeight: 480,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-start',
-                }}>
-                  <h4 style={{color: '#2E7D32', fontWeight: 900, fontSize: '1.18rem', marginBottom: 32, letterSpacing: 0.5, textAlign: 'left'}}>Formatos disponibles</h4>
-                  <ul style={{listStyle: 'none', padding: 0, margin: 0, flex: 1}}>
-                    {autogestionDocs.map((doc, idx) => (
-                      <li key={idx} style={{marginBottom: 22}}>
-                        <button
-                          onClick={() => handleNavClick(idx)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#388e3c',
-                            fontWeight: 700,
-                            fontSize: '1.13rem',
-                            cursor: 'pointer',
-                            padding: 0,
-                            textAlign: 'left',
-                            width: '100%',
-                            transition: 'color 0.15s',
-                          }}
-                          onMouseOver={e => e.currentTarget.style.color = '#2E7D32'}
-                          onMouseOut={e => e.currentTarget.style.color = '#388e3c'}
-                        >
-                          <FeatherIcon icon="file" size={22} className="me-2" /> {doc.nombre.replace('.xlsx','').replace('.xls','')}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </nav>
-            </Col>
-            {/* Contenido principal */}
-            <Col xs={12} md={9} lg={8}>
-              {autogestionDocs.map((doc, idx) => {
-                const ext = doc.archivo.split('.').pop().toLowerCase();
-                let icon = 'file-text';
-                if (ext === 'pdf') icon = 'file';
-                if (ext === 'xlsx' || ext === 'xls') icon = 'bar-chart-2';
-                if (ext === 'doc' || ext === 'docx') icon = 'file';
-                return (
-                  <div
-                    ref={docRefs.current[idx]}
-                    id={`doc-${idx}`}
-                    className="documento-card mb-5"
-                    style={{
-                      ...glassStyle,
-                      flexDirection: 'row',
-                      alignItems: 'flex-start',
-                      padding: 36,
-                      minHeight: 180,
-                      gap: 32,
-                    }}
-                    key={idx}
-                  >
-                    <div style={{width: 64, height: 64, marginRight: 32, flexShrink: 0, background: '#f1f8e9', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px 0 rgba(76,175,80,0.08)'}}>
-                      <FeatherIcon icon={icon} size={40} color="#43e97b" />
-                    </div>
-                    <div style={{flex: 1}}>
-                      <h2 style={{color: '#2E7D32', fontWeight: 800, fontSize: '1.25rem', marginBottom: 12, wordBreak: 'break-word'}}>{doc.nombre}</h2>
-                      <p style={{color: '#388e3c', fontSize: '1.08rem', marginBottom: 18, lineHeight: 1.7}}>{doc.descripcion}</p>
-                      <a
-                        className="btn btn-mundo-verde d-inline-flex align-items-center"
-                        href={doc.archivo}
-                        download
-                        style={{fontWeight: 700, fontSize: '1.08rem', boxShadow: '0 2px 12px 0 rgba(76,175,80,0.10)', borderRadius: 10, transition: 'background 0.18s, box-shadow 0.18s, transform 0.18s'}}
-                        onMouseOver={e => {e.currentTarget.style.transform='scale(1.07)';e.currentTarget.style.boxShadow='0 6px 24px 0 rgba(76,175,80,0.18)';}}
-                        onMouseOut={e => {e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='0 2px 12px 0 rgba(76,175,80,0.10)';}}
-                      >
-                        <FeatherIcon icon="download" className="me-2" size={20} /> Descargar
-                      </a>
-                    </div>
+
+
+
+      {/* Sección de descarga de Excel debajo del formulario */}
+
+
+      {/* Card con PDF instructivo y formulario juntos */}
+      <Container className="my-4" id="autogestion-instructivo">
+        <Row className="justify-content-center">
+          <Col lg={10} md={12} sm={12}>
+            <Card className="shadow border-0" style={{ borderRadius: '18px', background: '#f8fff8' }}>
+              <CardBody className="p-4">
+                <h3 className="fw-bold mb-3 w-100 text-center" style={{ color: '#217a3a' }}>Instructivo para Autogestión</h3>
+                <p className="mb-3 w-100 text-center" style={{ color: '#4b5c53', fontSize: '1.08rem' }}>
+                  Antes de iniciar el autodiagnóstico, revisa el instructivo para diligenciar correctamente el formulario y aprovechar al máximo la herramienta.
+                </p>
+                <div className="d-flex flex-row w-100 justify-content-center align-items-stretch gap-4" style={{flexWrap: 'wrap'}}>
+                  {/* Card PDF instructivo */}
+                  <div style={{flex: '1 1 340px', minWidth: 320, maxWidth: 420, display: 'flex', alignItems: 'stretch'}}>
+                    <Card className="shadow border-0 w-100" style={{ borderRadius: '18px', background: '#f8fff8', width: '100%' }}>
+                      <CardBody className="p-3">
+                        <DocumentViewer
+                          pdfPath="/Autodiagnostico_docs/1.Instructivo_para_diligenciar_Autodiagnostico_de_Sostenibilidad.pdf"
+                          title="Instructivo para diligenciar Autodiagnóstico"
+                          description="Guía paso a paso para completar el autodiagnóstico de sostenibilidad."
+                          icon="file-text"
+                          buttonText="Ver Instructivo"
+                          cardStyle="featured"
+                          customCardStyle={{ paddingTop: 0, paddingBottom: '1.2rem', background: 'transparent', height: '100%', marginTop: 0 }}
+                        />
+                      </CardBody>
+                    </Card>
                   </div>
-                );
-              })}
-            </Col>
-          </Row>
-        </Container>
-      </section>
-  <Footer />
+                  {/* Formulario autogestión */}
+                  <div ref={formRef} id="autogestion-formulario" style={{flex: '1 1 340px', minWidth: 320, maxWidth: 520, display: 'flex', alignItems: 'flex-start'}}>
+                    <FormularioAutogestion noCard />
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+
+      {/* Sección de descarga de Excel debajo del formulario */}
+      <Container className="mt-5" id="autogestion-descargas">
+        <Row className="justify-content-center">
+          <Col lg={5} md={6} sm={12} className="mb-4">
+            <Card className="shadow border-0 w-100" style={{ borderRadius: '18px', background: '#f8fff8', width: '100%' }}>
+              <CardBody className="p-3 d-flex flex-column justify-content-center align-items-center">
+                <h5 style={{color:'#217a3a', fontWeight:900, marginBottom:'12px', textAlign:'center'}}>Autodiagnóstico SuperSociedades</h5>
+                <p style={{color:'#4b5c53', fontSize:'1rem', textAlign:'center', marginBottom:'18px'}}>Herramienta para autodiagnóstico integral de sostenibilidad ambiental, social y económica.</p>
+                <a
+                  href="/Autodiagnostico_docs/1. Autodiagnóstico de sostenibilidad SuperSociedades - GRI.xlsx"
+                  download
+                  style={{
+                    display: 'inline-block',
+                    background: '#217a3a',
+                    color: '#fff',
+                    fontWeight: 700,
+                    borderRadius: '12px',
+                    padding: '12px 24px',
+                    textDecoration: 'none',
+                    fontSize: '1.08rem',
+                    boxShadow: '0 2px 8px 0 rgba(46,125,50,0.10)',
+                    transition: 'background 0.18s',
+                  }}
+                >
+                  Descargar Autodiagnóstico (Excel)
+                </a>
+              </CardBody>
+            </Card>
+          </Col>
+          <Col lg={5} md={6} sm={12} className="mb-4">
+            <Card className="shadow border-0 w-100" style={{ borderRadius: '18px', background: '#f8fff8', width: '100%' }}>
+              <CardBody className="p-3 d-flex flex-column justify-content-center align-items-center">
+                <h5 style={{color:'#217a3a', fontWeight:900, marginBottom:'12px', textAlign:'center'}}>Cuestionario de Sostenibilidad</h5>
+                <p style={{color:'#4b5c53', fontSize:'1rem', textAlign:'center', marginBottom:'18px'}}>Cuestionario detallado para recopilar información sobre prácticas sostenibles y consumo de recursos.</p>
+                <a
+                  href="/Autodiagnostico_docs/2. Cuestionario de Sostenibilidad Organizaciones.xls"
+                  download
+                  style={{
+                    display: 'inline-block',
+                    background: '#217a3a',
+                    color: '#fff',
+                    fontWeight: 700,
+                    borderRadius: '12px',
+                    padding: '12px 24px',
+                    textDecoration: 'none',
+                    fontSize: '1.08rem',
+                    boxShadow: '0 2px 8px 0 rgba(46,125,50,0.10)',
+                    transition: 'background 0.18s',
+                  }}
+                >
+                  Descargar Cuestionario (Excel)
+                </a>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+      <Footer />
     </React.Fragment>
   );
 };

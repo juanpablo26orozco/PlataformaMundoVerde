@@ -21,6 +21,8 @@ import { useLocation } from "react-router-dom";
 
 
 import useNavbarScroll from '../../hooks/useNavbarScroll';
+import GlobalSearch from '../GlobalSearch';
+
 // Custom hook to detect mobile/tablet (width < 992px)
 function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState(() => window.innerWidth < 992);
@@ -77,6 +79,9 @@ const NavbarPage = ({ navItems }) => {
             className="navbar-collapse"
           >
             <Nav navbar className="ms-auto d-flex align-items-center" id="mySidenav" style={{ gap: '0.5rem' }}>
+              <div style={{ minWidth: 220, maxWidth: 340, marginRight: '1.2rem' }}>
+                <GlobalSearch />
+              </div>
               {navItems.map((item, key) => (
                 <NavItem
                   key={key}
