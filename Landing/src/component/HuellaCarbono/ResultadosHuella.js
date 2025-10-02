@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { 
   Container, 
   Row, 
@@ -10,11 +10,14 @@ import {
   Alert
 } from "reactstrap";
 import FeatherIcon from "feather-icons-react";
+import CalculationService from "../../services/CalculationService";
 
 const ResultadosHuella = ({ formData, onNewCalculation }) => {
+  const [savedCalculation, setSavedCalculation] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
   
-  // Factores de emisión (kg CO2 equivalente por unidad)
-  const factoresEmision = {
+  // Factores de emisión (kg CO2 equivalente por unidad) - Memoizado para evitar recálculos
+  const factoresEmision = useMemo(() => ({
     // Combustibles (kg CO2e/litro o kg CO2e/m³)
     gasolina: 2.31,      // kg CO2e/litro
     diesel: 2.68,        // kg CO2e/litro  
@@ -43,7 +46,7 @@ const ResultadosHuella = ({ formData, onNewCalculation }) => {
     // Agua (kg CO2e/m³)
     agua: 0.34,
     aguaTratada: 0.71
-  };
+  }), []);
 
   // Calcular emisiones por alcance
   const calcularAlcance1 = () => {
@@ -147,6 +150,54 @@ const ResultadosHuella = ({ formData, onNewCalculation }) => {
   };
 
   const recomendaciones = generarRecomendaciones();
+
+  // Guardar cálculo automáticamente al cargar el componente
+  useEffect(() => {
+    const guardarCalculo = async () => {
+      if (!savedCalculation && !isSaving) {
+        setIsSaving(true);
+        
+        // Preparar datos para guardar
+        const datosParaGuardar = {
+          datosEmpresa: {
+            nombreEmpresa: formData.nombreEmpresa,
+            nit: formData.nit,
+            sector: formData.sector || 'No especificado',
+            ciudad: `${formData.municipio}, ${formData.departamento}`
+          },
+          alcances: {
+            alcance1_gasolina: formData.combustibles.gasolina * factoresEmision.gasolina,
+            alcance1_diesel: formData.combustibles.diesel * factoresEmision.diesel,
+            alcance1_gasNatural: formData.combustibles.gasNatural * factoresEmision.gasNatural,
+            alcance1_glp: formData.combustibles.glp * factoresEmision.glp,
+            alcance1_carbon: formData.combustibles.carbon * factoresEmision.carbon,
+            alcance2_electricidad: alcance2,
+            alcance3_transporte: (formData.transporte.kmVehiculos * (formData.transporte.tipoVehiculo === 'gasolina' ? factoresEmision.vehiculoGasolina : factoresEmision.vehiculoDiesel)) + 
+                                   (formData.transporte.vuelosNacionales * factoresEmision.vueloNacional) + 
+                                   (formData.transporte.vuelosInternacionales * factoresEmision.vueloInternacional) + 
+                                   (formData.transporte.transportePublico * factoresEmision.transportePublico),
+            alcance3_residuos: (formData.residuos.residuosOrganicos * factoresEmision.residuosOrganicos) + 
+                               (formData.residuos.residuosReciclables * factoresEmision.residuosReciclables) + 
+                               (formData.residuos.residuosPeligrosos * factoresEmision.residuosPeligrosos),
+            alcance3_agua: formData.agua.consumoM3 * (formData.agua.tratamientoAguas ? factoresEmision.aguaTratada : factoresEmision.agua)
+          }
+        };
+        
+        const resultado = CalculationService.saveCalculation(datosParaGuardar, 'carbonFootprint');
+        
+        if (resultado.success) {
+          setSavedCalculation(resultado.calculation);
+          console.log('✅ Cálculo guardado automáticamente:', resultado.calculation.id);
+        } else {
+          console.error('❌ Error al guardar cálculo:', resultado.error);
+        }
+        
+        setIsSaving(false);
+      }
+    };
+    
+    guardarCalculo();
+  }, [formData, alcance1, alcance2, alcance3, savedCalculation, isSaving, factoresEmision]);
 
   const formatNumber = (num) => {
     return new Intl.NumberFormat('es-CO', {

@@ -35,17 +35,25 @@
     "title": "Contact Us",
     "subtitle": "Do you have questions about sustainability or need advice for your organization? We are here to help you drive sustainable practices in your company.",
     "name": "Name",
-    "email": "Email",
+    "phone": "Phone",
     "subject": "Subject",
     "message": "Message",
     "namePlaceholder": "Enter your name*",
-    "emailPlaceholder": "Enter your email*",
+    "phonePlaceholder": "+57 300 123 4567",
+    "phoneHelper": "Format: +57 followed by your mobile number (10 digits)",
     "subjectPlaceholder": "Enter subject",
     "messagePlaceholder": "Write your message here...",
     "sendButton": "Send Message",
     "contactEmail": "contact@mundoverde.com",
     "contactPhone": "+57 123 456 7890",
-    "contactAddress": "Bogotá, Colombia"
+    "contactAddress": "Bogotá, Colombia",
+    "validation": {
+      "nameRequired": "Name is required",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Invalid Colombian phone number. Format: +57 300 123 4567 or 300 123 4567",
+      "messageRequired": "Message is required",
+      "success": "Message sent! Redirecting to WhatsApp..."
+    }
   },
   "allies": {
     "title": "Allies"

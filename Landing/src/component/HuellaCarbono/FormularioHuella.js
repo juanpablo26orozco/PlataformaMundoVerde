@@ -1,8 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import departamentosMunicipios from "../../data/departamentos_municipios.json";
 import { Container, Row, Col, Card, CardBody, Button, Table, FormGroup, Label, Input } from "reactstrap";
 import FeatherIcon from "feather-icons-react";
 import { useTranslation } from 'react-i18next';
+import CalculationService from "../../services/CalculationService";
+import EmailService from "../../services/EmailService";
 import "../../assets/css/formulario.css";
 // Endpoints API countriesnow.space
 const API_COUNTRIES = "https://countriesnow.space/api/v0.1/countries/positions";
@@ -185,6 +187,7 @@ const FormularioHuella = ({ onFormComplete }) => {
   // Estados para el control de pasos y cálculos
   const [step, setStep] = useState(1);
   const [resumenCalculado, setResumenCalculado] = useState(false);
+  const [savedCalculation, setSavedCalculation] = useState(null);
   const resumenRef = useRef(null);
 
   // Datos generales
@@ -289,6 +292,25 @@ const FormularioHuella = ({ onFormComplete }) => {
   const handleElectricidadChange = (idx, field, value) => {
     const updated = [...electricidad];
     updated[idx][field] = value;
+    
+    // Calcular consumo anual sumando todos los meses
+    const row = updated[idx];
+    const consumoAnual = 
+      (parseFloat(row.enero) || 0) +
+      (parseFloat(row.febrero) || 0) +
+      (parseFloat(row.marzo) || 0) +
+      (parseFloat(row.abril) || 0) +
+      (parseFloat(row.mayo) || 0) +
+      (parseFloat(row.junio) || 0) +
+      (parseFloat(row.julio) || 0) +
+      (parseFloat(row.agosto) || 0) +
+      (parseFloat(row.septiembre) || 0) +
+      (parseFloat(row.octubre) || 0) +
+      (parseFloat(row.noviembre) || 0) +
+      (parseFloat(row.diciembre) || 0);
+    
+    updated[idx].consumoAnual = consumoAnual;
+    
     setElectricidad(updated);
   };
   const addElectricidadRow = () => setElectricidad([...electricidad, { año: '', instalacion: '', enero: '', febrero: '', marzo: '', abril: '', mayo: '', junio: '', julio: '', agosto: '', septiembre: '', octubre: '', noviembre: '', diciembre: '' }]);
@@ -378,6 +400,38 @@ const FormularioHuella = ({ onFormComplete }) => {
   // Cálculo de árboles a plantar (1 árbol absorbe ~21kg CO2/año)
   const arboles = Math.ceil(totalEmisiones / 21);
 
+  // Auto-guardar cuando se calcula el resumen
+  useEffect(() => {
+    if (resumenCalculado && !savedCalculation) {
+      const datosParaGuardar = {
+        datosEmpresa: {
+          nombreEmpresa: datosEmpresa.nombreEmpresa || '',
+          nit: datosEmpresa.nit || '',
+          sector: datosEmpresa.sector || 'No especificado',
+          ciudad: `${datosEmpresa.municipio || ''}, ${datosEmpresa.departamento || ''}`,
+          telefono: datosEmpresa.telefono || '',
+          correo: datosEmpresa.correo || ''
+        },
+        alcances: {
+          alcance1_solidos: solidos.reduce((sum, s) => sum + (parseFloat(s.emisionesParciales) || 0), 0),
+          alcance1_liquidos: liquidos.reduce((sum, l) => sum + (parseFloat(l.emisionesParciales) || 0), 0),
+          alcance1_gaseosos: gaseosos.reduce((sum, g) => sum + (parseFloat(g.emisionesParciales) || 0), 0),
+          alcance1_liquidosMoviles: liquidosMoviles.reduce((sum, l) => sum + (parseFloat(l.emisionesParciales) || 0), 0),
+          alcance1_gaseososMoviles: gaseososMoviles.reduce((sum, g) => sum + (parseFloat(g.emisionesParciales) || 0), 0),
+          alcance1_extintores: extintores.reduce((sum, e) => sum + (parseFloat(e.emisionesParciales) || 0), 0),
+          alcance2_electricidad: emisiones.alcance2,
+          alcance3_vuelos: emisiones.alcance3
+        }
+      };
+
+      const resultado = CalculationService.saveCalculation(datosParaGuardar, 'carbonFootprint');
+      if (resultado.success) {
+        setSavedCalculation(resultado.calculation);
+        console.log('✅ Cálculo de Huella guardado:', resultado.calculation.id);
+      }
+    }
+  }, [resumenCalculado, savedCalculation, datosEmpresa, emisiones, solidos, liquidos, gaseosos, liquidosMoviles, gaseososMoviles, extintores]);
+
   // Función para descargar pantallazo del resumen
   const addExtintorRow = () => setExtintores([...extintores, { tipo: '', cantidad: '', pcg: '', emisionesParciales: '' }]);
 
@@ -449,6 +503,18 @@ const FormularioHuella = ({ onFormComplete }) => {
     } else {
       newRows[idx][field] = value;
     }
+    
+    // Calcular emisiones después de actualizar
+    const row = newRows[idx];
+    const consumoKg = row.consumo ? parseFloat(row.consumo) : 0;
+    const energia = (consumoKg && parseFloat(row.poderCalorifico)) ? (consumoKg * parseFloat(row.poderCalorifico) / 1000000) : 0;
+    const emisionCO2 = (energia && parseFloat(row.factorCO2)) ? (energia * parseFloat(row.factorCO2)) : 0;
+    const emisionCH4 = (energia && parseFloat(row.factorCH4)) ? (energia * parseFloat(row.factorCH4)) : 0;
+    const emisionN2O = (energia && parseFloat(row.factorN2O)) ? (energia * parseFloat(row.factorN2O)) : 0;
+    const emisionesTotales = ((emisionCO2 + (emisionCH4 * 25) + (emisionN2O * 298)) / 1000);
+    
+    newRows[idx].emisionesTotales = emisionesTotales;
+    
     setSolidos(newRows);
   };
   const addSolidoRow = () => setSolidos([...solidos, { combustible: "", consumo: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "" }]);
@@ -485,6 +551,19 @@ const FormularioHuella = ({ onFormComplete }) => {
     } else {
       newRows[idx][field] = value;
     }
+    
+    // Calcular emisiones después de actualizar
+    const row = newRows[idx];
+    const consumoLitros = row.consumo ? parseFloat(row.consumo) * 3.78541 : 0;
+    const masa = (consumoLitros && parseFloat(row.densidad)) ? consumoLitros * parseFloat(row.densidad) : 0;
+    const energia = (masa && parseFloat(row.poderCalorifico)) ? (masa * parseFloat(row.poderCalorifico) / 1000000) : 0;
+    const emisionCO2 = (energia && parseFloat(row.factorCO2)) ? (energia * parseFloat(row.factorCO2)) : 0;
+    const emisionCH4 = (energia && parseFloat(row.factorCH4)) ? (energia * parseFloat(row.factorCH4)) : 0;
+    const emisionN2O = (energia && parseFloat(row.factorN2O)) ? (energia * parseFloat(row.factorN2O)) : 0;
+    const emisionesTotales = ((emisionCO2 + (emisionCH4 * 25) + (emisionN2O * 298)) / 1000);
+    
+    newRows[idx].emisionesTotales = emisionesTotales;
+    
     setLiquidos(newRows);
   };
   const addLiquidoRow = () => setLiquidos([...liquidos, { combustible: "", consumo: "", densidad: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "", masa: "", energia: "", emisionCO2: "", emisionCH4: "", emisionN2O: "", emisionSO2: "", emisionesTotales: "" }]);
@@ -519,6 +598,18 @@ const FormularioHuella = ({ onFormComplete }) => {
     } else {
       newRows[idx][field] = value;
     }
+    
+    // Calcular emisiones después de actualizar
+    const row = newRows[idx];
+    const consumoM3 = row.consumo ? parseFloat(row.consumo) : 0;
+    const energia = (consumoM3 && parseFloat(row.poderCalorifico)) ? (consumoM3 * parseFloat(row.poderCalorifico) / 1000000) : 0;
+    const emisionCO2 = (energia && parseFloat(row.factorCO2)) ? (energia * parseFloat(row.factorCO2)) : 0;
+    const emisionCH4 = (energia && parseFloat(row.factorCH4)) ? (energia * parseFloat(row.factorCH4)) : 0;
+    const emisionN2O = (energia && parseFloat(row.factorN2O)) ? (energia * parseFloat(row.factorN2O)) : 0;
+    const emisionesTotales = ((emisionCO2 + (emisionCH4 * 25) + (emisionN2O * 298)) / 1000);
+    
+    newRows[idx].emisionesTotales = emisionesTotales;
+    
     setGaseosos(newRows);
   };
   const addGaseosoRow = () => setGaseosos([...gaseosos, { combustible: "", consumo: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "" }]);
@@ -555,6 +646,19 @@ const FormularioHuella = ({ onFormComplete }) => {
     } else {
       newRows[idx][field] = value;
     }
+    
+    // Calcular emisiones después de actualizar
+    const row = newRows[idx];
+    const consumoLitros = row.consumo ? parseFloat(row.consumo) * 3.78541 : 0;
+    const masa = (consumoLitros && parseFloat(row.densidad)) ? consumoLitros * parseFloat(row.densidad) : 0;
+    const energia = (masa && parseFloat(row.poderCalorifico)) ? (masa * parseFloat(row.poderCalorifico) / 1000000) : 0;
+    const emisionCO2 = (energia && parseFloat(row.factorCO2)) ? (energia * parseFloat(row.factorCO2)) : 0;
+    const emisionCH4 = (energia && parseFloat(row.factorCH4)) ? (energia * parseFloat(row.factorCH4)) : 0;
+    const emisionN2O = (energia && parseFloat(row.factorN2O)) ? (energia * parseFloat(row.factorN2O)) : 0;
+    const emisionesTotales = ((emisionCO2 + (emisionCH4 * 25) + (emisionN2O * 298)) / 1000);
+    
+    newRows[idx].emisionesTotales = emisionesTotales;
+    
     setLiquidosMoviles(newRows);
   };
   const addLiquidoMovilRow = () => setLiquidosMoviles([...liquidosMoviles, { combustible: "", consumo: "", densidad: "", poderCalorifico: "", factorCO2: "", factorCH4: "", factorN2O: "", factorSO2: "", masa: "", energia: "", emisionCO2: "", emisionCH4: "", emisionN2O: "", emisionSO2: "", emisionesTotales: "" }]);
@@ -589,6 +693,18 @@ const FormularioHuella = ({ onFormComplete }) => {
     } else {
       newRows[idx][field] = value;
     }
+    
+    // Calcular emisiones después de actualizar
+    const row = newRows[idx];
+    const consumoM3 = row.consumo ? parseFloat(row.consumo) : 0;
+    const energia = (consumoM3 && parseFloat(row.poderCalorifico)) ? (consumoM3 * parseFloat(row.poderCalorifico) / 1000000) : 0;
+    const emisionCO2 = (energia && parseFloat(row.factorCO2)) ? (energia * parseFloat(row.factorCO2)) : 0;
+    const emisionCH4 = (energia && parseFloat(row.factorCH4)) ? (energia * parseFloat(row.factorCH4)) : 0;
+    const emisionN2O = (energia && parseFloat(row.factorN2O)) ? (energia * parseFloat(row.factorN2O)) : 0;
+    const emisionesTotales = ((emisionCO2 + (emisionCH4 * 25) + (emisionN2O * 298)) / 1000);
+    
+    newRows[idx].emisionesTotales = emisionesTotales;
+    
     setGaseososMoviles(newRows);
   };
   // Select departamento
@@ -1582,7 +1698,84 @@ const FormularioHuella = ({ onFormComplete }) => {
         </div>
       </div>
     </div>
-    <div style={{display:'flex', justifyContent:'center', marginTop:32}}>
+    <div style={{display:'flex', justifyContent:'center', gap: 16, marginTop:32, flexWrap: 'wrap'}}>
+      <button
+        className="btn-email"
+        style={{
+          fontWeight: 800,
+          fontSize: 17,
+          borderRadius: 24,
+          padding: '12px 36px',
+          background: 'linear-gradient(90deg, #2196F3 0%, #1976D2 100%)',
+          color: '#fff',
+          border: 'none',
+          boxShadow: '0 4px 15px rgba(33, 150, 243, 0.3)',
+          transition: 'all 0.3s ease',
+          cursor: 'pointer',
+          outline: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8
+        }}
+        onMouseOver={e => {
+          e.currentTarget.style.background = 'linear-gradient(90deg, #1976D2 0%, #0D47A1 100%)';
+          e.currentTarget.style.boxShadow = '0 6px 20px rgba(33, 150, 243, 0.4)';
+          e.currentTarget.style.transform = 'translateY(-2px)';
+        }}
+        onMouseOut={e => {
+          e.currentTarget.style.background = 'linear-gradient(90deg, #2196F3 0%, #1976D2 100%)';
+          e.currentTarget.style.boxShadow = '0 4px 15px rgba(33, 150, 243, 0.3)';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
+        onClick={() => {
+          if (savedCalculation) {
+            // Calcular totalEmisiones actual
+            const totalEmisionesActual = emisiones.alcance1 + emisiones.alcance2 + emisiones.alcance3;
+            
+            // Actualizar savedCalculation con los datos actuales de la empresa
+            // (por si el usuario llenó el correo DESPUÉS de calcular)
+            const calculationActualizada = {
+              ...savedCalculation,
+              datosEmpresa: {
+                nombreEmpresa: datosEmpresa.nombreEmpresa || '',
+                nit: datosEmpresa.nit || '',
+                sector: datosEmpresa.sector || 'No especificado',
+                ciudad: `${datosEmpresa.municipio || ''}, ${datosEmpresa.departamento || ''}`,
+                telefono: datosEmpresa.telefono || '',
+                correo: datosEmpresa.correo || ''  // ← Tomar correo ACTUAL
+              },
+              totalEmisiones: totalEmisionesActual,  // ← Agregar total
+              alcances: {
+                alcance1: { total: emisiones.alcance1 },
+                alcance2: { total: emisiones.alcance2 },
+                alcance3: { total: emisiones.alcance3 }
+              },
+              fecha: datosEmpresa.fechaReporte || new Date().toLocaleDateString('es-CO')
+            };
+            
+            // Preparar TODOS los datos para el PDF
+            const datosCompletos = {
+              ...calculationActualizada,
+              // Agregar todas las tablas del formulario
+              solidos: solidos,
+              liquidos: liquidos,
+              gaseosos: gaseosos,
+              liquidosMoviles: liquidosMoviles,
+              gaseososMoviles: gaseososMoviles,
+              extintores: extintores,
+              electricidad: electricidad,
+              vuelos: vuelos
+            };
+            
+            // Enviar por email con TODOS los datos
+            EmailService.sendCarbonFootprintByEmail(calculationActualizada, datosCompletos);
+          } else {
+            alert('Por favor espera un momento mientras se guarda el cálculo...');
+          }
+        }}
+      >
+        <FeatherIcon icon="mail" className="me-2" color="#fff" /> Enviar por Email
+      </button>
       <button
         className="btn-download-green"
         style={{

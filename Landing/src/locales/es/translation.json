@@ -35,17 +35,25 @@
     "title": "Contáctanos",
     "subtitle": "¿Tienes preguntas sobre sostenibilidad o necesitas asesoría para tu organización? Estamos aquí para ayudarte a impulsar prácticas sostenibles en tu empresa.",
     "name": "Nombre",
-    "email": "Correo Electrónico",
+    "phone": "Teléfono",
     "subject": "Asunto",
     "message": "Mensaje",
     "namePlaceholder": "Ingresa tu nombre*",
-    "emailPlaceholder": "Ingresa tu correo electrónico*",
+    "phonePlaceholder": "+57 300 123 4567",
+    "phoneHelper": "Formato: +57 seguido de tu número celular (10 dígitos)",
     "subjectPlaceholder": "Ingresa el asunto",
     "messagePlaceholder": "Escribe tu mensaje aquí...",
     "sendButton": "Enviar Mensaje",
     "contactEmail": "contacto@mundoverde.com",
     "contactPhone": "+57 123 456 7890",
-    "contactAddress": "Bogotá, Colombia"
+    "contactAddress": "Bogotá, Colombia",
+    "validation": {
+      "nameRequired": "El nombre es obligatorio",
+      "phoneRequired": "El teléfono es obligatorio",
+      "phoneInvalid": "Número de teléfono colombiano inválido. Formato: +57 300 123 4567 o 300 123 4567",
+      "messageRequired": "El mensaje es obligatorio",
+      "success": "¡Mensaje enviado! Redirigiendo a WhatsApp..."
+    }
   },
   "allies": {
     "title": "Aliados"
