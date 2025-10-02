@@ -8,14 +8,14 @@ import "./assets/css/pe-icon-7.css";
 import "./assets/css/materialdesignicons.min.css";
 import "./assets/scss/themes.scss";
 
-// Definir los items del navbar globalmente
+// Definir los items del navbar globalmente con claves de traducción
 const navItems = [
-  { id: 1, idnm: "home", navheading: "Inicio", link: "/" },
-  { id: 3, idnm: "contact", navheading: "Contacto", link: "/#contact" },
-  { id: 2, navheading: "Calculadora de huella de carbono", link: "/calculadora" },
-  { id: 4, navheading: "Conceptos Claves", link: "/huella-carbono" },
-  { id: 5, navheading: "Herramientas", link: "/documentos" },
-  { id: 6, navheading: "Autodiagnóstico de sostenibilidad ambiental", link: "/autogestion" },
+  { id: 1, idnm: "home", navheadingKey: "navbar.home", link: "/" },
+  { id: 3, idnm: "contact", navheadingKey: "navbar.contact", link: "/#contact" },
+  { id: 2, navheadingKey: "navbar.calculator", link: "/calculadora" },
+  { id: 4, navheadingKey: "navbar.concepts", link: "/huella-carbono" },
+  { id: 5, navheadingKey: "navbar.tools", link: "/documentos" },
+  { id: 6, navheadingKey: "navbar.autodiagnosis", link: "/autogestion" },
 ];
 
 class App extends Component {

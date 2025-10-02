@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Container, Row, Col } from "reactstrap";
 import { Link } from "react-router-dom";
+import { withTranslation } from 'react-i18next';
 
 // Import Background Image
 import Background from "../../assets/images/hero-1-bg.png";
@@ -12,6 +13,8 @@ import HeroImage from "../../assets/images/mundo-verde/iot-de-agricultura-inteli
 
 class Section extends Component {
   render() {
+    const { t } = this.props;
+    
     return (
       <div className="mundo-verde-theme">
   {/* <ConceptSidebarNav /> eliminado para quitar el navbar lateral derecho */}
@@ -32,9 +35,7 @@ class Section extends Component {
                   Mundo Verde
                 </h1>
                 <p className="text-white-70 mb-4 mb-lg-5">
-                  Una apuesta por la adopción e implementación de prácticas sostenibles
-                  que beneficien tanto a nuestras empresas como al medio ambiente.
-                  Construyamos juntos un futuro más verde y próspero.
+                  {t('hero.subtitle')}
                 </p>
                 <a 
                   href="#modules" 
@@ -47,7 +48,7 @@ class Section extends Component {
                     }
                   }}
                 >
-                  Comenzar Ahora
+                  {t('hero.cta')}
                 </a>
               </Col>
               <Col lg={6} sm={10} className="mx-auto ms-lg-auto me-lg-0">
@@ -109,4 +110,4 @@ class Section extends Component {
   }
 }
 
-export default Section;
+export default withTranslation()(Section);

@@ -17,9 +17,11 @@ import FormularioHuella from "../HuellaCarbono/FormularioHuella";
 import ResultadosHuella from "../HuellaCarbono/ResultadosHuella";
 import DocumentViewer from "../DocumentViewer";
 import BosqueVerdeImage from "../../assets/images/mundo-verde/vista-de-los-arboles-del-bosque-verde-con-co2.jpg";
+import { useTranslation } from 'react-i18next';
 
 
 const CalculadoraSection = () => {
+  const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [calculationData, setCalculationData] = useState(null);
@@ -86,7 +88,7 @@ const CalculadoraSection = () => {
                           marginBottom: 14,
                           letterSpacing: '-0.5px',
                           lineHeight: 1.13
-                        }}>¡Comienza tu cálculo!</h2>
+                        }}>{t('calculadora.calculatorCard.title')}</h2>
                         <p style={{
                           color: '#4b5c4b',
                           fontSize: '1.13rem',
@@ -94,8 +96,7 @@ const CalculadoraSection = () => {
                           lineHeight: 1.6,
                           fontWeight: 400
                         }}>
-                          Nuestra calculadora te guiará paso a paso para obtener un análisis completo<br />
-                          de las emisiones de tu organización en los tres alcances definidos por el GHG Protocol.
+                          {t('calculadora.calculatorCard.description')}
                         </p>
                         <div className="alert alert-info calculadora-instructivo" style={{
                           fontSize: '1.01rem',
@@ -125,7 +126,7 @@ const CalculadoraSection = () => {
                             }}>
                               <FeatherIcon icon="info" size={18} style={{ color: '#fff' }} />
                             </div>
-                            <span style={{ fontWeight: 800, color: '#217a3a', fontSize: '1.13rem', letterSpacing: '-0.2px' }}>Instructivo rápido</span>
+                            <span style={{ fontWeight: 800, color: '#217a3a', fontSize: '1.13rem', letterSpacing: '-0.2px' }}>{t('calculadora.calculatorCard.quickInstructive')}</span>
                           </div>
                           <ul style={{
                             marginBottom: 10,
@@ -156,7 +157,7 @@ const CalculadoraSection = () => {
                               marginTop: 2
                             }}
                           >
-                            Ver instructivo completo
+                            {t('calculadora.calculatorCard.viewFullInstructive')}
                           </button>
                         </div>
                       </div>
@@ -176,8 +177,8 @@ const CalculadoraSection = () => {
                           }}>
                             <FeatherIcon icon="check-circle" size={18} className="alcance-icon-1" />
                           </div>
-                          <span className="alcance-title">Alcance 1:</span>
-                          <span className="alcance-desc">Emisiones directas</span>
+                          <span className="alcance-title">{t('calculadora.calculatorCard.scope1')}</span>
+                          <span className="alcance-desc">{t('calculadora.calculatorCard.scope1Desc')}</span>
                         </li>
                         <li style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                           <div style={{
@@ -193,8 +194,8 @@ const CalculadoraSection = () => {
                           }}>
                             <FeatherIcon icon="zap" size={18} className="alcance-icon-2" />
                           </div>
-                          <span className="alcance-title">Alcance 2:</span>
-                          <span className="alcance-desc">Electricidad y energía</span>
+                          <span className="alcance-title">{t('calculadora.calculatorCard.scope2')}</span>
+                          <span className="alcance-desc">{t('calculadora.calculatorCard.scope2Desc')}</span>
                         </li>
                         <li style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
                           <div style={{
@@ -210,8 +211,8 @@ const CalculadoraSection = () => {
                           }}>
                             <FeatherIcon icon="truck" size={18} className="alcance-icon-3" />
                           </div>
-                          <span className="alcance-title">Alcance 3:</span>
-                          <span className="alcance-desc">Transporte y residuos</span>
+                          <span className="alcance-title">{t('calculadora.calculatorCard.scope3')}</span>
+                          <span className="alcance-desc">{t('calculadora.calculatorCard.scope3Desc')}</span>
                         </li>
                       </ul>
 
@@ -223,7 +224,7 @@ const CalculadoraSection = () => {
                         <span className="calculadora-btn-icon">
                           <FeatherIcon icon="play" size={18} />
                         </span>
-                        <span>Iniciar Cálculo</span>
+                        <span>{t('calculadora.calculatorCard.startCalculation')}</span>
                       </Button>
                     </CardBody>
                   </Card>
@@ -285,10 +286,10 @@ const CalculadoraSection = () => {
                     {/* Solo visor PDF */}
                       <DocumentViewer
                         pdfPath="/Huella_docs/1.Huella_de_Carbono.pdf"
-                        title="Metodología Certificada - Huella de Carbono"
+                        title={t('calculadora.documents.certifiedMethodology')}
                         showDescription={false}
                         cardStyle="buttons-only"
-                        buttonText="Ver documento"
+                        buttonText={t('calculadora.documents.viewDocument')}
                       />
                   </div>
                 </Col>
@@ -310,47 +311,47 @@ const CalculadoraSection = () => {
                     {/* Solo visor PDF */}
                       <DocumentViewer
                         pdfPath="/Huella_docs/2.Factores_de_Emision.pdf"
-                        title="Factores de Emisión"
+                        title={t('calculadora.documents.emissionFactors')}
                         showDescription={false}
                         cardStyle="buttons-only"
-                        buttonText="Ver documento"
+                        buttonText={t('calculadora.documents.viewDocument')}
                       />
                   </div>
           {/* Modal instructivo (fuera del Col) */}
           <Modal isOpen={showInstructivo} toggle={handleCloseInstructivo} size="lg">
             <div className="modal-header">
-              <h5 className="modal-title">INSTRUCTIVO - Herramienta Emisiones Gases de Efecto Invernadero</h5>
+              <h5 className="modal-title">{t('calculadora.instructiveModal.title')}</h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={handleCloseInstructivo}></button>
             </div>
             <div className="modal-body" style={{maxHeight: '70vh', overflowY: 'auto'}}>
               <ul>
-                <li>Diligencie la herramienta de cálculo de emisiones de gases de efecto invernadero ingresando cada dato en el orden establecido.</li>
-                <li>Para las celdas que requieran ser diligenciadas con valores numéricos no incluir las unidades, estas son proporcionadas por la herramienta. Ejemplo: kg, galones, m3, grados (°), minutos (´), etcétera.</li>
-                <li>Cuando aparezca en el formulario "(Escoja Opción)" despliegue la lista para diligenciar la celda.</li>
-                <li>Si desea realizar el cálculo para más de un proceso deberá diligenciar un formulario por cada uno.</li>
-                <li>Recuerde que la información que diligencie debe corresponder a las cantidades del periodo de reporte.</li>
-                <li>Verifique antes de diligenciar la información de la empresa, que la herramienta no tenga ningún dato diligenciado.</li>
-                <li>Evite manipular la pestaña "Resumen". No ingrese ni borre información. Esta hoja de cálculo permite el correcto funcionamiento de la herramienta.</li>
-                <li>No elimine hojas de reportes ya creados. Para no afectar el funcionamiento de la herramienta no elimine reportes, déjelos sin diligenciar.</li>
+                <li>{t('calculadora.instructiveModal.instruction1')}</li>
+                <li>{t('calculadora.instructiveModal.instruction2')}</li>
+                <li>{t('calculadora.instructiveModal.instruction3')}</li>
+                <li>{t('calculadora.instructiveModal.instruction4')}</li>
+                <li>{t('calculadora.instructiveModal.instruction5')}</li>
+                <li>{t('calculadora.instructiveModal.instruction6')}</li>
+                <li>{t('calculadora.instructiveModal.instruction7')}</li>
+                <li>{t('calculadora.instructiveModal.instruction8')}</li>
               </ul>
               <hr />
-              <h6>GLOSARIO</h6>
+              <h6>{t('calculadora.instructiveModal.glossaryTitle')}</h6>
               <ul>
-                <li><b>Depósitos de carbono:</b> Compartimentos donde se almacena el carbono de los ecosistemas continentales y sus productos. Ej: biomasa aérea y subterránea, materia orgánica muerta, carbono en el suelo, productos cosechados de la madera.</li>
-                <li><b>Dióxido de carbono (CO2):</b> Gas producido naturalmente y como subproducto de la combustión de combustibles fósiles y biomasa, cambios en el uso de tierras y procesos industriales. Principal GEI antropogénico.</li>
-                <li><b>Dióxido de carbono equivalente (CO2e):</b> Unidad que compara el potencial de calentamiento global de cada GEI respecto al CO2.</li>
-                <li><b>Emisión de GEI:</b> Liberación a la atmósfera de la masa de un GEI.</li>
-                <li><b>Emisiones directas de GEI:</b> Provenientes de fuentes propiedad o bajo control de la empresa que reporta.</li>
-                <li><b>Emisiones fugitivas:</b> No están físicamente controladas pero resultan de liberaciones intencionales o no intencionales de GEI (juntas, sellos, empaques, etc.).</li>
-                <li><b>Emisiones indirectas de GEI:</b> Consecuencia de operaciones de la empresa que reporta, pero ocurren en fuentes propiedad/control de otras empresas.</li>
-                <li><b>Escenario de referencia de emisiones de GEI:</b> Línea base que representa las emisiones de GEI que se producirían en ausencia de políticas o iniciativas de mitigación.</li>
-                <li><b>Factor de emisión:</b> Permite estimar emisiones de GEI a partir de datos de actividades y emisiones totales de GEI.</li>
-                <li><b>Gases de Efecto Invernadero (GEI):</b> Componentes gaseosos de la atmósfera que absorben y reemiten radiación infrarroja.</li>
-                <li><b>Potencial de Calentamiento Global (PCG):</b> Factor que describe el impacto de una unidad de masa de un GEI respecto al CO2 en un periodo determinado.</li>
+                <li><b>{t('calculadora.instructiveModal.carbonDeposits')}</b> {t('calculadora.instructiveModal.carbonDepositsDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.co2')}</b> {t('calculadora.instructiveModal.co2Desc')}</li>
+                <li><b>{t('calculadora.instructiveModal.co2e')}</b> {t('calculadora.instructiveModal.co2eDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.ghgEmission')}</b> {t('calculadora.instructiveModal.ghgEmissionDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.directEmissions')}</b> {t('calculadora.instructiveModal.directEmissionsDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.fugitiveEmissions')}</b> {t('calculadora.instructiveModal.fugitiveEmissionsDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.indirectEmissions')}</b> {t('calculadora.instructiveModal.indirectEmissionsDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.referenceScenario')}</b> {t('calculadora.instructiveModal.referenceScenarioDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.emissionFactor')}</b> {t('calculadora.instructiveModal.emissionFactorDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.ghg')}</b> {t('calculadora.instructiveModal.ghgDesc')}</li>
+                <li><b>{t('calculadora.instructiveModal.gwp')}</b> {t('calculadora.instructiveModal.gwpDesc')}</li>
               </ul>
             </div>
             <div className="modal-footer">
-              <Button color="secondary" onClick={handleCloseInstructivo}>Cerrar</Button>
+              <Button color="secondary" onClick={handleCloseInstructivo}>{t('calculadora.instructiveModal.close')}</Button>
             </div>
           </Modal>
                 </Col>
@@ -372,10 +373,10 @@ const CalculadoraSection = () => {
                     {/* Solo visor PDF */}
                       <DocumentViewer
                         pdfPath="/Huella_docs/3.Acciones_para_reducir_la_Huella_de_CO2.pdf"
-                        title="Plan de Reducción - Acciones para reducir la Huella de CO2"
+                        title={t('calculadora.documents.reductionPlan')}
                         showDescription={false}
                         cardStyle="buttons-only"
-                        buttonText="Ver documento"
+                        buttonText={t('calculadora.documents.viewDocument')}
                       />
                   </div>
                 </Col>
@@ -388,7 +389,7 @@ const CalculadoraSection = () => {
       {/* Modal for Calculator */}
       <Modal isOpen={modal} toggle={toggle} size="xl" className="modal-dialog-scrollable">
         <ModalHeader toggle={toggle}>
-          {showResults ? "Resultados de Huella de Carbono" : "Calculadora de Huella de Carbono"}
+          {showResults ? t('calculadora.modal.results') : t('calculadora.modal.calculator')}
         </ModalHeader>
         <ModalBody className="p-0">
           {showResults ? (
@@ -404,7 +405,7 @@ const CalculadoraSection = () => {
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={toggle}>
-            Cerrar
+            {t('calculadora.modal.close')}
           </Button>
         </ModalFooter>
       </Modal>

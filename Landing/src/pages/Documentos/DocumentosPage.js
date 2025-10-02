@@ -4,28 +4,32 @@ import Footer from '../../component/Footer/Footer';
 import FeatherIcon from 'feather-icons-react';
 import DocumentViewer from '../../component/DocumentViewer';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Estructura base de carpetas/categorías
-const categorias = [
-  { nombre: '1. Revisión Inicial Ambiental - RIA', icon: 'folder' },
-  { nombre: '2. Ciclo de Vida', icon: 'folder' },
-  { nombre: '3. Criterios de Producción y consumo sostenible', icon: 'folder' },
-  { nombre: '4. Gestión de subproductos Economía Circular', icon: 'folder' },
-  { nombre: '5. Costos de Ineficiencia - CI', icon: 'folder' },
-  { nombre: '6. Otras Herramientas', icon: 'folder' },
+const getCategorias = (t) => [
+  { nombre: t('documentos.categories.ria'), key: 'ria', icon: 'folder' },
+  { nombre: t('documentos.categories.lifecycle'), key: 'lifecycle', icon: 'folder' },
+  { nombre: t('documentos.categories.production'), key: 'production', icon: 'folder' },
+  { nombre: t('documentos.categories.circular'), key: 'circular', icon: 'folder' },
+  { nombre: t('documentos.categories.costs'), key: 'costs', icon: 'folder' },
+  { nombre: t('documentos.categories.other'), key: 'other', icon: 'folder' },
 ];
 
-const seccionesSidebar = [
-  { id: 'cat-0', label: 'Revisión Inicial Ambiental', icon: 'folder' },
-  { id: 'cat-1', label: 'Ciclo de Vida', icon: 'folder' },
-  { id: 'cat-2', label: 'Criterios de Producción y Consumo Sostenible', icon: 'folder' },
-  { id: 'cat-3', label: 'Gestión de subproductos Economía Circular', icon: 'folder' },
-  { id: 'cat-4', label: 'Costos de Ineficiencia', icon: 'folder' },
-  { id: 'cat-5', label: 'Otras Herramientas', icon: 'folder' },
+const getSeccionesSidebar = (t) => [
+  { id: 'cat-0', label: t('documentos.sidebar.ria'), icon: 'folder' },
+  { id: 'cat-1', label: t('documentos.sidebar.lifecycle'), icon: 'folder' },
+  { id: 'cat-2', label: t('documentos.sidebar.production'), icon: 'folder' },
+  { id: 'cat-3', label: t('documentos.sidebar.circular'), icon: 'folder' },
+  { id: 'cat-4', label: t('documentos.sidebar.costs'), icon: 'folder' },
+  { id: 'cat-5', label: t('documentos.sidebar.other'), icon: 'folder' },
 ];
 
 // 1. Cambia DocumentosSidebarNav para recibir props 'open' y 'setOpen'
 const DocumentosSidebarNav = ({ open, setOpen }) => {
+  const { t } = useTranslation();
+  const categorias = getCategorias(t);
+  const seccionesSidebar = getSeccionesSidebar(t);
   const [active, setActive] = useState(seccionesSidebar[0].id);
   const [dark, setDark] = useState(false);
 
@@ -59,7 +63,7 @@ const DocumentosSidebarNav = ({ open, setOpen }) => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [seccionesSidebar]);
 
   // Nueva función: scroll y abrir carpeta
   const handleNavClick = (id, label) => {
@@ -77,7 +81,7 @@ const DocumentosSidebarNav = ({ open, setOpen }) => {
     <nav
       style={{
         position: 'fixed',
-        top: 110,
+        top: 180,
         right: 32,
         zIndex: 1000,
         background: dark ? '#1a232a' : '#f6fff7',
@@ -426,16 +430,17 @@ const DocumentosSidebarNav = ({ open, setOpen }) => {
   );
 };
 
-const sectionIdToCategoria = {
-  'cat-0': categorias[0].nombre,
-  'cat-1': categorias[1].nombre,
-  'cat-2': categorias[2].nombre,
-  'cat-3': categorias[3].nombre,
-  'cat-4': categorias[4].nombre,
-  'cat-5': categorias[5].nombre,
-};
-
 const DocumentosPage = () => {
+  const { t } = useTranslation();
+  const categorias = getCategorias(t);
+  const sectionIdToCategoria = {
+    'cat-0': categorias[0].nombre,
+    'cat-1': categorias[1].nombre,
+    'cat-2': categorias[2].nombre,
+    'cat-3': categorias[3].nombre,
+    'cat-4': categorias[4].nombre,
+    'cat-5': categorias[5].nombre,
+  };
   const location = useLocation();
   const [open, setOpen] = useState('');
   const toggle = id => setOpen(open === id ? '' : id);
@@ -455,7 +460,7 @@ const DocumentosPage = () => {
         }
       }
     }
-  }, [location.state]);
+  }, [location.state, sectionIdToCategoria]);
 
   return (
     <React.Fragment>
@@ -464,9 +469,9 @@ const DocumentosPage = () => {
         <Container>
           <Row className="justify-content-center">
             <Col lg={8} className="text-center text-white">
-              <h1 className="fw-bold mb-3">Herramientas y Documentos</h1>
+              <h1 className="fw-bold mb-3">{t('documentos.hero.title')}</h1>
               <p className="lead mb-4">
-                Accede y descarga herramientas y documentos clave organizados por categorías. Haz clic en cada carpeta para explorar los recursos disponibles.
+                {t('documentos.hero.description')}
               </p>
             </Col>
           </Row>
@@ -490,25 +495,25 @@ const DocumentosPage = () => {
                             <div style={{ minWidth: 280, flex: 1 }}>
                               <DocumentViewer
                                 pdfPath="/Documentation/1.RIA/1.Herramientas_de_Sostenibilidad_y_PML.pdf"
-                                title="1. Herramientas de Sostenibilidad y PML"
-                                description="Manual y guía de herramientas para la gestión sostenible y Producción Más Limpia."
+                                title={t('documentos.ria.doc1.title')}
+                                description={t('documentos.ria.doc1.desc')}
                                 icon="file-text"
-                                buttonText="Ver PDF"
+                                buttonText={t('documentos.buttons.viewPdf')}
                                 cardStyle="compact"
                               />
                             </div>
                             <div style={{ minWidth: 220, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <div className="card shadow border-0 document-card" style={{ width: '100%', minWidth: 220, borderRadius: 12, padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                 <FeatherIcon icon="file" size={28} className="mb-2 text-success" />
-                                <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>Formato RIA (Excel)</div>
-                                <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>Plantilla editable para diligenciar el RIA.</div>
+                                <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{t('documentos.ria.format.title')}</div>
+                                <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{t('documentos.ria.format.desc')}</div>
                                 <a
                                   href={process.env.PUBLIC_URL + '/Documentation/1.RIA/Formato_RIA.xlsx'}
                                   download
                                   className="btn btn-outline-success"
                                   style={{ minWidth: 140, fontWeight: 600 }}
                                 >
-                                  <FeatherIcon icon="download" size={16} className="me-1" /> Descargar Excel
+                                  <FeatherIcon icon="download" size={16} className="me-1" /> {t('documentos.buttons.downloadExcel')}
                                 </a>
                               </div>
                             </div>
@@ -518,45 +523,45 @@ const DocumentosPage = () => {
                             {/* PDFs */}
                             {[{
                               file: '1.EL_contexto_del_analisis_del_ciclo_de_vida.pdf',
-                              title: '1. El Contexto del Análisis del Ciclo de Vida',
-                              desc: 'Documento sobre el contexto y la importancia del análisis del ciclo de vida.'
+                              titleKey: 'documentos.lifecycle.doc1.title',
+                              descKey: 'documentos.lifecycle.doc1.desc'
                             }, {
                               file: '1.1Ejercicio_Ciclo_de_vida.pdf',
-                              title: '1.1. Ejercicio Ciclo de Vida',
-                              desc: 'Ejercicio práctico sobre el análisis del ciclo de vida.'
+                              titleKey: 'documentos.lifecycle.doc1_1.title',
+                              descKey: 'documentos.lifecycle.doc1_1.desc'
                             }, {
                               file: '2.Metodologia_del_análisis_del_ciclo_de_vida.pdf',
-                              title: '2. Metodología del Análisis del Ciclo de Vida',
-                              desc: 'Metodología detallada para el análisis del ciclo de vida.'
+                              titleKey: 'documentos.lifecycle.doc2.title',
+                              descKey: 'documentos.lifecycle.doc2.desc'
                             }, {
                               file: '2.1Ejercicio_analisis_ciclo_de_vida.pdf',
-                              title: '2.1. Ejercicio Análisis Ciclo de Vida',
-                              desc: 'Ejercicio de análisis aplicado al ciclo de vida.'
+                              titleKey: 'documentos.lifecycle.doc2_1.title',
+                              descKey: 'documentos.lifecycle.doc2_1.desc'
                             }, {
                               file: '3.Datos_Usados_en_el_analisis_de_ciclo_de_vida.pdf',
-                              title: '3. Datos Usados en el Análisis de Ciclo de Vida',
-                              desc: 'Datos empleados en el análisis de ciclo de vida.'
+                              titleKey: 'documentos.lifecycle.doc3.title',
+                              descKey: 'documentos.lifecycle.doc3.desc'
                               
                             }, {
                               file: '3.1Ejercicio_Datos_Usados_en_el_analisis_de_ciclo_de_vida.pdf',
-                              title: '3.1. Ejercicio Datos Usados en el Análisis de Ciclo de Vida',
-                              desc: 'Ejercicio sobre los datos utilizados en el análisis de ciclo de vida.'
+                              titleKey: 'documentos.lifecycle.doc3_1.title',
+                              descKey: 'documentos.lifecycle.doc3_1.desc'
                             }, {
                               file: '4.Conceptos_clave_del_ciclo_de_vida_un_producto.pdf',
-                              title: '4. Conceptos Clave del Ciclo de Vida de un Producto',
-                              desc: 'Conceptos fundamentales sobre el ciclo de vida de un producto.'
+                              titleKey: 'documentos.lifecycle.doc4.title',
+                              descKey: 'documentos.lifecycle.doc4.desc'
                             }, {
                               file: '5.Guia_herramienta_ciclo_de_vida.pdf',
-                              title: '5. Guía Herramienta Ciclo de Vida',
-                              desc: 'Guía para el uso de la herramienta de ciclo de vida.'
+                              titleKey: 'documentos.lifecycle.doc5.title',
+                              descKey: 'documentos.lifecycle.doc5.desc'
                             }].map((pdf, i) => (
                               <div className="col-md-6 col-lg-4" key={pdf.file}>
                                 <DocumentViewer
                                   pdfPath={`/Documentation/2.Ciclo_de_Vida/${pdf.file}`}
-                                  title={pdf.title}
-                                  description={pdf.desc}
+                                  title={t(pdf.titleKey)}
+                                  description={t(pdf.descKey)}
                                   icon="file-text"
-                                  buttonText="Ver PDF"
+                                  buttonText={t('documentos.buttons.viewPdf')}
                                   cardStyle="compact"
                                 />
                               </div>
@@ -564,25 +569,25 @@ const DocumentosPage = () => {
                             {/* Excels */}
                             {[{
                               file: 'ciclo_de_vida_Proceso_Productivo.xlsx',
-                              title: 'Ciclo de Vida - Proceso Productivo',
-                              desc: 'Plantilla Excel para el análisis de ciclo de vida de un proceso productivo.'
+                              titleKey: 'documentos.lifecycle.excel1.title',
+                              descKey: 'documentos.lifecycle.excel1.desc'
                             }, {
                               file: 'Ciclo_de_vida_Producto_o_Servico_especifico.xlsx',
-                              title: 'Ciclo de Vida - Producto o Servicio Específico',
-                              desc: 'Plantilla Excel para el análisis de ciclo de vida de un producto o servicio.'
+                              titleKey: 'documentos.lifecycle.excel2.title',
+                              descKey: 'documentos.lifecycle.excel2.desc'
                             }].map((excel, i) => (
                               <div className="col-md-6 col-lg-4" key={excel.file}>
                                 <div className="card shadow border-0 document-card" style={{ borderRadius: 12, padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                   <FeatherIcon icon="file" size={28} className="mb-2 text-success" />
-                                  <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{excel.title}</div>
-                                  <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{excel.desc}</div>
+                                  <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{t(excel.titleKey)}</div>
+                                  <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{t(excel.descKey)}</div>
                                   <a
                                     href={process.env.PUBLIC_URL + `/Documentation/2.Ciclo_de_Vida/${excel.file}`}
                                     download
                                     className="btn btn-outline-success"
                                     style={{ minWidth: 140, fontWeight: 600 }}
                                   >
-                                    <FeatherIcon icon="download" size={16} className="me-1" /> Descargar Excel
+                                    <FeatherIcon icon="download" size={16} className="me-1" /> {t('documentos.buttons.downloadExcel')}
                                   </a>
                                 </div>
                               </div>
@@ -593,24 +598,24 @@ const DocumentosPage = () => {
                             {/* PDFs */}
                             {[{
                               file: '1.Criterios_de_PCC_y_CS.pdf',
-                              title: '1. Criterios de PCC y CS',
-                              desc: 'Documento con los criterios de Producción más limpia y Consumo Sostenible.'
+                              titleKey: 'documentos.production.doc1.title',
+                              descKey: 'documentos.production.doc1.desc'
                             }, {
                               file: '2.Evaluacion_Operativa_de_la_organizacion.pdf',
-                              title: '2. Evaluación Operativa de la Organización',
-                              desc: 'Documento de evaluación operativa para organizaciones.'
+                              titleKey: 'documentos.production.doc2.title',
+                              descKey: 'documentos.production.doc2.desc'
                             }, {
                               file: '2.1Guia_para_el_uso_de_la_herramientas_de_Evaluacion_Operativa.pdf',
-                              title: '2.1 Guía para el Uso de la Herramienta de Evaluación Operativa',
-                              desc: 'Guía de uso para la herramienta de evaluación operativa.'
+                              titleKey: 'documentos.production.doc2_1.title',
+                              descKey: 'documentos.production.doc2_1.desc'
                             }].map((pdf, i) => (
                               <div className="col-md-6 col-lg-4" key={pdf.file}>
                                 <DocumentViewer
                                   pdfPath={`/Documentation/3.Criterios_de_PCC_y_CS/${pdf.file}`}
-                                  title={pdf.title}
-                                  description={pdf.desc}
+                                  title={t(pdf.titleKey)}
+                                  description={t(pdf.descKey)}
                                   icon="file-text"
-                                  buttonText="Ver PDF"
+                                  buttonText={t('documentos.buttons.viewPdf')}
                                   cardStyle="compact"
                                 />
                               </div>
@@ -618,25 +623,25 @@ const DocumentosPage = () => {
                             {/* Excels */}
                             {[{
                               file: '1.1.Herramienta_de_PCC_y_CS_de_una_organizacion.xlsx',
-                              title: '1.1. Herramienta de PCC y CS de una Organización',
-                              desc: 'Plantilla Excel para aplicar criterios de PCC y CS.'
+                              titleKey: 'documentos.production.excel1.title',
+                              descKey: 'documentos.production.excel1.desc'
                             }, {
                               file: '2.1.1Evaluacion_Operativa_de_la_organizacion.xlsx',
-                              title: '2.1.1. Evaluación Operativa de la Organización (Excel)',
-                              desc: 'Plantilla Excel para la evaluación operativa.'
+                              titleKey: 'documentos.production.excel2.title',
+                              descKey: 'documentos.production.excel2.desc'
                             }].map((excel, i) => (
                               <div className="col-md-6 col-lg-4" key={excel.file}>
                                 <div className="card shadow border-0 document-card" style={{ borderRadius: 12, padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                   <FeatherIcon icon="file" size={28} className="mb-2 text-success" />
-                                  <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{excel.title}</div>
-                                  <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{excel.desc}</div>
+                                  <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{t(excel.titleKey)}</div>
+                                  <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{t(excel.descKey)}</div>
                                   <a
                                     href={process.env.PUBLIC_URL + `/Documentation/3.Criterios_de_PCC_y_CS/${excel.file}`}
                                     download
                                     className="btn btn-outline-success"
                                     style={{ minWidth: 140, fontWeight: 600 }}
                                   >
-                                    <FeatherIcon icon="download" size={16} className="me-1" /> Descargar Excel
+                                    <FeatherIcon icon="download" size={16} className="me-1" /> {t('documentos.buttons.downloadExcel')}
                                   </a>
                                 </div>
                               </div>
@@ -647,20 +652,20 @@ const DocumentosPage = () => {
                             {/* PDFs */}
                             {[{
                               file: '1.Instructivo_para_diligenciar_Matriz_de_Valoracion_Economia_Circular.pdf',
-                              title: '1. Instructivo para diligenciar Matriz de Valoración Economía Circular',
-                              desc: 'Guía para completar la matriz de valoración de economía circular.'
+                              titleKey: 'documentos.circular.doc1.title',
+                              descKey: 'documentos.circular.doc1.desc'
                             }, {
                               file: '2.Gestion_de_residuos_Economia_circular.pdf',
-                              title: '2. Gestión de residuos Economía Circular',
-                              desc: 'Documento sobre la gestión de residuos en el contexto de economía circular.'
+                              titleKey: 'documentos.circular.doc2.title',
+                              descKey: 'documentos.circular.doc2.desc'
                             }].map((pdf, i) => (
                               <div className="col-md-6 col-lg-4" key={pdf.file}>
                                 <DocumentViewer
                                   pdfPath={`/Documentation/4.Gestion_de_subproductos_EC/${pdf.file}`}
-                                  title={pdf.title}
-                                  description={pdf.desc}
+                                  title={t(pdf.titleKey)}
+                                  description={t(pdf.descKey)}
                                   icon="file-text"
-                                  buttonText="Ver PDF"
+                                  buttonText={t('documentos.buttons.viewPdf')}
                                   cardStyle="compact"
                                 />
                               </div>
@@ -669,15 +674,15 @@ const DocumentosPage = () => {
                             <div className="col-md-6 col-lg-4">
                               <div className="card shadow border-0 document-card" style={{ borderRadius: 12, padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                 <FeatherIcon icon="file" size={28} className="mb-2 text-success" />
-                                <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>1.1. Matriz Valoración Economía Circular (Excel)</div>
-                                <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>Plantilla Excel para valoración de economía circular.</div>
+                                <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{t('documentos.circular.excel1.title')}</div>
+                                <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{t('documentos.circular.excel1.desc')}</div>
                                 <a
                                   href={process.env.PUBLIC_URL + '/Documentation/4.Gestion_de_subproductos_EC/1.1 Matriz Valoración Economía Circular.xlsx'}
                                   download
                                   className="btn btn-outline-success"
                                   style={{ minWidth: 140, fontWeight: 600 }}
                                 >
-                                  <FeatherIcon icon="download" size={16} className="me-1" /> Descargar Excel
+                                  <FeatherIcon icon="download" size={16} className="me-1" /> {t('documentos.buttons.downloadExcel')}
                                 </a>
                               </div>
                             </div>
@@ -687,24 +692,24 @@ const DocumentosPage = () => {
                             {/* PDFs */}
                             {[{
                               file: '1.Costos_de_ineficiencia.pdf',
-                              title: '1. Costos de Ineficiencia',
-                              desc: 'Documento sobre la estimación y análisis de costos de ineficiencia.'
+                              titleKey: 'documentos.costs.doc1.title',
+                              descKey: 'documentos.costs.doc1.desc'
                             }, {
                               file: '2.Analisis_de_CI.pdf',
-                              title: '2. Análisis de CI',
-                              desc: 'Documento de análisis de costos de ineficiencia.'
+                              titleKey: 'documentos.costs.doc2.title',
+                              descKey: 'documentos.costs.doc2.desc'
                             }, {
                               file: '3.PARETO_Instructivo.pdf',
-                              title: '3. PARETO Instructivo',
-                              desc: 'Instructivo para el análisis PARETO de costos de ineficiencia.'
+                              titleKey: 'documentos.costs.doc3.title',
+                              descKey: 'documentos.costs.doc3.desc'
                             }].map((pdf, i) => (
                               <div className="col-md-6 col-lg-4" key={pdf.file}>
                                 <DocumentViewer
                                   pdfPath={`/Documentation/5.Costos_de_Ineficiencia_CI/${pdf.file}`}
-                                  title={pdf.title}
-                                  description={pdf.desc}
+                                  title={t(pdf.titleKey)}
+                                  description={t(pdf.descKey)}
                                   icon="file-text"
-                                  buttonText="Ver PDF"
+                                  buttonText={t('documentos.buttons.viewPdf')}
                                   cardStyle="compact"
                                 />
                               </div>
@@ -712,29 +717,29 @@ const DocumentosPage = () => {
                             {/* Excels */}
                             {[{
                               file: '1.1.Estimacion_de_Costos_de_Ineficiencia.xlsx',
-                              title: '1.1 Estimación de Costos de Ineficiencia (Excel)',
-                              desc: 'Plantilla Excel para estimar costos de ineficiencia.'
+                              titleKey: 'documentos.costs.excel1.title',
+                              descKey: 'documentos.costs.excel1.desc'
                             }, {
                               file: '2.1.Analisis_de_CI.xlsx',
-                              title: '2.1. Análisis de CI (Excel)',
-                              desc: 'Plantilla Excel para análisis de costos de ineficiencia.'
+                              titleKey: 'documentos.costs.excel2.title',
+                              descKey: 'documentos.costs.excel2.desc'
                             }, {
                               file: '3.PARETO_CI.xlsx',
-                              title: '3.1 PARETO CI (Excel)',
-                              desc: 'Plantilla Excel para análisis PARETO de costos de ineficiencia.'
+                              titleKey: 'documentos.costs.excel3.title',
+                              descKey: 'documentos.costs.excel3.desc'
                             }].map((excel, i) => (
                               <div className="col-md-6 col-lg-4" key={excel.file}>
                                 <div className="card shadow border-0 document-card" style={{ borderRadius: 12, padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                   <FeatherIcon icon="file" size={28} className="mb-2 text-success" />
-                                  <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{excel.title}</div>
-                                  <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{excel.desc}</div>
+                                  <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{t(excel.titleKey)}</div>
+                                  <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{t(excel.descKey)}</div>
                                   <a
                                     href={process.env.PUBLIC_URL + `/Documentation/5.Costos_de_Ineficiencia_CI/${excel.file}`}
                                     download
                                     className="btn btn-outline-success"
                                     style={{ minWidth: 140, fontWeight: 600 }}
                                   >
-                                    <FeatherIcon icon="download" size={16} className="me-1" /> Descargar Excel
+                                    <FeatherIcon icon="download" size={16} className="me-1" /> {t('documentos.buttons.downloadExcel')}
                                   </a>
                                 </div>
                               </div>
@@ -745,37 +750,37 @@ const DocumentosPage = () => {
                             {/* Excels */}
                             {[{
                               file: '1.Autodiagnostico de sostenibilidad_SuperSociedades_GRI.xlsx',
-                              title: '1. Autodiagnóstico de Sostenibilidad SuperSociedades (Excel)',
-                              desc: 'Plantilla Excel para autodiagnóstico de sostenibilidad según GRI.'
+                              titleKey: 'documentos.other.excel1.title',
+                              descKey: 'documentos.other.excel1.desc'
                             }, {
                               file: '2.Cuestionario_de_Sostenibilidad_Organizaciones.xls',
-                              title: '2. Cuestionario de Sostenibilidad Organizaciones (Excel)',
-                              desc: 'Cuestionario Excel para evaluar la sostenibilidad en organizaciones.'
+                              titleKey: 'documentos.other.excel2.title',
+                              descKey: 'documentos.other.excel2.desc'
                             }, {
                               file: '3.Formato_diagnostico_electricidad.xlsx',
-                              title: '3. Formato Diagnóstico Electricidad (Excel)',
-                              desc: 'Plantilla Excel para diagnóstico de consumo eléctrico.'
+                              titleKey: 'documentos.other.excel3.title',
+                              descKey: 'documentos.other.excel3.desc'
                             }, {
                               file: '4.Formato_diagnostico_Combustibles.xlsx',
-                              title: '4. Formato Diagnóstico Combustibles (Excel)',
-                              desc: 'Plantilla Excel para diagnóstico de consumo de combustibles.'
+                              titleKey: 'documentos.other.excel4.title',
+                              descKey: 'documentos.other.excel4.desc'
                             }, {
                               file: '5.formato_diagnostico_agua.xlsx',
-                              title: '5. Formato Diagnóstico Agua (Excel)',
-                              desc: 'Plantilla Excel para diagnóstico de consumo de agua.'
+                              titleKey: 'documentos.other.excel5.title',
+                              descKey: 'documentos.other.excel5.desc'
                             }].map((excel, i) => (
                               <div className="col-md-6 col-lg-4" key={excel.file}>
                                 <div className="card shadow border-0 document-card" style={{ borderRadius: 12, padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                   <FeatherIcon icon="file" size={28} className="mb-2 text-success" />
-                                  <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{excel.title}</div>
-                                  <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{excel.desc}</div>
+                                  <div style={{ fontWeight: 700, fontSize: '1.08rem', marginBottom: 6, textAlign: 'center' }}>{t(excel.titleKey)}</div>
+                                  <div className="text-muted mb-3" style={{ fontSize: '0.98rem', textAlign: 'center' }}>{t(excel.descKey)}</div>
                                   <a
                                     href={process.env.PUBLIC_URL + `/Documentation/6.Otras_Herramientas/${excel.file}`}
                                     download
                                     className="btn btn-outline-success"
                                     style={{ minWidth: 140, fontWeight: 600 }}
                                   >
-                                    <FeatherIcon icon="download" size={16} className="me-1" /> Descargar Excel
+                                    <FeatherIcon icon="download" size={16} className="me-1" /> {t('documentos.buttons.downloadExcel')}
                                   </a>
                                 </div>
                               </div>

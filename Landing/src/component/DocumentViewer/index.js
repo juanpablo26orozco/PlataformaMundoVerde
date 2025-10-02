@@ -2,19 +2,26 @@ import React, { useState } from 'react';
 import { Button, Card, CardBody } from 'reactstrap';
 import FeatherIcon from 'feather-icons-react';
 import SimplePDFModal from '../SimplePDFModal';
+import { useTranslation } from 'react-i18next';
 
 const DocumentViewer = ({ 
   pdfPath, 
   title, 
   description, 
   icon = "file-text",
-  buttonText = "Ver Documento",
-  downloadText = "Descargar PDF",
-  newTabText = "Abrir en Nueva Ventana",
+  buttonText,
+  downloadText,
+  newTabText,
   showDescription = true,
   cardStyle = "default" // "default", "compact", "featured"
 }) => {
+  const { t } = useTranslation();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  // Use default translations if not provided
+  const finalButtonText = buttonText || t('documentViewer.viewDocument');
+  const finalDownloadText = downloadText || t('documentViewer.downloadPDF');
+  const finalNewTabText = newTabText || t('documentViewer.openInNewWindow');
 
   const togglePreview = () => setIsPreviewOpen(!isPreviewOpen);
 
@@ -52,15 +59,15 @@ const DocumentViewer = ({
           <div className="d-flex flex-wrap gap-2">
             <Button size="sm" color="success" onClick={togglePreview}>
               <FeatherIcon icon="eye" size={14} className="me-1" />
-              Ver
+              {t('documentViewer.view')}
             </Button>
             <Button size="sm" color="outline-primary" onClick={openPDFInNewTab}>
               <FeatherIcon icon="external-link" size={14} className="me-1" />
-              Abrir
+              {t('documentViewer.open')}
             </Button>
             <Button size="sm" color="outline-secondary" onClick={downloadPDF}>
               <FeatherIcon icon="download" size={14} className="me-1" />
-              Descargar
+              {t('documentViewer.download')}
             </Button>
           </div>
 
@@ -92,16 +99,16 @@ const DocumentViewer = ({
           <div className="d-flex flex-column gap-2">
             <Button color="success" onClick={togglePreview}>
               <FeatherIcon icon="eye" size={16} className="me-2" />
-              {buttonText}
+              {finalButtonText}
             </Button>
             <div className="d-flex gap-2">
               <Button color="outline-primary" size="sm" onClick={openPDFInNewTab}>
                 <FeatherIcon icon="external-link" size={14} className="me-1" />
-                {newTabText}
+                {finalNewTabText}
               </Button>
               <Button color="outline-secondary" size="sm" onClick={downloadPDF}>
                 <FeatherIcon icon="download" size={14} className="me-1" />
-                {downloadText}
+                {finalDownloadText}
               </Button>
             </div>
           </div>
@@ -134,8 +141,8 @@ const DocumentViewer = ({
           <div className="d-flex align-items-center">
             <FeatherIcon icon="info" size={16} className="me-2 text-primary" />
             <div>
-              <strong>Documento disponible</strong><br/>
-              Puedes ver, descargar o abrir este documento
+              <strong>{t('documentViewer.availableDocument')}</strong><br/>
+              {t('documentViewer.availableDocumentDesc')}
             </div>
           </div>
         </div>
@@ -143,15 +150,15 @@ const DocumentViewer = ({
         <div className="mt-3 mb-2">
           <div className="d-flex flex-row justify-content-center gap-2 mb-2">
             <Button color="success" onClick={togglePreview} size="sm" style={{ minWidth: '100px' }}>
-              <FeatherIcon icon="eye" size={16} className="me-1" /> {buttonText}
+              <FeatherIcon icon="eye" size={16} className="me-1" /> {finalButtonText}
             </Button>
             <Button color="outline-success" onClick={openPDFInNewTab} size="sm" style={{ minWidth: '100px' }}>
-              <FeatherIcon icon="external-link" size={16} className="me-1" /> {newTabText}
+              <FeatherIcon icon="external-link" size={16} className="me-1" /> {finalNewTabText}
             </Button>
           </div>
           <div className="d-flex justify-content-center">
             <Button color="outline-secondary" onClick={downloadPDF} size="sm" style={{ minWidth: '210px' }}>
-              <FeatherIcon icon="download" size={16} className="me-1" /> {downloadText}
+              <FeatherIcon icon="download" size={16} className="me-1" /> {finalDownloadText}
             </Button>
           </div>
         </div>

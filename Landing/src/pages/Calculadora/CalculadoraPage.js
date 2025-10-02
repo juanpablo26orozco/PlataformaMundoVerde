@@ -1,6 +1,7 @@
 import SidebarNav from "../../component/Calculadora/SidebarNav";
 
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import CalculadoraSection from "../../component/Calculadora/CalculadoraSection";
 import Footer from "../../component/Footer/Footer";
 import Switch from "../../component/Switch";
@@ -8,6 +9,7 @@ import FeatherIcon from "feather-icons-react";
 import { Container, Row, Col, Card, CardBody } from "reactstrap";
 
 const CalculadoraPage = () => {
+  const { t } = useTranslation();
   React.useEffect(() => {
     // Reset any potential body classes or styles
     document.body.classList = "";
@@ -34,12 +36,12 @@ const CalculadoraPage = () => {
               <div style={{fontSize: 64, marginBottom: 16, color: '#fff', opacity: 0.9}}>
                 <i className="feather icon-calculator" style={{fontSize: 64}}></i>
               </div>
-              <h1 className="fw-bold mb-3" style={{fontSize: '2.7rem', letterSpacing: '-1px'}}>Herramientas de Medición Ambiental</h1>
+              <h1 className="fw-bold mb-3" style={{fontSize: '2.7rem', letterSpacing: '-1px'}}>{t('calculadora.hero.title')}</h1>
               <h4 className="mb-3" style={{color: '#e8f5e8', fontWeight: 700, fontSize: '1.5rem', letterSpacing: '-0.2px', lineHeight: 1.18}}>
-                Calcula y gestiona las emisiones de carbono de tu organización
+                {t('calculadora.hero.subtitle')}
               </h4>
               <p className="lead text-white-70 mb-4" style={{fontSize: '1.18rem', color: 'rgba(255,255,255,0.92)'}}>
-                Nuestra calculadora está basada en <b>estándares internacionales</b> y factores de emisión específicos para Colombia.
+                {t('calculadora.hero.description')}
               </p>
             </div>
           </div>
@@ -53,9 +55,9 @@ const CalculadoraPage = () => {
           <Row className="justify-content-center">
             <Col lg={12} className="text-center mb-5">
               <FeatherIcon icon="info" className="text-mundo-verde mb-3" size={48} />
-              <h2 className="text-mundo-verde mb-4">¿Qué es la Huella de Carbono?</h2>
+              <h2 className="text-mundo-verde mb-4">{t('calculadora.carbonFootprint.title')}</h2>
               <p className="text-muted">
-                Conoce los fundamentos de la medición de gases de efecto invernadero y su impacto en el cambio climático.
+                {t('calculadora.carbonFootprint.subtitle')}
               </p>
             </Col>
           </Row>
@@ -64,36 +66,31 @@ const CalculadoraPage = () => {
               <Card className="shadow border-0 mb-4">
                 <CardBody className="p-5">
                   <p className="text-muted mb-4 lead">
-                    La <strong>huella de carbono</strong> es una medida del total de emisiones de gases
-                    de efecto invernadero (GEI) causadas directa o indirectamente por una actividad,
-                    organización, evento o producto, expresada como equivalente de dióxido de carbono (CO2eq).
+                    {t('calculadora.carbonFootprint.description')}
                   </p>
                   <Row className="mt-4">
                     <Col lg={6}>
                       <div className="feature-icon mb-4">
                         <FeatherIcon icon="globe" className="text-mundo-verde me-2" size={24} />
-                        <h5 className="d-inline text-mundo-verde">Importancia Global</h5>
+                        <h5 className="d-inline text-mundo-verde">{t('calculadora.carbonFootprint.globalImportance')}</h5>
                       </div>
                       <p className="text-muted">
-                        El cálculo de la huella de carbono es fundamental para entender nuestro
-                        impacto en el cambio climático y tomar medidas para reducirlo.
+                        {t('calculadora.carbonFootprint.globalImportanceDesc')}
                       </p>
                     </Col>
                     <Col lg={6}>
                       <div className="feature-icon mb-4">
                         <FeatherIcon icon="trending-up" className="text-mundo-verde me-2" size={24} />
-                        <h5 className="d-inline text-mundo-verde">Beneficios Empresariales</h5>
+                        <h5 className="d-inline text-mundo-verde">{t('calculadora.carbonFootprint.businessBenefits')}</h5>
                       </div>
                       <p className="text-muted">
-                        Las empresas que miden y reducen su huella de carbono mejoran su
-                        reputación, reducen costos operativos y se preparan para futuras regulaciones.
+                        {t('calculadora.carbonFootprint.businessBenefitsDesc')}
                       </p>
                     </Col>
                   </Row>
                   <div className="alert alert-mundo-verde mt-4" role="alert">
                     <FeatherIcon icon="lightbulb" className="me-2" size={18} />
-                    <strong>Dato Importante:</strong> Colombia se comprometió a reducir sus emisiones
-                    de GEI en un 51% para el 2030 según el Acuerdo de París.
+                    <strong>{t('calculadora.carbonFootprint.importantFact')}</strong> {t('calculadora.carbonFootprint.importantFactDesc')}
                   </div>
                 </CardBody>
               </Card>
@@ -101,7 +98,7 @@ const CalculadoraPage = () => {
           </Row>
           <div className="text-center mt-4">
             <a href="#calculadora-huella" className="btn btn-success btn-lg rounded-pill" style={{fontWeight:700, fontSize:18, padding:'12px 36px', boxShadow:'none'}}>
-              Ir a la Calculadora
+              {t('calculadora.carbonFootprint.goToCalculator')}
               <FeatherIcon icon="arrow-down" className="ms-2" />
             </a>
           </div>
@@ -157,7 +154,7 @@ const CalculadoraPage = () => {
                   letterSpacing: '-1px',
                 }}
               >
-                Factores de Emisión para Colombia
+                {t('calculadora.emissionFactors.title')}
               </h2>
               <p
                 className="mb-0"
@@ -169,7 +166,7 @@ const CalculadoraPage = () => {
                       : '#4a4a4a',
                 }}
               >
-                Valores oficiales y metodologías para convertir datos de actividad en emisiones de GEI.
+                {t('calculadora.emissionFactors.subtitle')}
               </p>
             </Col>
           </Row>
@@ -208,7 +205,7 @@ const CalculadoraPage = () => {
                                 : '#217a3a',
                           }}
                         >
-                          Electricidad
+                          {t('calculadora.emissionFactors.electricity')}
                         </span>
                       </div>
                       <div
@@ -235,7 +232,7 @@ const CalculadoraPage = () => {
                                 : '#4a4a4a',
                           }}
                         >
-                          Factor de emisión (SIN):
+                          {t('calculadora.emissionFactors.emissionFactor')}
                         </span>
                         <span
                           className="fw-bold"
@@ -263,21 +260,21 @@ const CalculadoraPage = () => {
                                 : '#217a3a',
                           }}
                         >
-                          Combustibles Fósiles
+                          {t('calculadora.emissionFactors.fossilFuels')}
                         </span>
                       </div>
                       <div className="w-100" style={{ maxWidth: 340 }}>
                         <div className="d-flex align-items-center mb-2">
                           <FeatherIcon icon="truck" className="text-warning me-2" size={18} />
-                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>Gasolina:</b> 2.296 kg CO₂e/litro</span>
+                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>{t('calculadora.emissionFactors.gasoline')}</b> 2.296 kg CO₂e/litro</span>
                         </div>
                         <div className="d-flex align-items-center mb-2">
                           <FeatherIcon icon="settings" className="text-secondary me-2" size={18} />
-                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>Diésel:</b> 2.671 kg CO₂e/litro</span>
+                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>{t('calculadora.emissionFactors.diesel')}</b> 2.671 kg CO₂e/litro</span>
                         </div>
                         <div className="d-flex align-items-center mb-2">
                           <FeatherIcon icon="wind" className="text-info me-2" size={18} />
-                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>Gas Natural:</b> 2.108 kg CO₂e/m³</span>
+                          <span style={{ color: typeof document !== 'undefined' && document.body.getAttribute('data-bs-theme') === 'dark' ? '#e0f7fa' : undefined }}><b>{t('calculadora.emissionFactors.naturalGas')}</b> 2.108 kg CO₂e/m³</span>
                         </div>
                       </div>
                     </Col>
@@ -294,7 +291,7 @@ const CalculadoraPage = () => {
                                 : '#217a3a',
                           }}
                         >
-                          Fuentes Oficiales
+                          {t('calculadora.emissionFactors.officialSources')}
                         </span>
                       </div>
                       <div className="mb-3">
@@ -324,7 +321,7 @@ const CalculadoraPage = () => {
                       >
                         <FeatherIcon icon="info" className="me-2" size={20} />
                         <span>
-                          <b>Nota:</b> Los factores de emisión se actualizan periódicamente. Consulta siempre las fuentes oficiales más recientes.
+                          <b>{t('calculadora.emissionFactors.note')}</b> {t('calculadora.emissionFactors.noteDescription')}
                         </span>
                       </div>
                       <div className="mt-4">
@@ -339,7 +336,7 @@ const CalculadoraPage = () => {
                                 : undefined,
                           }}
                         >
-                          Basado en estándares internacionales y datos nacionales.
+                          {t('calculadora.emissionFactors.basedOnStandards')}
                         </span>
                       </div>
                     </Col>

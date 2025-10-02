@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import FeatherIcon from "feather-icons-react";
+import { useTranslation } from 'react-i18next';
 
-const sections = [
+const getSections = (t) => [
   {
     id: "conceptos-basicos-content",
-    label: "¿Qué es la huella?",
+    label: t('calculadora.sidebar.whatIsFootprint'),
     icon: "info"
   },
   {
     id: "calculadora-huella",
-    label: "Calculadora",
+    label: t('calculadora.sidebar.calculator'),
     icon: "activity"
   },
   {
     id: "factores-emision",
-    label: "Factores de emisión",
+    label: t('calculadora.sidebar.emissionFactors'),
     icon: "cloud"
   }
 ];
 
 const SidebarNav = () => {
+  const { t } = useTranslation();
+  const sections = getSections(t);
   const [active, setActive] = useState(sections[0].id);
   const [dark, setDark] = useState(false);
 
@@ -54,7 +57,7 @@ const SidebarNav = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [sections]);
 
   const scrollTo = id => {
     const el = document.getElementById(id);
@@ -70,7 +73,7 @@ const SidebarNav = () => {
     <nav
       style={{
         position: "fixed",
-  top: 110,
+  top: 180,
         right: 32,
         zIndex: 1000,
         background: dark ? "#1a232a" : "#f6fff7",

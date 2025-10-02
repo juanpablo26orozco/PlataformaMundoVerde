@@ -8,6 +8,7 @@ import {
   Collapse,
 } from "reactstrap";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 // Import Logo
 import logopositive from "../../assets/images/logo-positive.png";
@@ -22,6 +23,7 @@ import { useLocation } from "react-router-dom";
 
 import useNavbarScroll from '../../hooks/useNavbarScroll';
 import GlobalSearch from '../GlobalSearch';
+import LanguageSwitcher from './LanguageSwitcher';
 
 // Custom hook to detect mobile/tablet (width < 992px)
 function useIsMobile() {
@@ -43,6 +45,7 @@ const NavbarPage = ({ navItems }) => {
   const { navClass, imglight } = useNavbarScroll();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
 
   const toggle = () => setIsOpenMenu(!isOpenMenu);
 
@@ -109,7 +112,7 @@ const NavbarPage = ({ navItems }) => {
                           whiteSpace: 'nowrap'
                         }}
                       >
-                        {item.navheading}
+                        {item.navheadingKey ? t(item.navheadingKey) : item.navheading}
                       </a>
                     ) : (
                       <Link
@@ -125,7 +128,7 @@ const NavbarPage = ({ navItems }) => {
                           whiteSpace: 'nowrap'
                         }}
                       >
-                        {item.navheading}
+                        {item.navheadingKey ? t(item.navheadingKey) : item.navheading}
                       </Link>
                     )
                   ) : (
@@ -142,11 +145,14 @@ const NavbarPage = ({ navItems }) => {
                         whiteSpace: 'nowrap'
                       }}
                     >
-                      {item.navheading}
+                      {item.navheadingKey ? t(item.navheadingKey) : item.navheading}
                     </a>
                   )}
                 </NavItem>
               ))}
+              <NavItem style={{ marginLeft: '0.5rem' }}>
+                <LanguageSwitcher />
+              </NavItem>
             </Nav>
           </Collapse>
         </Container>

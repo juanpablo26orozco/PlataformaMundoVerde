@@ -5,6 +5,7 @@ import { Card, CardBody } from 'reactstrap';
 import DocumentViewer from '../../component/DocumentViewer';
 import { Container, Row, Col } from 'reactstrap';
 import Footer from '../../component/Footer/Footer';
+import { useTranslation } from 'react-i18next';
 
 import FeatherIcon from 'feather-icons-react';
 
@@ -55,6 +56,7 @@ const glassStyle = {
 
 
 const AutogestionPage = () => {
+  const { t } = useTranslation();
   const formRef = useRef(null);
 
   return (
@@ -76,9 +78,9 @@ const AutogestionPage = () => {
               <div style={{fontSize: 64, marginBottom: 16, color: '#fff', opacity: 0.9}}>
                 <FeatherIcon icon="activity" size={64} />
               </div>
-              <h1 className="fw-bold mb-3" style={{fontSize: '2.7rem', letterSpacing: '-1px'}}>Autogestión de sostenibilidad ambiental</h1>
+              <h1 className="fw-bold mb-3" style={{fontSize: '2.7rem', letterSpacing: '-1px'}}>{t('autogestion.hero.title')}</h1>
               <p className="lead text-white-70 mb-4" style={{fontSize: '1.25rem', color: 'rgba(255,255,255,0.92)'}}>
-                Descarga los formatos y documentos necesarios para la autogestión de sostenibilidad en tu organización.
+                {t('autogestion.hero.description')}
               </p>
             </Col>
           </Row>
@@ -98,9 +100,9 @@ const AutogestionPage = () => {
           <Col lg={10} md={12} sm={12}>
             <Card className="shadow border-0" style={{ borderRadius: '18px', background: '#f8fff8' }}>
               <CardBody className="p-4">
-                <h3 className="fw-bold mb-3 w-100 text-center" style={{ color: '#217a3a' }}>Instructivo para Autogestión</h3>
+                <h3 className="fw-bold mb-3 w-100 text-center" style={{ color: '#217a3a' }}>{t('autogestion.instructive.title')}</h3>
                 <p className="mb-3 w-100 text-center" style={{ color: '#4b5c53', fontSize: '1.08rem' }}>
-                  Antes de iniciar el autodiagnóstico, revisa el instructivo para diligenciar correctamente el formulario y aprovechar al máximo la herramienta.
+                  {t('autogestion.instructive.description')}
                 </p>
                 <div className="d-flex flex-row w-100 justify-content-center align-items-stretch gap-4" style={{flexWrap: 'wrap'}}>
                   {/* Card PDF instructivo */}
@@ -109,10 +111,10 @@ const AutogestionPage = () => {
                       <CardBody className="p-3">
                         <DocumentViewer
                           pdfPath="/Autodiagnostico_docs/1.Instructivo_para_diligenciar_Autodiagnostico_de_Sostenibilidad.pdf"
-                          title="Instructivo para diligenciar Autodiagnóstico"
-                          description="Guía paso a paso para completar el autodiagnóstico de sostenibilidad."
+                          title={t('autogestion.instructive.viewInstructive')}
+                          description={t('autogestion.instructive.pdfDescription')}
                           icon="file-text"
-                          buttonText="Ver Instructivo"
+                          buttonText={t('autogestion.instructive.viewInstructive')}
                           cardStyle="featured"
                           customCardStyle={{ paddingTop: 0, paddingBottom: '1.2rem', background: 'transparent', height: '100%', marginTop: 0 }}
                         />
@@ -136,8 +138,8 @@ const AutogestionPage = () => {
           <Col lg={5} md={6} sm={12} className="mb-4">
             <Card className="shadow border-0 w-100" style={{ borderRadius: '18px', background: '#f8fff8', width: '100%' }}>
               <CardBody className="p-3 d-flex flex-column justify-content-center align-items-center">
-                <h5 style={{color:'#217a3a', fontWeight:900, marginBottom:'12px', textAlign:'center'}}>Autodiagnóstico SuperSociedades</h5>
-                <p style={{color:'#4b5c53', fontSize:'1rem', textAlign:'center', marginBottom:'18px'}}>Herramienta para autodiagnóstico integral de sostenibilidad ambiental, social y económica.</p>
+                <h5 style={{color:'#217a3a', fontWeight:900, marginBottom:'12px', textAlign:'center'}}>{t('autogestion.downloads.selfDiagnosis.title')}</h5>
+                <p style={{color:'#4b5c53', fontSize:'1rem', textAlign:'center', marginBottom:'18px'}}>{t('autogestion.downloads.selfDiagnosis.description')}</p>
                 <a
                   href="/Autodiagnostico_docs/1. Autodiagnóstico de sostenibilidad SuperSociedades - GRI.xlsx"
                   download
@@ -154,7 +156,7 @@ const AutogestionPage = () => {
                     transition: 'background 0.18s',
                   }}
                 >
-                  Descargar Autodiagnóstico (Excel)
+                  {t('autogestion.downloads.selfDiagnosis.button')}
                 </a>
               </CardBody>
             </Card>
@@ -162,8 +164,8 @@ const AutogestionPage = () => {
           <Col lg={5} md={6} sm={12} className="mb-4">
             <Card className="shadow border-0 w-100" style={{ borderRadius: '18px', background: '#f8fff8', width: '100%' }}>
               <CardBody className="p-3 d-flex flex-column justify-content-center align-items-center">
-                <h5 style={{color:'#217a3a', fontWeight:900, marginBottom:'12px', textAlign:'center'}}>Cuestionario de Sostenibilidad</h5>
-                <p style={{color:'#4b5c53', fontSize:'1rem', textAlign:'center', marginBottom:'18px'}}>Cuestionario detallado para recopilar información sobre prácticas sostenibles y consumo de recursos.</p>
+                <h5 style={{color:'#217a3a', fontWeight:900, marginBottom:'12px', textAlign:'center'}}>{t('autogestion.downloads.questionnaire.title')}</h5>
+                <p style={{color:'#4b5c53', fontSize:'1rem', textAlign:'center', marginBottom:'18px'}}>{t('autogestion.downloads.questionnaire.description')}</p>
                 <a
                   href="/Autodiagnostico_docs/2. Cuestionario de Sostenibilidad Organizaciones.xls"
                   download
@@ -180,7 +182,7 @@ const AutogestionPage = () => {
                     transition: 'background 0.18s',
                   }}
                 >
-                  Descargar Cuestionario (Excel)
+                  {t('autogestion.downloads.questionnaire.button')}
                 </a>
               </CardBody>
             </Card>

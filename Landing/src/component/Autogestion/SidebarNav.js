@@ -1,30 +1,33 @@
 import React, { useEffect, useState } from "react";
 import FeatherIcon from "feather-icons-react";
+import { useTranslation } from 'react-i18next';
 
-const sections = [
+const getSections = (t) => [
   {
     id: "autogestion-hero",
-    label: "Inicio",
+    label: t('autogestion.sidebar.start'),
     icon: "activity"
   },
   {
     id: "autogestion-instructivo",
-    label: "Instructivo",
+    label: t('autogestion.sidebar.instructive'),
     icon: "file-text"
   },
   {
     id: "autogestion-formulario",
-    label: "Formulario",
+    label: t('autogestion.sidebar.form'),
     icon: "edit"
   },
   {
     id: "autogestion-descargas",
-    label: "Descargas",
+    label: t('autogestion.sidebar.downloads'),
     icon: "download"
   }
 ];
 
 const SidebarNav = () => {
+  const { t } = useTranslation();
+  const sections = getSections(t);
   const [active, setActive] = useState(sections[0].id);
   const [dark, setDark] = useState(false);
 
@@ -74,7 +77,7 @@ const SidebarNav = () => {
     <nav
       style={{
         position: "fixed",
-        top: 110,
+        top: 180,
         right: 32,
         zIndex: 1000,
         background: dark ? "#1a232a" : "#f6fff7",

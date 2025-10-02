@@ -2,42 +2,46 @@ import React from "react";
 import { Row, Col } from "reactstrap";
 import { Link } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
+import { useTranslation } from 'react-i18next';
 
-const modules = [
-  {
-    title: "Conceptos Claves",
-    description: "Conceptos huella de carbono, acciones de consumo responsable y prácticas de uso eficiente y ahorro de energía.",
-    icon: "book-open",
-    to: "/huella-carbono"
-  },
-  {
-    title: "Calculadora de huella de carbono",
-    description: "Calcula la huella de carbono de tu organización de manera sencilla y visualiza resultados para tomar mejores decisiones.",
-    icon: "activity",
-    to: "/calculadora"
-  },
-  {
-    title: "Herramientas",
-    description: "Accede a formatos, instructivos y recursos descargables para la gestión y reporte de sostenibilidad.",
-    icon: "file-text",
-    to: "/documentos"
-  },
-  {
-    title: "Autodiagnóstico de sostenibilidad ambiental",
-    description: "Descarga herramientas y realiza autodiagnósticos para impulsar la sostenibilidad en tu empresa.",
-    icon: "check-circle",
-    to: "/autogestion"
-  }
-];
+const Modules = () => {
+  const { t } = useTranslation();
+  
+  const modules = [
+    {
+      titleKey: "modules.keyConcepts.title",
+      descriptionKey: "modules.keyConcepts.description",
+      icon: "book-open",
+      to: "/huella-carbono"
+    },
+    {
+      titleKey: "modules.calculator.title",
+      descriptionKey: "modules.calculator.description",
+      icon: "activity",
+      to: "/calculadora"
+    },
+    {
+      titleKey: "modules.tools.title",
+      descriptionKey: "modules.tools.description",
+      icon: "file-text",
+      to: "/documentos"
+    },
+    {
+      titleKey: "modules.autodiagnosis.title",
+      descriptionKey: "modules.autodiagnosis.description",
+      icon: "check-circle",
+      to: "/autogestion"
+    }
+  ];
 
-const Modules = () => (
+  return (
   <section className="section" id="modules" style={{background: '#fff', padding: '2.5rem 0 2.5rem 0'}}>
     <div className="container">
       <Row className="justify-content-center mb-5">
         <Col lg={8} className="text-center">
-          <h2 className="fw-bold text-mundo-verde">Explora los 4 módulos principales</h2>
+          <h2 className="fw-bold text-mundo-verde">{t('modules.title')}</h2>
           <p className="text-muted">
-            Navega por los módulos clave de la plataforma Mundo Verde y accede a recursos, herramientas y conocimientos para impulsar la sostenibilidad en tu organización.
+            {t('modules.subtitle')}
           </p>
         </Col>
       </Row>
@@ -114,14 +118,14 @@ const Modules = () => (
                     color: '#28a745',
                     marginBottom: '16px',
                     transition: 'color 0.3s ease'
-                  }}>{mod.title}</h4>
+                  }}>{t(mod.titleKey)}</h4>
                   <p className="card-description mb-0" style={{
                     fontSize: '0.95rem', 
                     lineHeight: '1.6', 
                     color: '#6c757d',
                     fontWeight: '400',
                     transition: 'color 0.3s ease'
-                  }}>{mod.description}</p>
+                  }}>{t(mod.descriptionKey)}</p>
                 </div>
               </div>
             </Link>
@@ -130,6 +134,7 @@ const Modules = () => (
       </Row>
     </div>
   </section>
-);
+  );
+};
 
 export default Modules;

@@ -1,46 +1,48 @@
 import React, { useEffect, useState } from "react";
 import FeatherIcon from "feather-icons-react";
+import { useTranslation } from "react-i18next";
 
-const sections = [
+const sectionsConfig = [
 	{
 		id: "problemas-ambientales",
-		label: "Problemas Ambientales",
+		labelKey: "huellaCarbono.sidebar.environmentalProblems",
 		icon: "alert-triangle",
 	},
 	{
 		id: "guia-reportes-sostenibilidad",
-		label: "Reportes Sostenibilidad",
+		labelKey: "huellaCarbono.sidebar.sustainabilityReports",
 		icon: "clipboard",
 	},
 	{
 		id: "componentes-socioambientales",
-		label: "Componentes Socioambientales",
+		labelKey: "huellaCarbono.sidebar.socioEnvironmentalComponents",
 		icon: "users",
 	},
 	{
 		id: "amenazas-impactos-aspectos",
-		label: "Amenazas e Impactos",
+		labelKey: "huellaCarbono.sidebar.threatsImpacts",
 		icon: "zap",
 	},
 	{
 		id: "consumo-responsable",
-		label: "Consumo Responsable",
+		labelKey: "huellaCarbono.sidebar.responsibleConsumption",
 		icon: "shopping-cart",
 	},
 	{
 		id: "uso-agua",
-		label: "Uso del Agua",
+		labelKey: "huellaCarbono.sidebar.waterUse",
 		icon: "droplet",
 	},
 	{
 		id: "uso-energia",
-		label: "Uso de Energía",
+		labelKey: "huellaCarbono.sidebar.energyUse",
 		icon: "activity",
 	},
 ];
 
 const ConceptSidebarNav = () => {
-	const [active, setActive] = useState(sections[0].id);
+	const { t } = useTranslation();
+	const [active, setActive] = useState(sectionsConfig[0].id);
 	const [dark, setDark] = useState(false);
 
 	useEffect(() => {
@@ -66,8 +68,8 @@ const ConceptSidebarNav = () => {
 
 	useEffect(() => {
 		const handleScroll = () => {
-			let found = sections[0].id;
-			for (const sec of sections) {
+			let found = sectionsConfig[0].id;
+			for (const sec of sectionsConfig) {
 				const el = document.getElementById(sec.id);
 				if (el) {
 					const rect = el.getBoundingClientRect();
@@ -103,7 +105,7 @@ const ConceptSidebarNav = () => {
 				className="d-none d-md-flex concept-sidebar-nav-responsive"
 				style={{
 					position: "fixed",
-					top: 110,
+					top: 180,
 					right: 32,
 					zIndex: 1000,
 					background: dark ? "#1a232a" : "#f6fff7",
@@ -119,7 +121,7 @@ const ConceptSidebarNav = () => {
 				}}
 				aria-label="Navegación de conceptos"
 			>
-				{sections.map((sec) => (
+				{sectionsConfig.map((sec) => (
 					<button
 						key={sec.id}
 						onClick={() => scrollTo(sec.id)}
@@ -167,7 +169,7 @@ const ConceptSidebarNav = () => {
 							margin: 0,
 						}}
 						aria-current={active === sec.id ? "section" : undefined}
-						aria-label={sec.label}
+						aria-label={t(sec.labelKey)}
 					>
 						<FeatherIcon
 							icon={sec.icon}
@@ -182,7 +184,7 @@ const ConceptSidebarNav = () => {
 							}}
 						/>
 						<span style={{ fontSize: 13, fontWeight: 600 }}>
-							{sec.label}
+							{t(sec.labelKey)}
 						</span>
 					</button>
 				))}

@@ -3,6 +3,7 @@ import { createRef } from "react";
 import { Container, Row, Col, Card, CardBody } from "reactstrap";
 import { Link } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
+import { withTranslation } from 'react-i18next';
 
 //Import Components
 import Footer from "../../component/Footer/Footer";
@@ -53,6 +54,8 @@ class HuellaCarbono extends Component {
   }
 
   render() {
+    const { t } = this.props;
+    
     return (
       <React.Fragment>
         {this.state.showSidebar && <ConceptSidebarNav />}
@@ -100,24 +103,23 @@ class HuellaCarbono extends Component {
               <Col lg={12} className="text-center text-white">
                 <div className="page-next-level">
                   <h1 className="title text-white mb-4 fw-bold">
-                    Conceptos Claves
+                    {t('huellaCarbono.hero.title')}
                   </h1>
                   <h4 className="text-white-70 mb-4">
-                    Mundo Verde - Prácticas Sostenibles
+                    {t('huellaCarbono.hero.subtitle')}
                   </h4>
                   <p className="text-white-70 para-desc mb-0 mx-auto">
-                    Descubre todo lo que necesitas saber sobre la medición, gestión y reducción 
-                    de la huella de carbono para crear un futuro más sostenible.
+                    {t('huellaCarbono.hero.description')}
                   </p>
                   <nav aria-label="breadcrumb" className="d-inline-block mt-4">
                     <ul className="breadcrumb bg-transparent mb-0 p-0">
                       <li className="breadcrumb-item">
                         <Link to="/" className="text-white-70">
-                          Inicio
+                          {t('huellaCarbono.hero.breadcrumbHome')}
                         </Link>
                       </li>
                       <li className="breadcrumb-item active text-white" aria-current="page">
-                        Conceptos Claves
+                        {t('huellaCarbono.hero.breadcrumbConcepts')}
                       </li>
                     </ul>
                   </nav>
@@ -135,48 +137,48 @@ class HuellaCarbono extends Component {
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
               <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
                 <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Problemas Medio Ambientales</h2>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>{t('huellaCarbono.environmentalProblems.title')}</h2>
                   <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
-                    Comprende los principales desafíos ambientales que enfrentamos y su impacto en el cambio climático global.
+                    {t('huellaCarbono.environmentalProblems.subtitle')}
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
                     <div style={{ marginBottom: 18 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                         <FeatherIcon icon="alert-triangle" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
-                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>¿Qué son los problemas medioambientales?</span>
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>{t('huellaCarbono.environmentalProblems.whatAre')}</span>
                       </div>
                       <div style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                        Son alteraciones negativas en el entorno natural causadas principalmente por actividades humanas. Estos problemas afectan el clima, la biodiversidad, la salud y la calidad de vida en el planeta.
+                        {t('huellaCarbono.environmentalProblems.description')}
                       </div>
                       <ul style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
-                        <li><b>Calentamiento Global:</b> Aumento de la temperatura media del planeta por emisiones de gases de efecto invernadero.</li>
-                        <li><b>Contaminación del Aire y Agua:</b> Presencia de sustancias tóxicas que dañan la salud y los ecosistemas.</li>
-                        <li><b>Deforestación:</b> Pérdida de bosques por tala y expansión agrícola, reduciendo la biodiversidad.</li>
-                        <li><b>Generación de Residuos:</b> Acumulación de basura y plásticos que contaminan suelos y océanos.</li>
-                        <li><b>Consumo Energético:</b> Uso excesivo de energía proveniente de fuentes no renovables.</li>
+                        <li><b>{t('huellaCarbono.environmentalProblems.globalWarming')}</b> {t('huellaCarbono.environmentalProblems.globalWarmingDesc')}</li>
+                        <li><b>{t('huellaCarbono.environmentalProblems.pollution')}</b> {t('huellaCarbono.environmentalProblems.pollutionDesc')}</li>
+                        <li><b>{t('huellaCarbono.environmentalProblems.deforestation')}</b> {t('huellaCarbono.environmentalProblems.deforestationDesc')}</li>
+                        <li><b>{t('huellaCarbono.environmentalProblems.waste')}</b> {t('huellaCarbono.environmentalProblems.wasteDesc')}</li>
+                        <li><b>{t('huellaCarbono.environmentalProblems.energy')}</b> {t('huellaCarbono.environmentalProblems.energyDesc')}</li>
                       </ul>
                     </div>
                     <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Causas principales:</b>
+                      <b>{t('huellaCarbono.environmentalProblems.mainCauses')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Quema de combustibles fósiles (carbón, petróleo, gas).</li>
-                        <li>Deforestación y cambio de uso del suelo.</li>
-                        <li>Uso excesivo de recursos naturales.</li>
-                        <li>Producción y consumo desmedido.</li>
+                        <li>{t('huellaCarbono.environmentalProblems.cause1')}</li>
+                        <li>{t('huellaCarbono.environmentalProblems.cause2')}</li>
+                        <li>{t('huellaCarbono.environmentalProblems.cause3')}</li>
+                        <li>{t('huellaCarbono.environmentalProblems.cause4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: 'var(--section-alert)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Consecuencias:</b>
+                      <b>{t('huellaCarbono.environmentalProblems.consequences')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Incremento de fenómenos climáticos extremos (huracanes, sequías, inundaciones).</li>
-                        <li>Pérdida de biodiversidad y especies.</li>
-                        <li>Problemas de salud pública (enfermedades respiratorias, falta de agua potable).</li>
-                        <li>Desplazamiento de comunidades y aumento de la pobreza.</li>
+                        <li>{t('huellaCarbono.environmentalProblems.consequence1')}</li>
+                        <li>{t('huellaCarbono.environmentalProblems.consequence2')}</li>
+                        <li>{t('huellaCarbono.environmentalProblems.consequence3')}</li>
+                        <li>{t('huellaCarbono.environmentalProblems.consequence4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
-                      <b>Dato clave:</b> Más del 70% de los gases de efecto invernadero provienen de la energía, la industria y la agricultura.<br/>
-                      <b>¿Sabías que?</b> Cada año se pierden millones de hectáreas de bosque y se generan más de 300 millones de toneladas de plástico.
+                      <b>{t('huellaCarbono.environmentalProblems.keyFact')}</b> {t('huellaCarbono.environmentalProblems.keyFactDesc')}<br/>
+                      <b>{t('huellaCarbono.environmentalProblems.didYouKnow')}</b> {t('huellaCarbono.environmentalProblems.didYouKnowDesc')}
                     </div>
                   </div>
                 </div>
@@ -187,10 +189,10 @@ class HuellaCarbono extends Component {
                     <CardBody className="p-4">
                       <DocumentViewer 
                         pdfPath="/Concepts_docs/1.Los_Problemas_medio_ambientales.pdf"
-                        title="Los Problemas Medio Ambientales"
-                        description="Documento introductorio que explica los principales problemas ambientales actuales, sus causas y consecuencias para el planeta y la sociedad."
+                        title={t('huellaCarbono.environmentalProblems.title')}
+                        description={t('huellaCarbono.environmentalProblems.cardDescription')}
                         icon="alert-triangle"
-                        buttonText="Ver Documento Completo"
+                        buttonText={t('huellaCarbono.environmentalProblems.viewDocument')}
                         cardStyle="featured"
                         customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
                       />
@@ -208,49 +210,49 @@ class HuellaCarbono extends Component {
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
               <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
                 <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Guía para Elaborar Reportes de Sostenibilidad</h2>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>{t('huellaCarbono.sustainabilityReports.title')}</h2>
                   <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
-                    Aprende cómo comunicar el desempeño ambiental, social y económico de tu organización y fortalecer la transparencia y sostenibilidad.
+                    {t('huellaCarbono.sustainabilityReports.subtitle')}
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
                     <div style={{ marginBottom: 18 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                         <FeatherIcon icon="clipboard" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
-                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>¿Qué es un Reporte de Sostenibilidad?</span>
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>{t('huellaCarbono.sustainabilityReports.whatIs')}</span>
                       </div>
                       <p style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                        Es un documento que comunica el desempeño ambiental, social y económico de una organización. Informa a los grupos de interés sobre el impacto de las actividades y el compromiso con el desarrollo sostenible.
+                        {t('huellaCarbono.sustainabilityReports.description')}
                       </p>
                       <ul style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
-                        <li><b>Contexto Organizacional:</b> Descripción de la empresa, misión, visión y valores.</li>
-                        <li><b>Materialidad:</b> Temas relevantes para la organización y sus grupos de interés.</li>
-                        <li><b>Desempeño Ambiental:</b> Consumo de recursos, emisiones, gestión de residuos y acciones ambientales.</li>
-                        <li><b>Desempeño Social:</b> Condiciones laborales, derechos humanos, diversidad, salud y seguridad.</li>
-                        <li><b>Desempeño Económico:</b> Resultados financieros, generación de valor y desarrollo local.</li>
-                        <li><b>Gobernanza:</b> Estructura de gobierno, ética y transparencia.</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.organizationalContext')}</b> {t('huellaCarbono.sustainabilityReports.organizationalContextDesc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.materiality')}</b> {t('huellaCarbono.sustainabilityReports.materialityDesc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.environmentalPerformance')}</b> {t('huellaCarbono.sustainabilityReports.environmentalPerformanceDesc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.socialPerformance')}</b> {t('huellaCarbono.sustainabilityReports.socialPerformanceDesc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.economicPerformance')}</b> {t('huellaCarbono.sustainabilityReports.economicPerformanceDesc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.governance')}</b> {t('huellaCarbono.sustainabilityReports.governanceDesc')}</li>
                       </ul>
                     </div>
                     <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Beneficios de elaborar un reporte:</b>
+                      <b>{t('huellaCarbono.sustainabilityReports.benefits')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Mejora la transparencia y la confianza con los grupos de interés.</li>
-                        <li>Identifica riesgos y oportunidades.</li>
-                        <li>Facilita la toma de decisiones estratégicas.</li>
-                        <li>Contribuye al cumplimiento de normativas y estándares internacionales (GRI).</li>
+                        <li>{t('huellaCarbono.sustainabilityReports.benefit1')}</li>
+                        <li>{t('huellaCarbono.sustainabilityReports.benefit2')}</li>
+                        <li>{t('huellaCarbono.sustainabilityReports.benefit3')}</li>
+                        <li>{t('huellaCarbono.sustainabilityReports.benefit4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Pasos para elaborar el reporte:</b>
+                      <b>{t('huellaCarbono.sustainabilityReports.steps')}</b>
                       <ol style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li><b>Planificación:</b> Definir equipo responsable y alcance.</li>
-                        <li><b>Identificación de temas materiales:</b> Consultar a los grupos de interés y priorizar temas.</li>
-                        <li><b>Recolección de información:</b> Recopilar datos cuantitativos y cualitativos.</li>
-                        <li><b>Redacción y validación:</b> Elaborar y validar el documento internamente.</li>
-                        <li><b>Comunicación:</b> Publicar y difundir el reporte.</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.step1')}</b> {t('huellaCarbono.sustainabilityReports.step1Desc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.step2')}</b> {t('huellaCarbono.sustainabilityReports.step2Desc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.step3')}</b> {t('huellaCarbono.sustainabilityReports.step3Desc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.step4')}</b> {t('huellaCarbono.sustainabilityReports.step4Desc')}</li>
+                        <li><b>{t('huellaCarbono.sustainabilityReports.step5')}</b> {t('huellaCarbono.sustainabilityReports.step5Desc')}</li>
                       </ol>
                     </div>
                     <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
-                      <b>Estándares y referencias:</b> El marco GRI (Global Reporting Initiative) es el más utilizado. Integra los ODS (Objetivos de Desarrollo Sostenible) en la estrategia y el reporte.
+                      <b>{t('huellaCarbono.sustainabilityReports.standards')}</b> {t('huellaCarbono.sustainabilityReports.standardsDesc')}
                     </div>
                   </div>
                 </div>
@@ -261,10 +263,10 @@ class HuellaCarbono extends Component {
                     <CardBody className="p-4">
                       <DocumentViewer 
                         pdfPath="/Concepts_docs/2.Guia_para_elaborar_el_reporte_de_sostenibilidad.pdf"
-                        title="Guía para Elaborar Reportes de Sostenibilidad"
-                        description="Manual práctico para diseñar estrategias de sostenibilidad alineadas con los ODS, con pasos, ejemplos y recomendaciones."
+                        title={t('huellaCarbono.sustainabilityReports.title')}
+                        description={t('huellaCarbono.sustainabilityReports.cardDescription')}
                         icon="clipboard"
-                        buttonText="Ver Guía Completa"
+                        buttonText={t('huellaCarbono.sustainabilityReports.viewGuide')}
                         cardStyle="featured"
                         customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
                       />
@@ -286,42 +288,42 @@ class HuellaCarbono extends Component {
       <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
         <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
           <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-            <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Componentes Sociambientales de una Organización</h2>
+            <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>{t('huellaCarbono.socioEnvironmentalComponents.title')}</h2>
             <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
-              Descubre cómo los componentes sociales y ambientales interactúan en la gestión sostenible de una organización.
+              {t('huellaCarbono.socioEnvironmentalComponents.subtitle')}
             </p>
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
               <div style={{ marginBottom: 18 }}>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                   <FeatherIcon icon="users" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
-                  <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>¿Qué son los componentes sociambientales?</span>
+                  <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>{t('huellaCarbono.socioEnvironmentalComponents.whatAre')}</span>
                 </div>
                 <div style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                  Son los elementos sociales y ambientales que conforman la estructura y funcionamiento de una organización, y que influyen en su sostenibilidad y responsabilidad.
+                  {t('huellaCarbono.socioEnvironmentalComponents.description')}
                 </div>
                 <ul style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
-                  <li><b>Componente social:</b> Personas, cultura organizacional, relaciones laborales, bienestar, equidad, diversidad e inclusión. Implica promover un ambiente de trabajo saludable, participación y responsabilidad social.</li>
-                  <li><b>Componente ambiental:</b> Recursos naturales utilizados (agua, energía, materiales), emisiones, residuos y el impacto de las actividades sobre el entorno. Busca minimizar el impacto negativo, promover la eficiencia y el cumplimiento normativo.</li>
+                  <li><b>{t('huellaCarbono.socioEnvironmentalComponents.socialComponent')}</b> {t('huellaCarbono.socioEnvironmentalComponents.socialComponentDesc')}</li>
+                  <li><b>{t('huellaCarbono.socioEnvironmentalComponents.environmentalComponent')}</b> {t('huellaCarbono.socioEnvironmentalComponents.environmentalComponentDesc')}</li>
                 </ul>
               </div>
               <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                <b>Importancia:</b>
+                <b>{t('huellaCarbono.socioEnvironmentalComponents.importance')}</b>
                 <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                  <li>Integrar ambos componentes permite a la organización ser sostenible, mejorar su reputación y cumplir con regulaciones.</li>
-                  <li>La sostenibilidad requiere equilibrio entre el desarrollo económico, el bienestar social y la protección ambiental.</li>
+                  <li>{t('huellaCarbono.socioEnvironmentalComponents.importance1')}</li>
+                  <li>{t('huellaCarbono.socioEnvironmentalComponents.importance2')}</li>
                 </ul>
               </div>
               <div style={{ color: '#1976D2', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                <b>Acciones clave:</b>
+                <b>{t('huellaCarbono.socioEnvironmentalComponents.keyActions')}</b>
                 <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                  <li>Diagnóstico de aspectos sociales y ambientales.</li>
-                  <li>Implementación de políticas de responsabilidad social y ambiental.</li>
-                  <li>Educación y sensibilización interna.</li>
-                  <li>Medición y reporte de indicadores de desempeño.</li>
+                  <li>{t('huellaCarbono.socioEnvironmentalComponents.action1')}</li>
+                  <li>{t('huellaCarbono.socioEnvironmentalComponents.action2')}</li>
+                  <li>{t('huellaCarbono.socioEnvironmentalComponents.action3')}</li>
+                  <li>{t('huellaCarbono.socioEnvironmentalComponents.action4')}</li>
                 </ul>
               </div>
               <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
-                <b>Dato clave:</b> Una gestión sociambiental efectiva impulsa la sostenibilidad, la innovación y la competitividad organizacional.
+                <b>{t('huellaCarbono.socioEnvironmentalComponents.keyFact')}</b> {t('huellaCarbono.socioEnvironmentalComponents.keyFactDesc')}
               </div>
             </div>
           </div>
@@ -332,10 +334,10 @@ class HuellaCarbono extends Component {
               <CardBody className="p-4">
                 <DocumentViewer 
                   pdfPath="/Concepts_docs/3.Componentes_sociambientales_de_una_organización.pdf"
-                  title="Componentes Sociambientales"
-                  description="Marco conceptual sobre los elementos sociales y ambientales que integran la gestión sostenible de una organización."
+                  title={t('huellaCarbono.socioEnvironmentalComponents.cardTitle')}
+                  description={t('huellaCarbono.socioEnvironmentalComponents.cardDescription')}
                   icon="users"
-                  buttonText="Ver Documento"
+                  buttonText={t('documentViewer.viewDocument')}
                   cardStyle="featured"
                   customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
                 />
@@ -354,42 +356,42 @@ class HuellaCarbono extends Component {
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
               <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
                 <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Amenazas, Impactos y Aspectos Ambientales</h2>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>{t('huellaCarbono.threatsImpactsAspects.title')}</h2>
                   <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
-                    Aprende a identificar, evaluar y gestionar los riesgos y consecuencias ambientales en tu organización para impulsar la sostenibilidad.
+                    {t('huellaCarbono.threatsImpactsAspects.subtitle')}
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
                     <div style={{ marginBottom: 18 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                         <FeatherIcon icon="shield" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
-                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>¿Qué son las amenazas, impactos y aspectos ambientales?</span>
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>{t('huellaCarbono.threatsImpactsAspects.whatAre')}</span>
                       </div>
                       <div style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                        <b>Amenazas Ambientales:</b> Factores o actividades que pueden causar daño al medio ambiente, como la contaminación, la deforestación, el uso excesivo de recursos naturales y el cambio climático.<br/>
-                        <b>Impactos Ambientales:</b> Consecuencias directas o indirectas de las amenazas, como la pérdida de biodiversidad, la degradación del suelo, la contaminación del agua y del aire, y el calentamiento global.<br/>
-                        <b>Aspectos Ambientales:</b> Elementos de las actividades, productos o servicios de una organización que pueden interactuar con el medio ambiente, por ejemplo, el consumo de energía, la generación de residuos, las emisiones atmosféricas y el uso del agua.
+                        <b>{t('huellaCarbono.threatsImpactsAspects.threats')}</b> {t('huellaCarbono.threatsImpactsAspects.threatsDesc')}<br/>
+                        <b>{t('huellaCarbono.threatsImpactsAspects.impacts')}</b> {t('huellaCarbono.threatsImpactsAspects.impactsDesc')}<br/>
+                        <b>{t('huellaCarbono.threatsImpactsAspects.aspects')}</b> {t('huellaCarbono.threatsImpactsAspects.aspectsDesc')}
                       </div>
                     </div>
                     <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Gestión de Amenazas e Impactos:</b>
+                      <b>{t('huellaCarbono.threatsImpactsAspects.management')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Identificar y evaluar los aspectos ambientales significativos.</li>
-                        <li>Implementar controles y buenas prácticas para minimizar los impactos negativos.</li>
-                        <li>Adoptar políticas de sostenibilidad y tecnologías limpias.</li>
-                        <li>Fomentar la educación y la sensibilización ambiental.</li>
+                        <li>{t('huellaCarbono.threatsImpactsAspects.management1')}</li>
+                        <li>{t('huellaCarbono.threatsImpactsAspects.management2')}</li>
+                        <li>{t('huellaCarbono.threatsImpactsAspects.management3')}</li>
+                        <li>{t('huellaCarbono.threatsImpactsAspects.management4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: '#1976D2', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Beneficios de una gestión ambiental efectiva:</b>
+                      <b>{t('huellaCarbono.threatsImpactsAspects.benefits')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Reducción de riesgos y cumplimiento normativo.</li>
-                        <li>Mejora de la reputación y competitividad organizacional.</li>
-                        <li>Conservación de recursos y reducción de costos.</li>
-                        <li>Contribución a la protección del planeta y el bienestar social.</li>
+                        <li>{t('huellaCarbono.threatsImpactsAspects.benefit1')}</li>
+                        <li>{t('huellaCarbono.threatsImpactsAspects.benefit2')}</li>
+                        <li>{t('huellaCarbono.threatsImpactsAspects.benefit3')}</li>
+                        <li>{t('huellaCarbono.threatsImpactsAspects.benefit4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
-                      <b>Dato clave:</b> La gestión proactiva de amenazas y aspectos ambientales es fundamental para lograr la sostenibilidad y prevenir daños irreversibles al entorno.
+                      <b>{t('huellaCarbono.threatsImpactsAspects.keyFact')}</b> {t('huellaCarbono.threatsImpactsAspects.keyFactDesc')}
                     </div>
                   </div>
                 </div>
@@ -400,10 +402,10 @@ class HuellaCarbono extends Component {
                     <CardBody className="p-4">
                       <DocumentViewer 
                         pdfPath="/Concepts_docs/4.Amenazas_impactos_y_aspectos_ambientales.pdf"
-                        title="Amenazas, Impactos y Aspectos Ambientales"
-                        description="Guía para identificar y evaluar amenazas, impactos y aspectos ambientales en el contexto organizacional."
+                        title={t('huellaCarbono.threatsImpactsAspects.title')}
+                        description={t('huellaCarbono.threatsImpactsAspects.cardDescription')}
                         icon="shield"
-                        buttonText="Ver Documento"
+                        buttonText={t('documentViewer.viewDocument')}
                         cardStyle="featured"
                         customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
                       />
@@ -422,37 +424,37 @@ class HuellaCarbono extends Component {
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
               <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
                 <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Acciones para el Consumo Responsable</h2>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>{t('huellaCarbono.responsibleConsumption.title')}</h2>
                   <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
-                    El consumo responsable implica tomar decisiones informadas y conscientes sobre los productos y servicios que adquirimos, considerando su impacto ambiental, social y económico. Adoptar hábitos de consumo responsable es fundamental para reducir la huella de carbono y promover la sostenibilidad.
+                    {t('huellaCarbono.responsibleConsumption.subtitle')}
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
                     <div style={{ marginBottom: 18 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                         <FeatherIcon icon="shopping-cart" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
-                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>Principales acciones:</span>
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>{t('huellaCarbono.responsibleConsumption.mainActions')}</span>
                       </div>
                       <ul style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
-                        <li><b>Reducir el consumo innecesario:</b> Antes de comprar, pregúntate si realmente lo necesitas.</li>
-                        <li><b>Elegir productos locales y sostenibles:</b> Prefiere productos con bajo impacto ambiental, de origen local y con certificaciones ecológicas.</li>
-                        <li><b>Reutilizar y reciclar:</b> Da una segunda vida a los objetos y separa correctamente los residuos para su reciclaje.</li>
-                        <li><b>Ahorrar energía y agua:</b> Apaga luces y dispositivos cuando no los uses, y utiliza el agua de manera eficiente.</li>
-                        <li><b>Optar por transporte sostenible:</b> Camina, usa bicicleta o transporte público para reducir emisiones.</li>
-                        <li><b>Consumir alimentos de temporada:</b> Favorece la agricultura local y reduce la huella de transporte.</li>
-                        <li><b>Evitar productos de un solo uso:</b> Prefiere envases reutilizables y reduce el uso de plásticos.</li>
+                        <li><b>{t('huellaCarbono.responsibleConsumption.action1')}</b> {t('huellaCarbono.responsibleConsumption.action1Desc')}</li>
+                        <li><b>{t('huellaCarbono.responsibleConsumption.action2')}</b> {t('huellaCarbono.responsibleConsumption.action2Desc')}</li>
+                        <li><b>{t('huellaCarbono.responsibleConsumption.action3')}</b> {t('huellaCarbono.responsibleConsumption.action3Desc')}</li>
+                        <li><b>{t('huellaCarbono.responsibleConsumption.action4')}</b> {t('huellaCarbono.responsibleConsumption.action4Desc')}</li>
+                        <li><b>{t('huellaCarbono.responsibleConsumption.action5')}</b> {t('huellaCarbono.responsibleConsumption.action5Desc')}</li>
+                        <li><b>{t('huellaCarbono.responsibleConsumption.action6')}</b> {t('huellaCarbono.responsibleConsumption.action6Desc')}</li>
+                        <li><b>{t('huellaCarbono.responsibleConsumption.action7')}</b> {t('huellaCarbono.responsibleConsumption.action7Desc')}</li>
                       </ul>
                     </div>
                     <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Beneficios del consumo responsable:</b>
+                      <b>{t('huellaCarbono.responsibleConsumption.benefits')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Disminución de residuos y contaminación.</li>
-                        <li>Ahorro de recursos naturales.</li>
-                        <li>Fomento de economías locales y justas.</li>
-                        <li>Reducción de la huella de carbono personal y colectiva.</li>
+                        <li>{t('huellaCarbono.responsibleConsumption.benefit1')}</li>
+                        <li>{t('huellaCarbono.responsibleConsumption.benefit2')}</li>
+                        <li>{t('huellaCarbono.responsibleConsumption.benefit3')}</li>
+                        <li>{t('huellaCarbono.responsibleConsumption.benefit4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: '#616161', fontSize: 15, background: 'var(--section-box)', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
-                      <b>Dato clave:</b> Cada pequeña acción cuenta. El consumo responsable es una herramienta poderosa para cuidar el planeta y construir una sociedad más justa y sostenible.
+                      <b>{t('huellaCarbono.responsibleConsumption.keyFact')}</b> {t('huellaCarbono.responsibleConsumption.keyFactDesc')}
                     </div>
                   </div>
                 </div>
@@ -463,10 +465,10 @@ class HuellaCarbono extends Component {
                     <CardBody className="p-4">
                       <DocumentViewer 
                         pdfPath="/Concepts_docs/5.Acciones_consumo_responsable.pdf"
-                        title="Acciones de Consumo Responsable"
-                        description="Estrategias y recomendaciones para implementar prácticas de consumo responsable."
+                        title={t('huellaCarbono.responsibleConsumption.cardTitle')}
+                        description={t('huellaCarbono.responsibleConsumption.cardDescription')}
                         icon="shopping-cart"
-                        buttonText="Ver Documento"
+                        buttonText={t('documentViewer.viewDocument')}
                         cardStyle="featured"
                         customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
                       />
@@ -484,44 +486,44 @@ class HuellaCarbono extends Component {
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
               <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
                 <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Uso Eficiente y Ahorro de Agua</h2>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>{t('huellaCarbono.waterUse.title')}</h2>
                   <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
-                    El agua es un recurso vital y limitado. Su uso eficiente y el ahorro son fundamentales para la sostenibilidad ambiental, la reducción de costos y la protección de los ecosistemas. Adoptar buenas prácticas permite garantizar su disponibilidad para las generaciones presentes y futuras.
+                    {t('huellaCarbono.waterUse.subtitle')}
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
                     <div style={{ marginBottom: 18 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                         <FeatherIcon icon="droplet" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
-                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>Principios clave para el uso eficiente del agua:</span>
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>{t('huellaCarbono.waterUse.keyPrinciples')}</span>
                       </div>
                       <ul style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
-                        <li><b>Detectar y reparar fugas:</b> Revisa periódicamente instalaciones y equipos para evitar pérdidas.</li>
-                        <li><b>Optimizar procesos:</b> Utiliza tecnologías y métodos que reduzcan el consumo de agua en actividades diarias y productivas.</li>
-                        <li><b>Reutilizar y reciclar:</b> Implementa sistemas de recolección y reutilización de aguas grises o pluviales.</li>
-                        <li><b>Concientizar y educar:</b> Promueve campañas internas y externas sobre la importancia del ahorro de agua.</li>
-                        <li><b>Uso responsable en el hogar y la empresa:</b> Cierra grifos mientras no los uses, utiliza electrodomésticos eficientes y riega en horarios adecuados.</li>
+                        <li><b>{t('huellaCarbono.waterUse.principle1')}</b> {t('huellaCarbono.waterUse.principle1Desc')}</li>
+                        <li><b>{t('huellaCarbono.waterUse.principle2')}</b> {t('huellaCarbono.waterUse.principle2Desc')}</li>
+                        <li><b>{t('huellaCarbono.waterUse.principle3')}</b> {t('huellaCarbono.waterUse.principle3Desc')}</li>
+                        <li><b>{t('huellaCarbono.waterUse.principle4')}</b> {t('huellaCarbono.waterUse.principle4Desc')}</li>
+                        <li><b>{t('huellaCarbono.waterUse.principle5')}</b> {t('huellaCarbono.waterUse.principle5Desc')}</li>
                       </ul>
                     </div>
                     <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Beneficios del uso eficiente y el ahorro de agua:</b>
+                      <b>{t('huellaCarbono.waterUse.benefits')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Reducción de costos operativos y facturas.</li>
-                        <li>Disminución del impacto ambiental y preservación de fuentes hídricas.</li>
-                        <li>Mejora de la imagen y responsabilidad social de la organización.</li>
-                        <li>Contribución a la seguridad hídrica y adaptación al cambio climático.</li>
+                        <li>{t('huellaCarbono.waterUse.benefit1')}</li>
+                        <li>{t('huellaCarbono.waterUse.benefit2')}</li>
+                        <li>{t('huellaCarbono.waterUse.benefit3')}</li>
+                        <li>{t('huellaCarbono.waterUse.benefit4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: '#1976D2', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Acciones prácticas:</b>
+                      <b>{t('huellaCarbono.waterUse.practicalActions')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Instalar dispositivos ahorradores (aireadores, inodoros de bajo consumo, sensores).</li>
-                        <li>Capacitar al personal y a la comunidad sobre hábitos responsables.</li>
-                        <li>Monitorear y registrar el consumo para identificar oportunidades de mejora.</li>
-                        <li>Fomentar la innovación en el uso y tratamiento del agua.</li>
+                        <li>{t('huellaCarbono.waterUse.action1')}</li>
+                        <li>{t('huellaCarbono.waterUse.action2')}</li>
+                        <li>{t('huellaCarbono.waterUse.action3')}</li>
+                        <li>{t('huellaCarbono.waterUse.action4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: '#616161', fontSize: 15, background: '#F1F8E9', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
-                      <b>Dato clave:</b> Solo el 2.5% del agua del planeta es dulce y menos del 1% está disponible para consumo humano. Cada gota cuenta.
+                      <b>{t('huellaCarbono.waterUse.keyFact')}</b> {t('huellaCarbono.waterUse.keyFactDesc')}
                     </div>
                   </div>
                 </div>
@@ -532,10 +534,10 @@ class HuellaCarbono extends Component {
                     <CardBody className="p-4">
                       <DocumentViewer 
                         pdfPath="/Concepts_docs/6.Uso_eficiente_y_ahorro_de_agua.pdf"
-                        title="Uso Eficiente y Ahorro de Agua"
-                        description="Guía práctica para optimizar el uso del agua y reducir el desperdicio."
+                        title={t('huellaCarbono.waterUse.title')}
+                        description={t('huellaCarbono.waterUse.cardDescription')}
                         icon="droplet"
-                        buttonText="Ver Documento"
+                        buttonText={t('documentViewer.viewDocument')}
                         cardStyle="featured"
                         customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
                       />
@@ -554,46 +556,46 @@ class HuellaCarbono extends Component {
             <Row className="align-items-center justify-content-center" style={{ minHeight: '420px', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
               <Col xl={8} lg={8} md={12} sm={12} className="d-flex flex-column justify-content-center px-3 px-md-5">
                 <div style={{ width: '100%', fontFamily: 'Inter, Poppins, Nunito, Segoe UI, Arial, sans-serif' }}>
-                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>Uso Eficiente y Ahorro de Energía</h2>
+                  <h2 className="fw-bold mb-3 text-center w-100 fs-2 fs-md-1" style={{ color: 'var(--section-text)' }}>{t('huellaCarbono.energyUse.title')}</h2>
                   <p className="mb-4 text-center mx-auto fs-6 fs-md-5" style={{ color: 'var(--section-subtext)', maxWidth: 700 }}>
-                    El uso eficiente de la energía es clave para reducir costos, disminuir la huella de carbono y proteger el medio ambiente. Adoptar buenas prácticas y tecnologías eficientes permite optimizar el consumo energético en hogares, empresas e instituciones.
+                    {t('huellaCarbono.energyUse.subtitle')}
                   </p>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 0 }}>
                     <div style={{ marginBottom: 18 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                         <FeatherIcon icon="zap" size={24} color="var(--section-list)" style={{ marginRight: 8 }} />
-                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>Principios clave para el uso eficiente de la energía:</span>
+                        <span style={{ fontWeight: 600, color: 'var(--section-list)', fontSize: 22 }}>{t('huellaCarbono.energyUse.keyPrinciples')}</span>
                       </div>
                       <ul style={{ color: 'var(--section-list2)', fontSize: 17, marginBottom: 10, paddingLeft: 28, maxWidth: '100%' }}>
-                        <li><b>Apagar equipos y luces:</b> Desconecta dispositivos y apaga luces cuando no se utilicen.</li>
-                        <li><b>Aprovechar la luz natural:</b> Utiliza la iluminación natural siempre que sea posible.</li>
-                        <li><b>Usar electrodomésticos eficientes:</b> Prefiere equipos con certificación energética (A, A+ o superior).</li>
-                        <li><b>Mantenimiento preventivo:</b> Realiza revisiones periódicas a equipos eléctricos y sistemas de climatización.</li>
-                        <li><b>Optimizar el uso de aire acondicionado y calefacción:</b> Ajusta la temperatura y aísla espacios para evitar pérdidas de energía.</li>
-                        <li><b>Implementar tecnologías LED:</b> Sustituye bombillas tradicionales por LED de bajo consumo.</li>
-                        <li><b>Fomentar la cultura del ahorro:</b> Capacita y sensibiliza a colaboradores y familiares sobre la importancia del uso racional de la energía.</li>
+                        <li><b>{t('huellaCarbono.energyUse.principle1')}</b> {t('huellaCarbono.energyUse.principle1Desc')}</li>
+                        <li><b>{t('huellaCarbono.energyUse.principle2')}</b> {t('huellaCarbono.energyUse.principle2Desc')}</li>
+                        <li><b>{t('huellaCarbono.energyUse.principle3')}</b> {t('huellaCarbono.energyUse.principle3Desc')}</li>
+                        <li><b>{t('huellaCarbono.energyUse.principle4')}</b> {t('huellaCarbono.energyUse.principle4Desc')}</li>
+                        <li><b>{t('huellaCarbono.energyUse.principle5')}</b> {t('huellaCarbono.energyUse.principle5Desc')}</li>
+                        <li><b>{t('huellaCarbono.energyUse.principle6')}</b> {t('huellaCarbono.energyUse.principle6Desc')}</li>
+                        <li><b>{t('huellaCarbono.energyUse.principle7')}</b> {t('huellaCarbono.energyUse.principle7Desc')}</li>
                       </ul>
                     </div>
                     <div style={{ color: 'var(--section-list)', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Beneficios del uso eficiente y el ahorro de energía:</b>
+                      <b>{t('huellaCarbono.energyUse.benefits')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Reducción de costos en facturas de energía.</li>
-                        <li>Disminución de emisiones de gases de efecto invernadero.</li>
-                        <li>Mayor vida útil de equipos y sistemas.</li>
-                        <li>Contribución a la sostenibilidad y al cuidado del planeta.</li>
+                        <li>{t('huellaCarbono.energyUse.benefit1')}</li>
+                        <li>{t('huellaCarbono.energyUse.benefit2')}</li>
+                        <li>{t('huellaCarbono.energyUse.benefit3')}</li>
+                        <li>{t('huellaCarbono.energyUse.benefit4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: '#1976D2', fontSize: 17, marginBottom: 10, maxWidth: '100%' }}>
-                      <b>Acciones prácticas:</b>
+                      <b>{t('huellaCarbono.energyUse.practicalActions')}</b>
                       <ul style={{ margin: 0, paddingLeft: 28, color: 'var(--section-list2)', maxWidth: '100%' }}>
-                        <li>Realizar auditorías energéticas para identificar oportunidades de mejora.</li>
-                        <li>Invertir en tecnologías limpias y renovables.</li>
-                        <li>Promover la movilidad sostenible y el teletrabajo.</li>
-                        <li>Establecer metas y monitorear el consumo energético.</li>
+                        <li>{t('huellaCarbono.energyUse.action1')}</li>
+                        <li>{t('huellaCarbono.energyUse.action2')}</li>
+                        <li>{t('huellaCarbono.energyUse.action3')}</li>
+                        <li>{t('huellaCarbono.energyUse.action4')}</li>
                       </ul>
                     </div>
                     <div style={{ color: '#616161', fontSize: 15, background: '#F1F8E9', borderRadius: 8, padding: 12, marginTop: 10, maxWidth: '100%' }}>
-                      <b>Dato clave:</b> El sector energético es responsable de más del 70% de las emisiones globales de gases de efecto invernadero. Cada acción cuenta para lograr la transición energética.
+                      <b>{t('huellaCarbono.energyUse.keyFact')}</b> {t('huellaCarbono.energyUse.keyFactDesc')}
                     </div>
                   </div>
                 </div>
@@ -604,10 +606,10 @@ class HuellaCarbono extends Component {
                     <CardBody className="p-4">
                       <DocumentViewer 
                         pdfPath="/Concepts_docs/7.Uso_eficiente_y_ahorro_de_energia.pdf"
-                        title="Uso Eficiente y Ahorro de Energía"
-                        description="Recomendaciones y estrategias para optimizar el consumo energético y reducir el impacto ambiental."
+                        title={t('huellaCarbono.energyUse.title')}
+                        description={t('huellaCarbono.energyUse.cardDescription')}
                         icon="zap"
-                        buttonText="Ver Documento"
+                        buttonText={t('documentViewer.viewDocument')}
                         cardStyle="featured"
                         customCardStyle={{ paddingTop: '1.2rem', paddingBottom: '1.2rem', background: 'transparent' }}
                       />
@@ -626,9 +628,9 @@ class HuellaCarbono extends Component {
           <Container fluid>
             <Row className="justify-content-center mb-3">
               <Col lg={12} className="text-center">
-                <h2 className="fw-bold mb-2" style={{ color: 'var(--section-text)' }}>Información Web y Recursos de Referencia</h2>
+                <h2 className="fw-bold mb-2" style={{ color: 'var(--section-text)' }}>{t('huellaCarbono.webResources.title')}</h2>
                 <p className="mb-3" style={{ color: 'var(--section-subtext)', fontSize: '1.08rem' }}>
-                  Accede a fuentes oficiales, herramientas, normativas y recursos internacionales para profundizar en sostenibilidad, cambio climático y huella de carbono.
+                  {t('huellaCarbono.webResources.description')}
                 </p>
               </Col>
             </Row>
@@ -743,4 +745,4 @@ class HuellaCarbono extends Component {
   }
 }
 
-export default withRouter(HuellaCarbono);
+export default withTranslation()(withRouter(HuellaCarbono));

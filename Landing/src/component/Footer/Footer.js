@@ -1,7 +1,11 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import logo from "../../assets/images/logo-positive.png"; // Ajusta la ruta si tu logo está en otro lugar
 
-const Footer = () => (
+const Footer = () => {
+  const { t } = useTranslation();
+  
+  return (
   <footer
     style={{
       background: "#217a3a",
@@ -44,8 +48,7 @@ const Footer = () => (
           opacity: 0.85,
         }}
       >
-        Plataforma para la gestión ambiental, medición de huella de carbono y
-        sostenibilidad en organizaciones.
+        {t('footer.description')}
       </div>
       <div
         style={{
@@ -63,7 +66,7 @@ const Footer = () => (
             fontWeight: 500,
           }}
         >
-          Contacto
+          {t('footer.contact')}
         </a>
         {/* <a href="/privacidad" style={{color: "#fff", textDecoration: "underline", fontWeight: 500}}>Aviso de privacidad</a> */}
         {/* <a href="/terminos" style={{color: "#fff", textDecoration: "underline", fontWeight: 500}}>Términos y condiciones</a> */}
@@ -76,9 +79,10 @@ const Footer = () => (
         opacity: 0.8,
       }}
     >
-      © 2025 Platform Develop By MIES GROUP.
+      {t('footer.copyright')}
     </div>
   </footer>
-);
+  );
+};
 
 export default Footer;

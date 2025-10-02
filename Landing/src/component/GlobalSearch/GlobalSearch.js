@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import searchIndex from "../../data/searchIndex";
 import FeatherIcon from "feather-icons-react";
 import "./GlobalSearch.css";
@@ -16,6 +17,7 @@ function getIcon(type) {
 }
 
 const GlobalSearch = ({ onSelect }) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
@@ -60,7 +62,7 @@ const GlobalSearch = ({ onSelect }) => {
         <input
           type="text"
           className="global-search-input"
-          placeholder="Buscar en toda la plataforma..."
+          placeholder={t('globalSearch.placeholder')}
           value={query}
           onChange={handleChange}
           onFocus={() => setShowResults(query.length > 1 && results.length > 0)}

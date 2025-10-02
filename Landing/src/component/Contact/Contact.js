@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { withTranslation } from 'react-i18next';
 
 //import icon
 import FeatherIcon from "feather-icons-react";
@@ -8,19 +9,19 @@ import { Col, Container, Form, Input, Label, Row } from "reactstrap";
 //import images
 import contact from "../../assets/images/contact.png";
 
-export default class Contact extends Component {
+class Contact extends Component {
   render() {
+    const { t } = this.props;
+    
     return (
       <React.Fragment>
         <section className="section" id="contact">
           <Container>
             <Row>
               <Col lg={6}>
-                <h2 className="fw-bold mb-4">Get in Touch</h2>
+                <h2 className="fw-bold mb-4">{t('contact.title')}</h2>
                 <p className="text-muted mb-5">
-                  Et harum quidem rerum facilis est expedita distinctio
-                  temporecum soluta nobis est eligendi optio cumque nihil
-                  impedit quo minus maxime.
+                  {t('contact.subtitle')}
                 </p>
 
                 <div>
@@ -34,14 +35,14 @@ export default class Contact extends Component {
                             htmlFor="name"
                             className="text-muted form-label"
                           >
-                            Name
+                            {t('contact.name')}
                           </Label>
                           <Input
                             name="name"
                             id="name"
                             type="text"
                             className="form-control"
-                            placeholder="Enter name*"
+                            placeholder={t('contact.namePlaceholder')}
                           />
                         </div>
                       </Col>
@@ -51,14 +52,14 @@ export default class Contact extends Component {
                             htmlFor="email"
                             className="text-muted form-label"
                           >
-                            Email
+                            {t('contact.email')}
                           </Label>
                           <Input
                             name="email"
                             id="email"
                             type="email"
                             className="form-control"
-                            placeholder="Enter email*"
+                            placeholder={t('contact.emailPlaceholder')}
                           />
                         </div>
                       </Col>
@@ -68,14 +69,14 @@ export default class Contact extends Component {
                             htmlFor="subject"
                             className="text-muted form-label"
                           >
-                            Subject
+                            {t('contact.subject')}
                           </Label>
                           <Input
                             type="text"
                             className="form-control"
                             id="subject"
                             name="subject"
-                            placeholder="Enter Subject.."
+                            placeholder={t('contact.subjectPlaceholder')}
                           />
                         </div>
 
@@ -84,24 +85,23 @@ export default class Contact extends Component {
                             htmlFor="comments"
                             className="text-muted form-label"
                           >
-                            Message
+                            {t('contact.message')}
                           </Label>
                           <textarea
                             name="comments"
                             id="comments"
                             rows="4"
                             className="form-control"
-                            placeholder="Enter message..."
+                            placeholder={t('contact.messagePlaceholder')}
                           ></textarea>
                         </div>
                         <Link to="#">
                         <button
                           type="submit"
                           name="send"
-
-                          className="btn btn-outline-primary"
+                          className="btn btn-success"
                         >
-                          Send Message
+                          {t('contact.sendButton')}
                         </button>
                         </Link>
                       </Col>
@@ -117,28 +117,28 @@ export default class Contact extends Component {
                     <i>
                       <FeatherIcon
                         icon="mail"
-                        className="me-2 text-muted icon icon-xs"
+                        className="me-2 text-success icon icon-xs"
                       />
                     </i>{" "}
-                    Support@info.com
+                    {t('contact.contactEmail')}
                   </p>
                   <p className="text-muted mb-3">
                     <i>
                       <FeatherIcon
                         icon="phone"
-                        className="me-2 text-muted icon icon-xs"
+                        className="me-2 text-success icon icon-xs"
                       />
                     </i>{" "}
-                    +91 123 4556 789
+                    {t('contact.contactPhone')}
                   </p>
                   <p className="text-muted mb-3">
                     <i>
                       <FeatherIcon
                         icon="map-pin"
-                        className="me-2 text-muted icon icon-xs"
+                        className="me-2 text-success icon icon-xs"
                       />
                     </i>{" "}
-                    2976 Edwards Street Rocky Mount, NC 27804
+                    {t('contact.contactAddress')}
                   </p>
                   <ul className="list-inline pt-4">
                     <li className="list-inline-item me-3">
@@ -181,3 +181,5 @@ export default class Contact extends Component {
     );
   }
 }
+
+export default withTranslation()(Contact);

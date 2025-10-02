@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import departamentosMunicipios from "../../data/departamentos_municipios.json";
 import { Container, Row, Col, Card, CardBody, Button, Table, FormGroup, Label, Input } from "reactstrap";
 import FeatherIcon from "feather-icons-react";
+import { useTranslation } from 'react-i18next';
 import "../../assets/css/formulario.css";
 // Endpoints API countriesnow.space
 const API_COUNTRIES = "https://countriesnow.space/api/v0.1/countries/positions";
@@ -124,6 +125,7 @@ const getToday = () => {
 const FACTOR_ELECTRICO = 0.391;
 
 const FormularioHuella = ({ onFormComplete }) => {
+  const { t } = useTranslation();
   // Estado para datosEmpresa debe ir al inicio del componente
   const [datosEmpresa, setDatosEmpresa] = useState({
     nombreEmpresa: "",
@@ -370,9 +372,9 @@ const FormularioHuella = ({ onFormComplete }) => {
   const totalEmisiones = emisiones.alcance1 + emisiones.alcance2 + emisiones.alcance3;
   // Evaluación simple (puedes ajustar los umbrales)
   let evaluacion = "";
-  if (totalEmisiones < 1000) evaluacion = "¡Excelente! Tu huella es baja.";
-  else if (totalEmisiones < 3000) evaluacion = "Aceptable, pero hay margen de mejora.";
-  else evaluacion = "Alto impacto, ¡urge reducir emisiones!";
+  if (totalEmisiones < 1000) evaluacion = t('calculadora.form.excellentFootprint');
+  else if (totalEmisiones < 3000) evaluacion = t('calculadora.form.acceptableFootprint');
+  else evaluacion = t('calculadora.form.highImpact');
   // Cálculo de árboles a plantar (1 árbol absorbe ~21kg CO2/año)
   const arboles = Math.ceil(totalEmisiones / 21);
 
@@ -630,30 +632,30 @@ const FormularioHuella = ({ onFormComplete }) => {
               <CardBody>
                 {/* Progress bar */}
                 <div className="mb-4">
-                  <Label>Avance del formulario: {progress}%</Label>
+                  <Label>{t('calculadora.form.progress')} {progress}%</Label>
                   <div style={{ background: '#e9ecef', borderRadius: 4, height: 18, width: '100%' }}>
                     <div style={{ width: `${progress}%`, background: '#28a745', height: '100%', borderRadius: 4, transition: 'width 0.3s' }}></div>
                   </div>
                 </div>
                 {step === 1 && (
                   <form autoComplete="off" onSubmit={e => { e.preventDefault(); if (canAdvance) setStep(2); }}>
-                    <h4 className="mb-4">Datos Generales</h4>
+                    <h4 className="mb-4">{t('calculadora.form.generalData')}</h4>
                     <Row>
                       <Col md={4}>
                         <FormGroup>
-                          <Label>Nombre Empresa <span style={{color:'red'}}>*</span></Label>
+                          <Label>{t('calculadora.form.companyName')} <span style={{color:'red'}}>*</span></Label>
                           <Input name="nombreEmpresa" value={datosEmpresa.nombreEmpresa} onChange={handleDatosEmpresa} required />
                         </FormGroup>
                       </Col>
                       <Col md={4}>
                         <FormGroup>
-                          <Label>NIT <span style={{color:'red'}}>*</span></Label>
+                          <Label>{t('calculadora.form.nit')} <span style={{color:'red'}}>*</span></Label>
                           <Input name="nit" value={datosEmpresa.nit} onChange={handleDatosEmpresa} required />
                         </FormGroup>
                       </Col>
                       <Col md={4}>
                         <FormGroup>
-                          <Label>Dirección <span style={{color:'red'}}>*</span></Label>
+                          <Label>{t('calculadora.form.address')} <span style={{color:'red'}}>*</span></Label>
                           <Input name="direccion" value={datosEmpresa.direccion} onChange={handleDatosEmpresa} required />
                         </FormGroup>
                       </Col>
@@ -661,9 +663,9 @@ const FormularioHuella = ({ onFormComplete }) => {
                     <Row>
                       <Col md={4}>
                         <FormGroup>
-                          <Label>Departamento <span style={{color:'red'}}>*</span></Label>
+                          <Label>{t('calculadora.form.department')} <span style={{color:'red'}}>*</span></Label>
                           <Input type="select" name="departamento" value={datosEmpresa.departamento} onChange={handleDepartamento} required>
-                            <option value="">Seleccione...</option>
+                            <option value="">{t('calculadora.form.select')}</option>
                             {departamentos.map(dep => (
                               <option key={dep} value={dep}>{dep}</option>
                             ))}
@@ -672,9 +674,9 @@ const FormularioHuella = ({ onFormComplete }) => {
                       </Col>
                       <Col md={4}>
                         <FormGroup>
-                          <Label>Municipio <span style={{color:'red'}}>*</span></Label>
+                          <Label>{t('calculadora.form.municipality')} <span style={{color:'red'}}>*</span></Label>
                           <Input type="select" name="municipio" value={datosEmpresa.municipio} onChange={handleMunicipio} required disabled={!datosEmpresa.departamento}>
-                            <option value="">Seleccione...</option>
+                            <option value="">{t('calculadora.form.select')}</option>
                             {municipiosFiltrados.map(mun => (
                               <option key={mun} value={mun}>{mun}</option>
                             ))}
@@ -683,23 +685,23 @@ const FormularioHuella = ({ onFormComplete }) => {
                       </Col>
                       <Col md={4}>
                         <FormGroup>
-                          <Label>Año Base <span style={{color:'red'}}>*</span></Label>
+                          <Label>{t('calculadora.form.baseYear')} <span style={{color:'red'}}>*</span></Label>
                           <Input name="añoBase" value={datosEmpresa.añoBase} onChange={handleDatosEmpresa} required />
                         </FormGroup>
                       </Col>
                     </Row>
                     <Row>
-                      <Col md={4}><FormGroup><Label>Fecha Reporte <span style={{color:'red'}}>*</span></Label><Input name="fechaReporte" type="date" value={datosEmpresa.fechaReporte} onChange={handleDatosEmpresa} required readOnly tabIndex={-1} /></FormGroup></Col>
-                      <Col md={4}><FormGroup><Label>Teléfono <span style={{color:'red'}}>*</span></Label><Input name="telefono" value={datosEmpresa.telefono} onChange={handleDatosEmpresa} required /></FormGroup></Col>
-                      <Col md={4}><FormGroup><Label>Correo <span style={{color:'red'}}>*</span></Label><Input name="correo" value={datosEmpresa.correo} onChange={handleDatosEmpresa} required type="email" /></FormGroup></Col>
+                      <Col md={4}><FormGroup><Label>{t('calculadora.form.reportDate')} <span style={{color:'red'}}>*</span></Label><Input name="fechaReporte" type="date" value={datosEmpresa.fechaReporte} onChange={handleDatosEmpresa} required readOnly tabIndex={-1} /></FormGroup></Col>
+                      <Col md={4}><FormGroup><Label>{t('calculadora.form.phone')} <span style={{color:'red'}}>*</span></Label><Input name="telefono" value={datosEmpresa.telefono} onChange={handleDatosEmpresa} required /></FormGroup></Col>
+                      <Col md={4}><FormGroup><Label>{t('calculadora.form.email')} <span style={{color:'red'}}>*</span></Label><Input name="correo" value={datosEmpresa.correo} onChange={handleDatosEmpresa} required type="email" /></FormGroup></Col>
                     </Row>
                     <Row>
-                      <Col md={6}><FormGroup><Label>Persona que Elabora <span style={{color:'red'}}>*</span></Label><Input name="personaElabora" value={datosEmpresa.personaElabora} onChange={handleDatosEmpresa} required /></FormGroup></Col>
-                      <Col md={6}><FormGroup><Label>Cargo <span style={{color:'red'}}>*</span></Label><Input name="cargo" value={datosEmpresa.cargo} onChange={handleDatosEmpresa} required /></FormGroup></Col>
+                      <Col md={6}><FormGroup><Label>{t('calculadora.form.preparedBy')} <span style={{color:'red'}}>*</span></Label><Input name="personaElabora" value={datosEmpresa.personaElabora} onChange={handleDatosEmpresa} required /></FormGroup></Col>
+                      <Col md={6}><FormGroup><Label>{t('calculadora.form.position')} <span style={{color:'red'}}>*</span></Label><Input name="cargo" value={datosEmpresa.cargo} onChange={handleDatosEmpresa} required /></FormGroup></Col>
                     </Row>
                     <div className="d-flex justify-content-end mt-4">
                       <Button color="primary" type="submit" disabled={!canAdvance}>
-                        Siguiente <FeatherIcon icon="arrow-right" className="ms-2" />
+                        {t('calculadora.form.next')} <FeatherIcon icon="arrow-right" className="ms-2" />
                       </Button>
                     </div>
                   </form>
@@ -707,18 +709,18 @@ const FormularioHuella = ({ onFormComplete }) => {
                 {step === 2 && (
                   <form onSubmit={handleSubmit} autoComplete="off">
                     {/* Vuelos Corporativos - ahora antes de sólidos */}
-                    <h4 className="formulario-section-title">Vuelos Corporativos</h4>
+                    <h4 className="formulario-section-title">{t('calculadora.form.corporateFlights')}</h4>
                     <Table bordered responsive size="sm">
                       <thead className="table-light">
                         <tr>
-                          <th style={{minWidth:140}}>País Origen</th>
-                          <th style={{minWidth:140}}>Estado/Depto Origen</th>
-                          <th style={{minWidth:140}}>Ciudad Origen</th>
-                          <th style={{minWidth:140}}>País Destino</th>
-                          <th style={{minWidth:140}}>Estado/Depto Destino</th>
-                          <th style={{minWidth:140}}>Ciudad Destino</th>
-                          <th style={{minWidth:140}}>Clase</th>
-                          <th style={{minWidth:140}}>Número de personas</th>
+                          <th style={{minWidth:140}}>{t('calculadora.form.originCountry')}</th>
+                          <th style={{minWidth:140}}>{t('calculadora.form.originState')}</th>
+                          <th style={{minWidth:140}}>{t('calculadora.form.originCity')}</th>
+                          <th style={{minWidth:140}}>{t('calculadora.form.destinationCountry')}</th>
+                          <th style={{minWidth:140}}>{t('calculadora.form.destinationState')}</th>
+                          <th style={{minWidth:140}}>{t('calculadora.form.destinationCity')}</th>
+                          <th style={{minWidth:140}}>{t('calculadora.form.class')}</th>
+                          <th style={{minWidth:140}}>{t('calculadora.form.numPersons')}</th>
                           <th style={{minWidth:140}}>Distancia (km)</th>
                           <th style={{minWidth:140}}>Factor de Emisión (kgCO2e)</th>
                           <th style={{minWidth:140}}>Emisión (tCO2e)</th>
@@ -857,26 +859,26 @@ const FormularioHuella = ({ onFormComplete }) => {
                     </Table>
                     {/* Total acumulado de emisiones de vuelos */}
                     <div className="resultado-emisiones mb-3">
-                      <strong>Total emisiones de vuelos:</strong> {
+                      <strong>{t('calculadora.form.totalFlightEmissions')}</strong> {
                         vuelos.reduce((acc, row) => acc + (parseFloat(row.emisionTon) || 0), 0).toFixed(4)
                       } Ton CO₂e / {
                         vuelos.reduce((acc, row) => acc + (parseFloat(row.emisionKg) || 0), 0).toFixed(2)
                       } kg CO₂e
                     </div>
                     <Button color="success" outline size="sm" onClick={addVueloRow} className="mb-3">
-                      <FeatherIcon icon="plus" size={16} className="me-1" /> Agregar fila
+                      <FeatherIcon icon="plus" size={16} className="me-1" /> {t('calculadora.form.addRow')}
                     </Button>
                     {/* Sólidos */}
-                    <h4 className="formulario-section-title">Alcance 1: Emisiones Directas por Consumo de Combustibles Sólidos</h4>
+                    <h4 className="formulario-section-title">{t('calculadora.form.scope1SolidFuels')}</h4>
                     <Table bordered responsive size="sm" className="formulario-table">
                       <thead className="table-light">
                         <tr>
                           <th style={{verticalAlign:'middle', fontWeight:'bold'}}>#</th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Combustible</th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Consumo anual <span style={{fontWeight:'normal'}}>(Kg)</span></th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Poder calorífico <span style={{fontWeight:'normal'}}>(MJ/kg)</span></th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Consumo de energía <span style={{fontWeight:'normal'}}>(TJ)</span></th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Factor CO2 <span style={{fontWeight:'normal'}}>(Kg CO2/TJ)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.fuel')}</th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.annualConsumption')} <span style={{fontWeight:'normal'}}>(Kg)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.calorificValue')} <span style={{fontWeight:'normal'}}>(MJ/kg)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.energyConsumption')} <span style={{fontWeight:'normal'}}>(TJ)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.co2Factor')} <span style={{fontWeight:'normal'}}>(Kg CO2/TJ)</span></th>
                           <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Factor CH4 <span style={{fontWeight:'normal'}}>(Kg CH4/TJ)</span></th>
                           <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Factor N2O <span style={{fontWeight:'normal'}}>(Kg N2O/TJ)</span></th>
                           <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Factor SO2 <span style={{fontWeight:'normal'}}>(Kg SO2/TJ)</span></th>
@@ -938,7 +940,7 @@ const FormularioHuella = ({ onFormComplete }) => {
                       </tbody>
                     </Table>
                     <div className="resultado-emisiones mb-3">
-                      <strong>Emisiones Sólidos:</strong> {
+                      <strong>{t('calculadora.form.solidEmissions')}</strong> {
                         solidos.reduce((acc, row) => {
                           const energia = (parseFloat(row.consumo) && parseFloat(row.poderCalorifico)) ? (parseFloat(row.consumo) * parseFloat(row.poderCalorifico) / 1000000) : 0;
                           const emisionCO2 = (energia && parseFloat(row.factorCO2)) ? (energia * parseFloat(row.factorCO2)) : 0;
@@ -950,23 +952,23 @@ const FormularioHuella = ({ onFormComplete }) => {
                     </div>
                     <div className="d-flex formulario-add-row">
                       <Button color="success" outline size="sm" onClick={addSolidoRow}>
-                        <FeatherIcon icon="plus" size={16} className="me-1" /> Agregar fila
+                        <FeatherIcon icon="plus" size={16} className="me-1" /> {t('calculadora.form.addRow')}
                       </Button>
                     </div>
 
                     {/* Fuentes estacionarias */}
-                    <h4 className="formulario-section-title">Alcance 1: Emisiones Directas por Consumo de Combustibles Fósiles Líquidos de Fuentes Estacionarias</h4>
+                    <h4 className="formulario-section-title">{t('calculadora.form.scope1LiquidFuels')}</h4>
                     <Table bordered responsive size="sm" className="formulario-table">
                       <thead className="table-light">
                         <tr>
                           <th style={{verticalAlign:'middle', fontWeight:'bold'}}>No.</th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Combustibles</th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Consumo anual <span style={{fontWeight:'normal'}}>(gal)</span></th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Densidad <span style={{fontWeight:'normal'}}>(kg/l)</span></th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Masa de combustible <span style={{fontWeight:'normal'}}>(kg)</span></th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Poder calorífico <span style={{fontWeight:'normal'}}>(MJ/kg)</span></th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Consumo de energía <span style={{fontWeight:'normal'}}>(TJ)</span></th>
-                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Factor de emisión CO2 <span style={{fontWeight:'normal'}}>(Kg CO2/TJ)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.fuels')}</th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.annualConsumption')} <span style={{fontWeight:'normal'}}>(gal)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.density')} <span style={{fontWeight:'normal'}}>(kg/l)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.fuelMass')} <span style={{fontWeight:'normal'}}>(kg)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.calorificPower')} <span style={{fontWeight:'normal'}}>(MJ/kg)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.energyConsumption')} <span style={{fontWeight:'normal'}}>(TJ)</span></th>
+                          <th style={{verticalAlign:'middle', fontWeight:'bold'}}>{t('calculadora.form.co2Factor')} <span style={{fontWeight:'normal'}}>(Kg CO2/TJ)</span></th>
                           <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Factor de emisión CH4 <span style={{fontWeight:'normal'}}>(Kg CH4/TJ)</span></th>
                           <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Factor de emisión N2O <span style={{fontWeight:'normal'}}>(Kg N2O/TJ)</span></th>
                           <th style={{verticalAlign:'middle', fontWeight:'bold'}}>Factor de emisión SO2 <span style={{fontWeight:'normal'}}>(Kg SO2/TJ)</span></th>
@@ -1500,33 +1502,33 @@ const FormularioHuella = ({ onFormComplete }) => {
         <FeatherIcon icon="activity" size={36} color="#1b5e20" />
       </div>
       <div>
-        <h2 style={{color:'#1b5e20', fontWeight:800, margin:0, fontSize:32, letterSpacing:0.5}}>Resumen de Consumo de la Empresa</h2>
+        <h2 style={{color:'#1b5e20', fontWeight:800, margin:0, fontSize:32, letterSpacing:0.5}}>{t('calculadora.form.consumptionSummary')}</h2>
       </div>
     </div>
     <div style={{display:'flex', flexWrap:'wrap', gap:32, justifyContent:'center'}}>
       <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #d8f3dc', padding:24, minWidth:260, maxWidth:320, flex:1, border:'2px solid #b7e4c7'}}>
-        <h3 style={{color:'#1b5e20', fontWeight:700, marginBottom:16, fontSize:20}}>Datos de la Empresa</h3>
+        <h3 style={{color:'#1b5e20', fontWeight:700, marginBottom:16, fontSize:20}}>{t('calculadora.form.companyData')}</h3>
         <div style={{fontSize:16, lineHeight:1.7, textAlign:'left'}}>
-          <b>Nombre:</b> {datosEmpresa.nombreEmpresa || '-'}<br/>
-          <b>NIT:</b> {datosEmpresa.nit || '-'}<br/>
-          <b>Dirección:</b> {datosEmpresa.direccion || '-'}<br/>
-          <b>Departamento:</b> {datosEmpresa.departamento || '-'}<br/>
-          <b>Municipio:</b> {datosEmpresa.municipio || '-'}<br/>
-          <b>Año Base:</b> {datosEmpresa.añoBase || '-'}<br/>
-          <b>Fecha Reporte:</b> {datosEmpresa.fechaReporte || '-'}<br/>
-          <b>Teléfono:</b> {datosEmpresa.telefono || '-'}<br/>
-          <b>Correo:</b> {datosEmpresa.correo || '-'}<br/>
-          <b>Responsable:</b> {datosEmpresa.personaElabora || '-'}<br/>
-          <b>Cargo:</b> {datosEmpresa.cargo || '-'}
+          <b>{t('calculadora.form.name')}</b> {datosEmpresa.nombreEmpresa || '-'}<br/>
+          <b>{t('calculadora.form.nit')}:</b> {datosEmpresa.nit || '-'}<br/>
+          <b>{t('calculadora.form.address')}:</b> {datosEmpresa.direccion || '-'}<br/>
+          <b>{t('calculadora.form.department')}:</b> {datosEmpresa.departamento || '-'}<br/>
+          <b>{t('calculadora.form.municipality')}:</b> {datosEmpresa.municipio || '-'}<br/>
+          <b>{t('calculadora.form.baseYear')}:</b> {datosEmpresa.añoBase || '-'}<br/>
+          <b>{t('calculadora.form.reportDate')}:</b> {datosEmpresa.fechaReporte || '-'}<br/>
+          <b>{t('calculadora.form.phone')}:</b> {datosEmpresa.telefono || '-'}<br/>
+          <b>{t('calculadora.form.email')}:</b> {datosEmpresa.correo || '-'}<br/>
+          <b>{t('calculadora.form.responsiblePerson')}</b> {datosEmpresa.personaElabora || '-'}<br/>
+          <b>{t('calculadora.form.position')}:</b> {datosEmpresa.cargo || '-'}
         </div>
       </div>
       <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #0001', padding:24, minWidth:320, flex:1, border:'1.5px solid #e0f2f1'}}>
-        <h3 style={{color:'#009688', fontWeight:700, marginBottom:16, fontSize:20, textAlign:'center'}}>Emisiones por Alcance</h3>
+        <h3 style={{color:'#009688', fontWeight:700, marginBottom:16, fontSize:20, textAlign:'center'}}>{t('calculadora.form.emissionsByScope')}</h3>
         <table style={{width:'100%', borderCollapse:'collapse', margin:'0 0 18px 0', fontSize:17}}>
           <thead>
             <tr style={{background:'#b7e4c7', color:'#1b5e20'}}>
-              <th style={{padding:8, borderRadius:'8px 0 0 0'}}>Alcance</th>
-              <th style={{padding:8, borderRadius:'0 8px 0 0'}}>Emisiones (Ton CO₂e)</th>
+              <th style={{padding:8, borderRadius:'8px 0 0 0'}}>{t('calculadora.form.scope')}</th>
+              <th style={{padding:8, borderRadius:'0 8px 0 0'}}>{t('calculadora.form.emissions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -1543,7 +1545,7 @@ const FormularioHuella = ({ onFormComplete }) => {
               <td style={{padding:8, textAlign:'right'}}>{emisiones.alcance3.toFixed(3)}</td>
             </tr>
             <tr style={{fontWeight:'bold', background:'#b7e4c7', color:'#1b5e20'}}>
-              <td style={{padding:8}}>Total</td>
+              <td style={{padding:8}}>{t('calculadora.form.total')}</td>
               <td style={{padding:8, textAlign:'right'}}>{totalEmisiones.toFixed(3)}</td>
             </tr>
           </tbody>
@@ -1576,7 +1578,7 @@ const FormularioHuella = ({ onFormComplete }) => {
           border:'1px solid #b7e4c7'
         }}>
           <FeatherIcon icon="tree" size={18} color="#43a047" style={{marginRight:8, marginBottom:-3}} />
-          Para compensar estas emisiones, deberías plantar al menos <b style={{color:'#388e3c'}}>{arboles}</b> árboles.
+          {t('calculadora.form.compensateEmissions')} <b style={{color:'#388e3c'}}>{arboles}</b> {t('calculadora.form.trees')}
         </div>
       </div>
     </div>
@@ -1620,7 +1622,7 @@ const FormularioHuella = ({ onFormComplete }) => {
           window.location.reload();
         }}
       >
-        <FeatherIcon icon="download" className="me-2" color="#fff" /> Descargar Pantallazo
+        <FeatherIcon icon="download" className="me-2" color="#fff" /> {t('calculadora.form.downloadReport')}
       </button>
     </div>
   </div>
