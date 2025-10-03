@@ -5,6 +5,7 @@ import './assets/css/calculadora-section.css';
 import App from './App';
 import { BrowserRouter } from "react-router-dom";
 import './i18n';
+import { registerServiceWorker } from './utils/serviceWorkerRegistration';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -13,7 +14,6 @@ root.render(
   </BrowserRouter>
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+// Registrar Service Worker para mejorar rendimiento con caché
+registerServiceWorker();
 

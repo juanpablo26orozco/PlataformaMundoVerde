@@ -12,6 +12,118 @@ module.exports = function(app) {
     console.log('SendGrid configurado');
   }
 
+  // Función para generar PDF del Autodiagnóstico
+  function generarPDFAutogestion(datos) {
+    return new Promise((resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ margin: 40, size: 'LETTER' });
+        const chunks = [];
+        
+        doc.on('data', chunk => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        
+        // PORTADA
+        doc.fontSize(24).fillColor('#43a047').text('AUTODIAGNOSTICO DE SOSTENIBILIDAD', { align: 'center' });
+        doc.moveDown(2);
+        
+        // DATOS DE EMPRESA
+        doc.fontSize(16).fillColor('#2e7d32').text('Datos de la Empresa', { underline: true });
+        doc.moveDown(0.5);
+        doc.fontSize(11).fillColor('#000');
+        doc.text('Nombre: ' + (datos.datosEmpresa.nombreEmpresa || ''));
+        doc.text('NIT: ' + (datos.datosEmpresa.nit || ''));
+        doc.text('Direccion: ' + (datos.datosEmpresa.direccion || ''));
+        doc.text('Ubicacion: ' + (datos.datosEmpresa.municipio || '') + ', ' + (datos.datosEmpresa.departamento || ''));
+        doc.text('Telefono: ' + (datos.datosEmpresa.telefono || ''));
+        doc.text('Correo: ' + (datos.datosEmpresa.correo || ''));
+        doc.text('Elaborado por: ' + (datos.datosEmpresa.personaElabora || '') + ' - ' + (datos.datosEmpresa.cargo || ''));
+        doc.text('Fecha: ' + (datos.fecha || ''));
+        doc.moveDown(2);
+        
+        // RESUMEN EJECUTIVO
+        doc.addPage();
+        doc.fontSize(20).fillColor('#43a047').text('RESUMEN EJECUTIVO', { align: 'center' });
+        doc.moveDown(1.5);
+        
+        doc.fontSize(14).fillColor('#2e7d32').text('Resultados por Dimension');
+        doc.moveDown(0.5);
+        doc.fontSize(11).fillColor('#000');
+        doc.text('Diagnostico Economico: ' + (datos.promedios.A.porcentajeFinal.toFixed(1)) + '%');
+        doc.text('Gestion Ambiental: ' + (datos.promedios.B.porcentajeFinal.toFixed(1)) + '%');
+        doc.text('Gestion Energia: ' + (datos.promedios.C.porcentajeFinal.toFixed(1)) + '%');
+        doc.text('Seguridad y Salud: ' + (datos.promedios.D.porcentajeFinal.toFixed(1)) + '%');
+        doc.text('Diagnostico Social: ' + (datos.promedios.E.porcentajeFinal.toFixed(1)) + '%');
+        doc.text('Diagnostico Almacen: ' + (datos.promedios.F.porcentajeFinal.toFixed(1)) + '%');
+        doc.moveDown(2);
+        
+        // SECCION A
+        generarSeccionPDF(doc, 'A', 'DIAGNOSTICO ECONOMICO', datos);
+        
+        // SECCION B
+        generarSeccionPDF(doc, 'B', 'GESTION AMBIENTAL', datos);
+        
+        // SECCION C
+        generarSeccionPDF(doc, 'C', 'GESTION ENERGIA', datos);
+        
+        // SECCION D
+        generarSeccionPDF(doc, 'D', 'SEGURIDAD Y SALUD', datos);
+        
+        // SECCION E
+        generarSeccionPDF(doc, 'E', 'DIAGNOSTICO SOCIAL', datos);
+        
+        // SECCION F
+        generarSeccionPDF(doc, 'F', 'DIAGNOSTICO ALMACEN', datos);
+        
+        doc.end();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // Función auxiliar para generar cada sección
+  function generarSeccionPDF(doc, seccionId, tituloSeccion, datos) {
+    doc.addPage();
+    doc.fontSize(18).fillColor('#43a047').text(tituloSeccion, { align: 'center' });
+    doc.moveDown(0.5);
+    doc.fontSize(12).fillColor('#2e7d32').text('Porcentaje Final: ' + datos.promedios[seccionId].porcentajeFinal.toFixed(1) + '%', { align: 'center' });
+    doc.moveDown(1.5);
+    
+    const esquema = datos.esquemas['seccion' + seccionId];
+    const respuestas = datos.respuestas['seccion' + seccionId];
+    const opciones = seccionId === 'E' ? datos.opciones.seccionE : datos.opciones.standard;
+    
+    esquema.blocks.forEach((block, blockIdx) => {
+      // Verificar si hay espacio suficiente en la página
+      if (doc.y > 650) {
+        doc.addPage();
+      }
+      
+      doc.fontSize(13).fillColor('#2e7d32').text(block.title);
+      doc.moveDown(0.3);
+      doc.fontSize(10).fillColor('#666').text('Promedio del bloque: ' + (datos.promedios[seccionId].bloques[block.id]?.toFixed(2) || 'N/A'));
+      doc.moveDown(0.5);
+      
+      block.questions.forEach((question, qIdx) => {
+        // Verificar espacio
+        if (doc.y > 700) {
+          doc.addPage();
+        }
+        
+        const respuesta = respuestas[question.id];
+        const opcionSeleccionada = opciones.find(opt => opt.value === respuesta);
+        
+        doc.fontSize(9).fillColor('#000');
+        doc.text((qIdx + 1) + '. ' + question.text, { width: 500 });
+        doc.fontSize(9).fillColor('#43a047');
+        doc.text('   Respuesta: ' + (opcionSeleccionada ? opcionSeleccionada.label + ' (' + opcionSeleccionada.score + ')' : 'Sin responder'));
+        doc.moveDown(0.3);
+      });
+      
+      doc.moveDown(0.5);
+    });
+  }
+
   function generarPDFHuella(datos) {
     return new Promise((resolve, reject) => {
       try {
@@ -236,6 +348,65 @@ module.exports = function(app) {
       
       const pdfBuffer = await generarPDFHuella(datosCompletos);
       const nombreArchivo = 'Huella_Carbono_' + datosCompletos.datosEmpresa.nombreEmpresa.replace(/\s+/g, '_') + '.pdf';
+      
+      await sgMail.send({
+        to,
+        from: process.env.SENDER_EMAIL || 'juanpablo26orozco@gmail.com',
+        subject,
+        html,
+        attachments: [{
+          content: pdfBuffer.toString('base64'),
+          filename: nombreArchivo,
+          type: 'application/pdf',
+          disposition: 'attachment'
+        }]
+      });
+      
+      res.json({ success: true, message: 'Email enviado' });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Endpoint para generar PDF de autodiagnóstico (sin enviar email)
+  app.post('/api/generar-pdf-autogestion', async (req, res) => {
+    try {
+      const datosCompletos = req.body;
+      
+      if (!datosCompletos || !datosCompletos.datosEmpresa) {
+        return res.status(400).json({ success: false, error: 'Faltan datos' });
+      }
+      
+      console.log('=== GENERANDO PDF AUTODIAGNOSTICO ===');
+      console.log('Empresa:', datosCompletos.datosEmpresa.nombreEmpresa);
+      
+      const pdfBuffer = await generarPDFAutogestion(datosCompletos);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=Autodiagnostico.pdf');
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.error('Error generando PDF:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Endpoint para enviar autodiagnóstico por email
+  app.post('/api/send-email-autogestion', async (req, res) => {
+    try {
+      const { to, subject, html, datosCompletos } = req.body;
+      
+      if (!to || !subject || !datosCompletos) {
+        return res.status(400).json({ success: false, error: 'Faltan campos' });
+      }
+      
+      console.log('=== ENVIANDO AUTODIAGNOSTICO POR EMAIL ===');
+      console.log('Para:', to);
+      console.log('Empresa:', datosCompletos.datosEmpresa.nombreEmpresa);
+      
+      const pdfBuffer = await generarPDFAutogestion(datosCompletos);
+      const nombreArchivo = 'Autodiagnostico_' + datosCompletos.datosEmpresa.nombreEmpresa.replace(/\s+/g, '_') + '.pdf';
       
       await sgMail.send({
         to,

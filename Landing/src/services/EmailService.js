@@ -297,6 +297,154 @@ Distribución por alcances:
   }
 
   /**
+   * Envía el autodiagnóstico de sostenibilidad por email
+   * @param {Object} datosCompletos - Todos los datos del autodiagnóstico
+   * @returns {Promise<Object>}
+   */
+  async sendAutogestionByEmail(datosCompletos) {
+    try {
+      if (!this.isConfigured()) {
+        alert('⚠️ Servicio de email no configurado.\n\nPor favor contacta al administrador.');
+        return {
+          success: false,
+          message: 'Servicio de email no está configurado.',
+          error: 'EMAIL_NOT_CONFIGURED'
+        };
+      }
+
+      if (!datosCompletos.datosEmpresa?.correo) {
+        alert('⚠️ No se encontró correo electrónico.\n\nPor favor completa el campo de correo en el formulario.');
+        return {
+          success: false,
+          message: 'No se encontró correo electrónico.',
+          error: 'NO_EMAIL'
+        };
+      }
+
+      console.log('📧 Preparando envío de autodiagnóstico...');
+
+      const toEmail = datosCompletos.datosEmpresa.correo;
+      const nombreEmpresa = datosCompletos.datosEmpresa.nombreEmpresa || 'Empresa';
+
+      const emailData = {
+        to: toEmail,
+        from: this.fromEmail,
+        subject: `🌱 Autodiagnóstico de Sostenibilidad - ${nombreEmpresa}`,
+        text: `Autodiagnóstico completado para ${nombreEmpresa}. Ver PDF adjunto.`,
+        html: this.generateAutogestionHTML(datosCompletos),
+        datosCompletos: datosCompletos
+      };
+
+      const response = await fetch('/api/send-email-autogestion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Error al enviar email');
+      }
+
+      console.log('✅ Email de autodiagnóstico enviado:', result);
+
+      return {
+        success: true,
+        message: 'Email enviado exitosamente',
+        response: result
+      };
+
+    } catch (error) {
+      console.error('❌ Error al enviar autodiagnóstico:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Genera HTML para el email de autodiagnóstico
+   */
+  generateAutogestionHTML(datosCompletos) {
+    const { datosEmpresa, promedios } = datosCompletos;
+    
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .section { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .metric { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+    .metric:last-child { border-bottom: none; }
+    .label { font-weight: bold; color: #666; }
+    .value { color: #43a047; font-weight: bold; font-size: 18px; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+    .icon { font-size: 40px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="icon">🌱</div>
+      <h1>Autodiagnóstico de Sostenibilidad</h1>
+      <p>${this.companyName}</p>
+    </div>
+    
+    <div class="content">
+      <div class="section">
+        <h2>🏢 ${datosEmpresa.nombreEmpresa}</h2>
+        <p><strong>NIT:</strong> ${datosEmpresa.nit || '-'}</p>
+        <p><strong>Fecha:</strong> ${datosCompletos.fecha || '-'}</p>
+      </div>
+
+      <div class="section">
+        <h2>📊 Resultados por Dimensión</h2>
+        <div class="metric">
+          <span class="label">💼 Diagnóstico Económico:</span>
+          <span class="value">${promedios.A.porcentajeFinal.toFixed(1)}%</span>
+        </div>
+        <div class="metric">
+          <span class="label">🌿 Gestión Ambiental:</span>
+          <span class="value">${promedios.B.porcentajeFinal.toFixed(1)}%</span>
+        </div>
+        <div class="metric">
+          <span class="label">⚡ Gestión Energía:</span>
+          <span class="value">${promedios.C.porcentajeFinal.toFixed(1)}%</span>
+        </div>
+        <div class="metric">
+          <span class="label">🏥 Seguridad y Salud:</span>
+          <span class="value">${promedios.D.porcentajeFinal.toFixed(1)}%</span>
+        </div>
+        <div class="metric">
+          <span class="label">👥 Diagnóstico Social:</span>
+          <span class="value">${promedios.E.porcentajeFinal.toFixed(1)}%</span>
+        </div>
+        <div class="metric">
+          <span class="label">📦 Diagnóstico Almacén:</span>
+          <span class="value">${promedios.F.porcentajeFinal.toFixed(1)}%</span>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <p>💚 <strong>¡Gracias por completar el autodiagnóstico!</strong></p>
+        <p>Revisa el PDF adjunto para ver el reporte completo con todas las respuestas.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>© 2025 ${this.companyName}. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+  }
+
+  /**
    * Envía un email de contacto simple
    * @param {Object} contactData - {name, email, phone, subject, message}
    * @returns {Promise<Object>}

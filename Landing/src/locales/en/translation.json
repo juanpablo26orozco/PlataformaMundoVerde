@@ -702,7 +702,19 @@
       "validation": {
         "error": "Error",
         "answerAllQuestions": "Please answer all questions before continuing.",
-        "close": "Close"
+        "close": "Close",
+        "missingFields": "Please complete the following required fields: {{fields}}",
+        "invalidEmail": "Please enter a valid email address."
+      },
+      "actions": {
+        "downloadPDF": "Download PDF",
+        "sendByEmail": "Send by Email",
+        "confirmDownload": "Do you want to generate the PDF with the complete self-assessment?",
+        "confirmEmail": "Do you want to send the complete self-assessment to {{email}}?",
+        "downloadSuccess": "✅ PDF downloaded successfully!",
+        "emailSuccess": "✅ Email sent successfully to {{email}}",
+        "downloadError": "❌ Error generating PDF. Please try again.",
+        "emailError": "❌ Error sending email. Please try again."
       },
       "sections": {
         "economicDiagnosis": "Economic Diagnosis",

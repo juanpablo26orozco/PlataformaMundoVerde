@@ -1036,7 +1036,34 @@ const FormularioAutogestion = ({ noCard = false }) => {
   }
   
   function handleStartWizard() {
+    // Validar datos de empresa
+    const camposObligatorios = [
+      { campo: 'nombreEmpresa', nombre: t('autogestion.form.fields.companyName') },
+      { campo: 'nit', nombre: t('autogestion.form.fields.nit') },
+      { campo: 'correo', nombre: t('autogestion.form.fields.email') }
+    ];
+    
+    const camposFaltantes = camposObligatorios.filter(item => 
+      !datosEmpresa[item.campo] || datosEmpresa[item.campo].trim() === ''
+    );
+    
+    if (camposFaltantes.length > 0) {
+      const nombresCampos = camposFaltantes.map(item => item.nombre).join(', ');
+      setStepError(t('autogestion.form.validation.missingFields', { fields: nombresCampos }));
+      setShowErrorModal(true);
+      return;
+    }
+    
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(datosEmpresa.correo)) {
+      setStepError(t('autogestion.form.validation.invalidEmail'));
+      setShowErrorModal(true);
+      return;
+    }
+    
     setStepError("");
+    setShowErrorModal(false);
     setMissingQuestions([]);
     setShowWizard(true);
     setCurrentStep(0);
@@ -1049,16 +1076,158 @@ const FormularioAutogestion = ({ noCard = false }) => {
     setCurrentStep(0);
   }
 
+  // Función para descargar PDF
+  async function handleDescargarPDF() {
+    try {
+      if (window.confirm(t('autogestion.form.actions.confirmDownload'))) {
+        const datosCompletos = prepararDatosCompletos();
+        
+        const response = await fetch('/api/generar-pdf-autogestion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datosCompletos)
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error('Error al generar PDF: ' + errorText);
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Autodiagnostico_' + (datosEmpresa.nombreEmpresa || 'Empresa').replace(/\s+/g, '_') + '.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        alert(t('autogestion.form.actions.downloadSuccess'));
+      }
+    } catch (error) {
+      console.error('Error al descargar PDF:', error);
+      alert(t('autogestion.form.actions.downloadError') + '\n\nDetalle: ' + error.message);
+    }
+  }
+
+  // Función para enviar por email
+  async function handleEnviarEmail() {
+    try {
+      if (!datosEmpresa.correo) {
+        alert(t('autogestion.form.validation.invalidEmail'));
+        return;
+      }
+      
+      // Validar formato de correo
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(datosEmpresa.correo)) {
+        alert(t('autogestion.form.validation.invalidEmail'));
+        return;
+      }
+      
+      if (window.confirm(t('autogestion.form.actions.confirmEmail', { email: datosEmpresa.correo }))) {
+        const datosCompletos = prepararDatosCompletos();
+        
+        const EmailService = require('../../services/EmailService').default;
+        await EmailService.sendAutogestionByEmail(datosCompletos);
+        
+        alert(t('autogestion.form.actions.emailSuccess', { email: datosEmpresa.correo }));
+      }
+    } catch (error) {
+      console.error('Error al enviar email:', error);
+      alert(t('autogestion.form.actions.emailError') + '\n\nDetalle: ' + error.message);
+    }
+  }
+
+  // Función auxiliar para preparar datos completos
+  function prepararDatosCompletos() {
+    return {
+      datosEmpresa: datosEmpresa,
+      respuestas: {
+        seccionA: Object.keys(answers).filter(k => k.startsWith('A_')).reduce((obj, k) => ({ ...obj, [k]: answers[k] }), {}),
+        seccionB: Object.keys(answers).filter(k => k.startsWith('B_')).reduce((obj, k) => ({ ...obj, [k]: answers[k] }), {}),
+        seccionC: Object.keys(answers).filter(k => k.startsWith('C_')).reduce((obj, k) => ({ ...obj, [k]: answers[k] }), {}),
+        seccionD: Object.keys(answers).filter(k => k.startsWith('D_')).reduce((obj, k) => ({ ...obj, [k]: answers[k] }), {}),
+        seccionE: answersE,
+        seccionF: answersF
+      },
+      promedios: {
+        A: { bloques: blockAveragesA, porcentajeFinal: categoryPercentA },
+        B: { bloques: blockAveragesB, porcentajeFinal: categoryPercentB },
+        C: { bloques: blockAveragesC, porcentajeFinal: categoryPercentC },
+        D: { bloques: blockAveragesD, porcentajeFinal: categoryPercentD },
+        E: { bloques: blockAveragesE, porcentajeFinal: categoryPercentE },
+        F: { bloques: blockAveragesF, porcentajeFinal: categoryPercentF }
+      },
+      esquemas: {
+        seccionA: sectionA,
+        seccionB: sectionB,
+        seccionC: sectionC,
+        seccionD: sectionD,
+        seccionE: sectionE,
+        seccionF: sectionF
+      },
+      opciones: {
+        standard: options,
+        seccionE: optionsE
+      },
+      fecha: new Date().toLocaleDateString('es-CO')
+    };
+  }
+
   return (
   <>
       {/* Modal de error emergente */}
       {showErrorModal && (
-        <div className="autogestion-modal-overlay">
-          <div className="autogestion-modal">
-            <div className="autogestion-modal-header">{t('autogestion.form.validation.error')}</div>
-            <div className="autogestion-modal-body">{stepError}</div>
-            <div className="autogestion-modal-footer">
-              <Button color="danger" onClick={() => setShowErrorModal(false)} style={{fontWeight:700, borderRadius:10}}>{t('autogestion.form.validation.close')}</Button>
+        <div className="autogestion-modal-overlay" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999
+        }}>
+          <div className="autogestion-modal" style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+          }}>
+            <div className="autogestion-modal-header" style={{
+              fontSize: '1.5rem',
+              fontWeight: 900,
+              color: '#d32f2f',
+              marginBottom: '16px',
+              textAlign: 'center'
+            }}>⚠️ {t('autogestion.form.validation.error')}</div>
+            <div className="autogestion-modal-body" style={{
+              fontSize: '1.1rem',
+              color: '#333',
+              marginBottom: '24px',
+              textAlign: 'center',
+              lineHeight: '1.5'
+            }}>{stepError}</div>
+            <div className="autogestion-modal-footer" style={{
+              display: 'flex',
+              justifyContent: 'center'
+            }}>
+              <Button 
+                color="danger" 
+                onClick={() => setShowErrorModal(false)} 
+                style={{
+                  fontWeight: 700, 
+                  borderRadius: 10,
+                  padding: '12px 32px',
+                  fontSize: '1.1rem'
+                }}
+              >{t('autogestion.form.validation.close')}</Button>
             </div>
           </div>
         </div>
@@ -1311,6 +1480,53 @@ const FormularioAutogestion = ({ noCard = false }) => {
                       F: categoryPercentF
                     }}
                   />
+                  {/* Botones de descarga y envío */}
+                  <div style={{width:'100%', display:'flex', justifyContent:'center', gap:24, marginTop:32, flexWrap:'wrap'}}>
+                    <button
+                      className="btn-download-green"
+                      style={{
+                        fontWeight: 800,
+                        fontSize: 17,
+                        borderRadius: 24,
+                        padding: '12px 36px',
+                        background: 'linear-gradient(90deg, #43a047 0%, #388e3c 100%)',
+                        color: '#fff',
+                        border: 'none',
+                        boxShadow: '0 2px 12px #b7e4c7',
+                        transition: 'background 0.2s, box-shadow 0.2s',
+                        cursor: 'pointer',
+                        outline: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8
+                      }}
+                      onClick={handleDescargarPDF}
+                    >
+                      📥 {t('autogestion.form.actions.downloadPDF') || 'Descargar PDF'}
+                    </button>
+                    <button
+                      className="btn-email-green"
+                      style={{
+                        fontWeight: 800,
+                        fontSize: 17,
+                        borderRadius: 24,
+                        padding: '12px 36px',
+                        background: 'linear-gradient(90deg, #2196F3 0%, #1976D2 100%)',
+                        color: '#fff',
+                        border: 'none',
+                        boxShadow: '0 2px 12px #90caf9',
+                        transition: 'background 0.2s, box-shadow 0.2s',
+                        cursor: 'pointer',
+                        outline: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8
+                      }}
+                      onClick={handleEnviarEmail}
+                    >
+                      📧 {t('autogestion.form.actions.sendByEmail') || 'Enviar por Email'}
+                    </button>
+                  </div>
                   <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:32}}>
                     <Button color="secondary" onClick={handlePrevStep} style={{fontWeight:700, fontSize:'1.15rem', borderRadius:14, padding:'14px 38px'}}>{t('autogestion.form.navigation.previous')}</Button>
                     <Button color="primary" onClick={handleCloseWizard} style={{fontWeight:700, fontSize:'1.15rem', borderRadius:14, padding:'14px 38px'}}>{t('autogestion.form.navigation.finish')}</Button>

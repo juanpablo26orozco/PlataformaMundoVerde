@@ -701,7 +701,19 @@
       "validation": {
         "error": "Error",
         "answerAllQuestions": "Por favor responde todas las preguntas antes de continuar.",
-        "close": "Cerrar"
+        "close": "Cerrar",
+        "missingFields": "Por favor complete los siguientes campos obligatorios: {{fields}}",
+        "invalidEmail": "Por favor ingrese un correo electrónico válido."
+      },
+      "actions": {
+        "downloadPDF": "Descargar PDF",
+        "sendByEmail": "Enviar por Email",
+        "confirmDownload": "¿Desea generar el PDF con el autodiagnóstico completo?",
+        "confirmEmail": "¿Desea enviar el autodiagnóstico completo al correo {{email}}?",
+        "downloadSuccess": "✅ PDF descargado exitosamente!",
+        "emailSuccess": "✅ Email enviado exitosamente a {{email}}",
+        "downloadError": "❌ Error al generar el PDF. Por favor intente nuevamente.",
+        "emailError": "❌ Error al enviar el email. Por favor intente nuevamente."
       },
       "sections": {
         "economicDiagnosis": "Diagnóstico Económico",
