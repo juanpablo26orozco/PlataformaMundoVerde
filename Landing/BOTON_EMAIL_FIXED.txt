@@ -1,0 +1,56 @@
+// REEMPLAZAR TODO EL onClick DEL BOTÓN EMAIL (línea ~1788) CON ESTO:
+
+onClick={() => {
+  if (!codigoSeguimiento) {
+    alert('Primero debes calcular el resumen para poder enviar por email.');
+    return;
+  }
+
+  try {
+    const resultados = calcularEmisionesTotales();
+    const totalEmisiones = resultados.alcance1 + resultados.alcance2 + resultados.alcance3;
+    
+    const calculationActualizada = {
+      codigoSeguimiento: codigoSeguimiento,
+      datosEmpresa: {
+        nombreEmpresa: datosEmpresa.nombreEmpresa || '',
+        nit: datosEmpresa.nit || '',
+        sector: datosEmpresa.sector || 'No especificado',
+        ciudad: `${datosEmpresa.municipio || ''}, ${datosEmpresa.departamento || ''}`,
+        telefono: datosEmpresa.telefono || '',
+        correo: datosEmpresa.correo || ''
+      },
+      totalEmisiones: totalEmisiones,
+      alcances: {
+        alcance1: { total: emisiones.alcance1 },
+        alcance2: { total: emisiones.alcance2 },
+        alcance3: { total: emisiones.alcance3 }
+      },
+      fecha: datosEmpresa.fechaReporte || new Date().toLocaleDateString('es-CO')
+    };
+
+    const datosCompletosEmail = {
+      datosEmpresa,
+      solidos,
+      liquidos,
+      liquidosMoviles,
+      gaseosos,
+      gaseososMoviles,
+      electricidad,
+      vuelos,
+      extintores,
+      resultados,
+      evaluacion: {
+        nivel: totalEmisiones <= 10 ? 'Excelente' : totalEmisiones <= 50 ? 'Aceptable' : 'Alto impacto',
+        arboles: arboles
+      }
+    };
+
+    EmailService.sendCarbonFootprintByEmail(calculationActualizada, datosCompletosEmail);
+    alert(`Email enviado exitosamente con codigo ${codigoSeguimiento}`);
+
+  } catch (error) {
+    console.error('Error al enviar email:', error);
+    alert('Error al enviar el email. Por favor intenta nuevamente.');
+  }
+}}

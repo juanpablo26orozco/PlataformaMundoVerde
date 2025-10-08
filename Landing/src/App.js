@@ -19,6 +19,11 @@ const navItems = [
 ];
 
 class App extends Component {
+  componentDidMount() {
+    // Configurar el título base de la aplicación
+    document.title = "Mundo Verde - Gestión Ambiental";
+  }
+
   render() {
     return (
       <React.Fragment>

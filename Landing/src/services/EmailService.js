@@ -169,7 +169,7 @@ Distribución por alcances:
 
       console.log('✅ Email enviado exitosamente:', result);
 
-      alert('✅ ¡Email enviado exitosamente!\n\n📧 Revisa tu bandeja de entrada: ' + toEmail);
+      alert('✅ ¡Email enviado exitosamente!\n\n📧 Revisa tu bandeja de entrada o spam: ' + toEmail);
 
       return {
         success: true,

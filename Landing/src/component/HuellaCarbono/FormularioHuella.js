@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import departamentosMunicipios from "../../data/departamentos_municipios.json";
 import { Container, Row, Col, Card, CardBody, Button, Table, FormGroup, Label, Input } from "reactstrap";
 import FeatherIcon from "feather-icons-react";
 import { useTranslation } from 'react-i18next';
-import CalculationService from "../../services/CalculationService";
+import { useEmissionFactors } from '../../context/EmissionFactorsContext';
 import EmailService from "../../services/EmailService";
 import "../../assets/css/formulario.css";
 // Endpoints API countriesnow.space
@@ -52,68 +52,7 @@ async function getCoords(city, state, country) {
 }
 
 // Factores de ejemplo para combustibles gaseosos
-const FACTORES_GASEOSOS = [
-  { nombre: "Biogas Genérico", poderCalorifico: 22.0001, factorCO2: 84364.4183, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 0.1 },
-  { nombre: "Coke Gas Genérico", poderCalorifico: 15.0252, factorCO2: 40784.0416, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 0.1 },
-  { nombre: "Gas Natural Cusiana", poderCalorifico: 38.6735, factorCO2: 56647.7825, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 3 },
-  { nombre: "Gas Natural Guajira", poderCalorifico: 33.4943, factorCO2: 54911.3424, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 3 },
-  { nombre: "Gas Natural Guepaje", poderCalorifico: 33.2687, factorCO2: 54689.5797, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 3 },
-  { nombre: "Gas Natural Neiva - Huila", poderCalorifico: 37.259, factorCO2: 54618.0888, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 3 },
-  { nombre: "Gas Opon Payoa", poderCalorifico: 35.4292, factorCO2: 55801.0446, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 3 },
-  { nombre: "Gas Cupiagua", poderCalorifico: 37.935, factorCO2: 56980.0106, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 3 },
-  { nombre: "Gas La Creciente", poderCalorifico: 13.5056, factorCO2: 54667.7823, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 3 },
-  { nombre: "Gas Natural Genérico", poderCalorifico: 35.6522, factorCO2: 55539.0869, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 3 },
-  { nombre: "Gas de Pozo Cupiagua", poderCalorifico: 40.5725, factorCO2: 56225.4566, factorCH4: 1, factorN2O_est: 0.1, factorN2O_mov: 0.1 }
-];
-
-const FACTORES_SOLIDOS = [
-  { nombre: "Carbón Genérico", poderCalorifico: 28.7600, factorCO2: 88136.0630, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 3101.7541 },
-  { nombre: "Carbón Guajira - Cesar", poderCalorifico: 26.6220, factorCO2: 81163.1560, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 1133.7889 },
-  { nombre: "Carbón Guajira", poderCalorifico: 30.4170, factorCO2: 95146.4460, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 427.5182 },
-  { nombre: "Carbón Cundinamarca", poderCalorifico: 29.1720, factorCO2: 75915.0750, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 578.8202 },
-  { nombre: "Carbón Cauca - Valle del Cauca", poderCalorifico: 31.2120, factorCO2: 80341.1980, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 10011.7045 },
-  { nombre: "Carbón Norte de Santander", poderCalorifico: 31.2920, factorCO2: 90087.8940, factorCH4: 1.20, factorN2O: 1.50, factorSO2: 671.8226 },
-  { nombre: "Carbón Córdoba-Norte de Antioquia", poderCalorifico: 20.9480, factorCO2: 90854.3910, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 1430.7775 },
-  { nombre: "Carbón Santander", poderCalorifico: 33.0770, factorCO2: 77405.1450, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 11860.2824 },
-  { nombre: "Carbón Santander Sogamoso", poderCalorifico: 29.2050, factorCO2: 92142.0410, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 738.9073 },
-  { nombre: "Carbón Boyacá", poderCalorifico: 35.2060, factorCO2: 86711.4470, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 308.9193 },
-  { nombre: "Carbón Antioquia", poderCalorifico: 24.4050, factorCO2: 93317.3110, factorCH4: 1.00, factorN2O: 1.50, factorSO2: 1399.6315 },
-  { nombre: "Bagazo", poderCalorifico: 14.7430, factorCO2: 112371.9450, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 47.4357 },
-  { nombre: "Fibra de palma", poderCalorifico: 16.9600, factorCO2: 115524.9500, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 240.1597 },
-  { nombre: "Cuesco de palma", poderCalorifico: 18.9790, factorCO2: 107438.3300, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 32.6761 },
-  { nombre: "Raquis de palma", poderCalorifico: 18.9790, factorCO2: 107438.3300, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 153.6714 },
-  { nombre: "Cascarilla de Arroz", poderCalorifico: 14.5600, factorCO2: 103875.9900, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 122.3044 },
-  { nombre: "Borra de Café", poderCalorifico: 24.5600, factorCO2: 90676.9600, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 78.0258 },
-  { nombre: "Cisco de Café", poderCalorifico: 19.9500, factorCO2: 89525.0270, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 0.0000 },
-  { nombre: "Leña", poderCalorifico: 16.9930, factorCO2: 89525.0270, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 0.0000 },
-  { nombre: "Madera Genérico", poderCalorifico: 18.9790, factorCO2: 115524.9500, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 21.6142 },
-  { nombre: "Madera Eucalipto", poderCalorifico: 18.9690, factorCO2: 103923.9300, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 5.2668 },
-  { nombre: "Madera Pino", poderCalorifico: 18.9690, factorCO2: 103923.9300, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 21.3772 },
-  { nombre: "Madera Acacia", poderCalorifico: 18.9690, factorCO2: 103923.9300, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 21.3772 },
-  { nombre: "Madera Melina", poderCalorifico: 18.9690, factorCO2: 103923.9300, factorCH4: 30.00, factorN2O: 4.00, factorSO2: 21.3772 },
-  { nombre: "Residuos de llantas", poderCalorifico: 37.9210, factorCO2: 77577.4880, factorCH4: 30.00, factorN2O: 0.10, factorSO2: 1124.9715 }
-];
-
-// Factores completos para combustibles líquidos
-const FACTORES_LIQUIDOS = [
-  { nombre: "Kerosene", densidad: 0.803, poderCalorifico: 42.8168, factorCO2: 73399.639, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 42.0002 },
-  { nombre: "Combustoleo", densidad: 0.97, poderCalorifico: 39.3469, factorCO2: 80460.272, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 1269.5595 },
-  { nombre: "Crudo de Castilla", densidad: 0.9414, poderCalorifico: 40.6705, factorCO2: 77841.778, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 1080.8539 },
-  { nombre: "Avigas", densidad: 0.696, poderCalorifico: 43.0302, factorCO2: 56337.812, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 2.4146 },
-  { nombre: "Jet A1", densidad: 0.826, poderCalorifico: 43.5769, factorCO2: 88461.137, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 30.6653 },
-  { nombre: "Biodiesel palma", densidad: 0.8751, poderCalorifico: 37.9079, factorCO2: 54806.487, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 2.4247 },
-  { nombre: "Etanol Anhidro", densidad: 0.8208, poderCalorifico: 22.4802, factorCO2: 84758.116, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 4.0847 },
-  { nombre: "Fuel Oil # 4 - Ecopetrol", densidad: 0.8493, poderCalorifico: 40.4422, factorCO2: 78281.203, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 3.0827 },
-  { nombre: "Gasolina Motor", densidad: 0.7475, poderCalorifico: 45.3295, factorCO2: 69923.668, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 2.9676 },
-  { nombre: "Diesel Marino", densidad: 0.8519, poderCalorifico: 42.8185, factorCO2: 74193.483, factorCH4: 1, factorN2O_est: 0.6, factorSO2: 4.3905 },
-  { nombre: "Diesel B2", densidad: 0.8519, poderCalorifico: 42.8185, factorCO2: 74193.483, factorCH4: 1, factorN2O_est: 0.6, factorSO2: 3.5705 },
-  { nombre: "Gasolina E10 (Comercial)", densidad: 0.745, poderCalorifico: 45.2318, factorCO2: 68911.812, factorCH4: 3, factorN2O_est: 0.6, factorSO2: 10.9589 },
-  { nombre: "GLP Cartagena", densidad: 0.5599, poderCalorifico: 45.4133, factorCO2: 67174.755, factorCH4: 3, factorN2O_est: 0.1, factorSO2: 0 },
-  { nombre: "GLP Barrancabermeja", densidad: 0.5599, poderCalorifico: 45.2318, factorCO2: 68911.812, factorCH4: 3, factorN2O_est: 0.1, factorSO2: 0 },
-  { nombre: "GLP Cusiana", densidad: 0.5343, poderCalorifico: 45.7431, factorCO2: 65846.382, factorCH4: 3, factorN2O_est: 0.1, factorSO2: 0 },
-  { nombre: "GLP Genérico", densidad: 0.5599, poderCalorifico: 45.4145, factorCO2: 67185.115, factorCH4: 3, factorN2O_est: 0.1, factorSO2: 0 }
-];
-
+// ========== HELPER FUNCTIONS ==========
 const REQUIRED_FIELDS = [
   "nombreEmpresa", "nit", "direccion", "departamento", "municipio", "añoBase", "fechaReporte", "telefono", "correo", "personaElabora", "cargo"
 ];
@@ -124,10 +63,22 @@ const getToday = () => {
 };
 
 // Factor eléctrico
-const FACTOR_ELECTRICO = 0.391;
-
 const FormularioHuella = ({ onFormComplete }) => {
   const { t } = useTranslation();
+  
+  // Hook para acceder a factores de emisión desde la base de datos
+  const { 
+    factors, 
+    loading: factorsLoading, 
+    error: factorsError,
+    getFactorByName,
+    getElectricityFactor,
+    getFlightFactor
+  } = useEmissionFactors();
+  
+  // Obtener factor eléctrico desde la base de datos (Colombia, año más reciente)
+  const FACTOR_ELECTRICO = getElectricityFactor('Colombia', 2024)?.factor_emision || 0.164;
+  
   // Estado para datosEmpresa debe ir al inicio del componente
   const [datosEmpresa, setDatosEmpresa] = useState({
     nombreEmpresa: "",
@@ -187,7 +138,7 @@ const FormularioHuella = ({ onFormComplete }) => {
   // Estados para el control de pasos y cálculos
   const [step, setStep] = useState(1);
   const [resumenCalculado, setResumenCalculado] = useState(false);
-  const [savedCalculation, setSavedCalculation] = useState(null);
+  const [codigoSeguimiento, setCodigoSeguimiento] = useState(null);
   const resumenRef = useRef(null);
 
   // Datos generales
@@ -277,17 +228,46 @@ const FormularioHuella = ({ onFormComplete }) => {
     }
   }, [estadoDestinoVuelo, paisDestinoVuelo]);
 
-  // Factores de extintores (ejemplo)
+  // Factores de extintores basados en PCG (Potencial de Calentamiento Global)
   const FACTORES_EXTINTORES = [
-    { tipo: "ABC", factor: 1.0 },
-    { tipo: "CO2", factor: 1.5 }
+    { tipo: "Dioxido de Carbono (CO2)", pcg: 1 },
+    { tipo: "Multipropósito", pcg: 0 },
+    { tipo: "Solkaflam", pcg: 77 }
   ];
 
-  // Handlers mínimos para extintores y electricidad
+  // Handlers para extintores - auto-calcula PCG y emisiones
   const handleExtintorChange = (idx, field, value) => {
-    const updated = [...extintores];
-    updated[idx][field] = value;
-    setExtintores(updated);
+    let newRows = [...extintores];
+    
+    if (field === "tipo") {
+      // Cuando se selecciona un tipo, auto-rellenar el PCG
+      const found = FACTORES_EXTINTORES.find(f => f.tipo === value);
+      if (found) {
+        newRows[idx] = {
+          ...newRows[idx],
+          tipo: value,
+          pcg: found.pcg
+        };
+      } else {
+        newRows[idx] = {
+          ...newRows[idx],
+          tipo: value,
+          pcg: ""
+        };
+      }
+    } else {
+      newRows[idx][field] = value;
+    }
+    
+    // Calcular emisiones parciales: Cantidad × PCG
+    const row = newRows[idx];
+    const cantidad = parseFloat(row.cantidad) || 0;
+    const pcg = parseFloat(row.pcg) || 0;
+    const emisionesParciales = cantidad * pcg;
+    
+    newRows[idx].emisionesParciales = emisionesParciales > 0 ? emisionesParciales : "";
+    
+    setExtintores(newRows);
   };
   const handleElectricidadChange = (idx, field, value) => {
     const updated = [...electricidad];
@@ -316,10 +296,92 @@ const FormularioHuella = ({ onFormComplete }) => {
   const addElectricidadRow = () => setElectricidad([...electricidad, { año: '', instalacion: '', enero: '', febrero: '', marzo: '', abril: '', mayo: '', junio: '', julio: '', agosto: '', septiembre: '', octubre: '', noviembre: '', diciembre: '' }]);
 
   // Handler de submit
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí puedes enviar los datos o hacer el cálculo final
-    if (onFormComplete) onFormComplete({ datosEmpresa, extintores, electricidad, vuelos });
+    
+    // Calcular totales antes de guardar
+    const resultados = calcularEmisionesTotales();
+    
+    // Calcular evaluación y árboles
+    const totalEmisiones = resultados.alcance1 + resultados.alcance2 + resultados.alcance3;
+    let nivelEvaluacion = '';
+    let arbolesCompensacion = 0;
+    
+    if (totalEmisiones <= 10) {
+      nivelEvaluacion = 'Excelente';
+      arbolesCompensacion = Math.ceil(totalEmisiones * 50);
+    } else if (totalEmisiones <= 50) {
+      nivelEvaluacion = 'Aceptable';
+      arbolesCompensacion = Math.ceil(totalEmisiones * 60);
+    } else {
+      nivelEvaluacion = 'Alto impacto';
+      arbolesCompensacion = Math.ceil(totalEmisiones * 80);
+    }
+    
+    // Preparar datos completos para guardar
+    const datosCompletos = {
+      datosEmpresa,
+      solidos,
+      liquidos,
+      liquidosMoviles,
+      gaseosos,
+      gaseososMoviles,
+      electricidad,
+      vuelos,
+      extintores,
+      resultados,
+      evaluacion: {
+        nivel: nivelEvaluacion,
+        arboles: arbolesCompensacion
+      }
+    };
+    
+    try {
+      // Guardar en base de datos
+      const response = await fetch('/api/huella-carbono/guardar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(datosCompletos)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('❌ Error del servidor:', errorData);
+        throw new Error(errorData.error || 'Error al guardar');
+      }
+      
+      const resultado = await response.json();
+      
+      if (resultado.success) {
+        console.log('✅ Cálculo guardado en BD:', resultado.codigo);
+        console.log('✅ ID del cálculo:', resultado.id);
+        
+        // Guardar el código para mostrarlo en pantalla
+        setCodigoSeguimiento(resultado.codigo);
+        
+        // Mostrar el resumen (avanzar al paso final)
+        setResumenCalculado(true);
+        
+      } else {
+        console.error('❌ Error guardando:', resultado.error);
+        throw new Error(resultado.error || 'Error desconocido');
+      }
+      
+    } catch (error) {
+      console.error('❌ Error completo:', error);
+      // NO mostrar el error técnico al usuario, solo guardarlo en consola
+      // Aún así mostrar el resumen con los cálculos
+      setResumenCalculado(true);
+      // Mensaje genérico al usuario
+      console.warn('⚠️ El cálculo se guardó parcialmente. Por favor revisa los datos ingresados.');
+    }
+    
+    // Llamar callback si existe
+    if (onFormComplete) {
+      onFormComplete(datosCompletos);
+    }
   };
 
   // Resumen de emisiones (dummy para que compile)
@@ -389,8 +451,8 @@ const FormularioHuella = ({ onFormComplete }) => {
     };
   };
 
-  // Calcular emisiones dinámicamente
-  const emisiones = calcularEmisionesTotales();
+  // Calcular emisiones dinámicamente (solo cuando resumen está calculado)
+  const emisiones = resumenCalculado ? calcularEmisionesTotales() : { alcance1: 0, alcance2: 0, alcance3: 0 };
   const totalEmisiones = emisiones.alcance1 + emisiones.alcance2 + emisiones.alcance3;
   // Evaluación simple (puedes ajustar los umbrales)
   let evaluacion = "";
@@ -400,37 +462,8 @@ const FormularioHuella = ({ onFormComplete }) => {
   // Cálculo de árboles a plantar (1 árbol absorbe ~21kg CO2/año)
   const arboles = Math.ceil(totalEmisiones / 21);
 
-  // Auto-guardar cuando se calcula el resumen
-  useEffect(() => {
-    if (resumenCalculado && !savedCalculation) {
-      const datosParaGuardar = {
-        datosEmpresa: {
-          nombreEmpresa: datosEmpresa.nombreEmpresa || '',
-          nit: datosEmpresa.nit || '',
-          sector: datosEmpresa.sector || 'No especificado',
-          ciudad: `${datosEmpresa.municipio || ''}, ${datosEmpresa.departamento || ''}`,
-          telefono: datosEmpresa.telefono || '',
-          correo: datosEmpresa.correo || ''
-        },
-        alcances: {
-          alcance1_solidos: solidos.reduce((sum, s) => sum + (parseFloat(s.emisionesParciales) || 0), 0),
-          alcance1_liquidos: liquidos.reduce((sum, l) => sum + (parseFloat(l.emisionesParciales) || 0), 0),
-          alcance1_gaseosos: gaseosos.reduce((sum, g) => sum + (parseFloat(g.emisionesParciales) || 0), 0),
-          alcance1_liquidosMoviles: liquidosMoviles.reduce((sum, l) => sum + (parseFloat(l.emisionesParciales) || 0), 0),
-          alcance1_gaseososMoviles: gaseososMoviles.reduce((sum, g) => sum + (parseFloat(g.emisionesParciales) || 0), 0),
-          alcance1_extintores: extintores.reduce((sum, e) => sum + (parseFloat(e.emisionesParciales) || 0), 0),
-          alcance2_electricidad: emisiones.alcance2,
-          alcance3_vuelos: emisiones.alcance3
-        }
-      };
-
-      const resultado = CalculationService.saveCalculation(datosParaGuardar, 'carbonFootprint');
-      if (resultado.success) {
-        setSavedCalculation(resultado.calculation);
-        console.log('✅ Cálculo de Huella guardado:', resultado.calculation.id);
-      }
-    }
-  }, [resumenCalculado, savedCalculation, datosEmpresa, emisiones, solidos, liquidos, gaseosos, liquidosMoviles, gaseososMoviles, extintores]);
+  // GUARDADO AUTOMÁTICO ELIMINADO - Ahora se guarda SOLO cuando el usuario hace clic en "Enviar por Email"
+  // El guardado se hace en la base de datos PostgreSQL con el formato HC-YYYY-NNNNNN
 
   // Función para descargar pantallazo del resumen
   const addExtintorRow = () => setExtintores([...extintores, { tipo: '', cantidad: '', pcg: '', emisionesParciales: '' }]);
@@ -452,14 +485,12 @@ const FormularioHuella = ({ onFormComplete }) => {
         newRows[idx].distancia = "No encontrado";
       }
     }
-    // Factor de emisión según clase y distancia
+    // Factor de emisión según clase y distancia (desde BD)
     if (newRows[idx].distancia && newRows[idx].clase && !isNaN(parseFloat(newRows[idx].distancia))) {
-      let factorEmision = 0;
-      if (newRows[idx].clase === "Ejecutiva") {
-        factorEmision = 0.237;
-      } else if (newRows[idx].clase === "Economica" || newRows[idx].clase === "Económica") {
-        factorEmision = 0.158;
-      }
+      // Obtener factor desde la base de datos
+      const flightFactorFromDB = getFlightFactor(newRows[idx].clase);
+      const factorEmision = flightFactorFromDB?.factor_emision || 0;
+      
       const personas = parseFloat(newRows[idx].personas) || 0;
       newRows[idx].factor = factorEmision;
       newRows[idx].emisionKg = (personas * factorEmision * parseFloat(newRows[idx].distancia)).toFixed(2);
@@ -478,16 +509,17 @@ const FormularioHuella = ({ onFormComplete }) => {
   const handleSolidoChange = (idx, field, value) => {
     let newRows = [...solidos];
     if (field === "combustible") {
-      const found = FACTORES_SOLIDOS.find(f => f.nombre === value);
+      // Obtener factor desde la base de datos
+      const found = getFactorByName('solid', value);
       if (found) {
         newRows[idx] = {
           ...newRows[idx],
           combustible: value,
-          poderCalorifico: found.poderCalorifico,
-          factorCO2: found.factorCO2,
-          factorCH4: found.factorCH4,
-          factorN2O: found.factorN2O,
-          factorSO2: found.factorSO2
+          poderCalorifico: found.poder_calorifico,
+          factorCO2: found.factor_co2,
+          factorCH4: found.factor_ch4,
+          factorN2O: found.factor_n2o,
+          factorSO2: found.factor_so2
         };
       } else {
         newRows[idx] = {
@@ -524,17 +556,18 @@ const FormularioHuella = ({ onFormComplete }) => {
   const handleLiquidoChange = (idx, field, value) => {
     let newRows = [...liquidos];
     if (field === "combustible") {
-      const found = FACTORES_LIQUIDOS.find(f => f.nombre === value);
+      // Obtener factor desde la base de datos
+      const found = getFactorByName('liquid', value);
       if (found) {
         newRows[idx] = {
           ...newRows[idx],
           combustible: value,
           densidad: found.densidad,
-          poderCalorifico: found.poderCalorifico,
-          factorCO2: found.factorCO2,
-          factorCH4: found.factorCH4,
-          factorN2O: found.factorN2O_est || "",
-          factorSO2: found.factorSO2
+          poderCalorifico: found.poder_calorifico,
+          factorCO2: found.factor_co2,
+          factorCH4: found.factor_ch4,
+          factorN2O: found.factor_n2o || "",
+          factorSO2: found.factor_so2
         };
       } else {
         newRows[idx] = {
@@ -573,16 +606,17 @@ const FormularioHuella = ({ onFormComplete }) => {
   const handleGaseosoChange = (idx, field, value) => {
     let newRows = [...gaseosos];
     if (field === "combustible") {
-      const found = FACTORES_GASEOSOS.find(f => f.nombre === value);
+      // Obtener factor desde la base de datos
+      const found = getFactorByName('gas', value);
       if (found) {
         newRows[idx] = {
           ...newRows[idx],
           combustible: value,
-          poderCalorifico: found.poderCalorifico,
-          factorCO2: found.factorCO2,
-          factorCH4: found.factorCH4,
-          factorN2O: found.factorN2O_est,
-          factorSO2: found.factorSO2
+          poderCalorifico: found.poder_calorifico,
+          factorCO2: found.factor_co2,
+          factorCH4: found.factor_ch4,
+          factorN2O: found.factor_n2o,
+          factorSO2: found.factor_so2 || ""
         };
       } else {
         newRows[idx] = {
@@ -619,17 +653,18 @@ const FormularioHuella = ({ onFormComplete }) => {
   const handleLiquidoMovilChange = (idx, field, value) => {
     let newRows = [...liquidosMoviles];
     if (field === "combustible") {
-      const found = FACTORES_LIQUIDOS.find(f => f.nombre === value);
+      // Obtener factor desde la base de datos
+      const found = getFactorByName('liquid', value);
       if (found) {
         newRows[idx] = {
           ...newRows[idx],
           combustible: value,
           densidad: found.densidad,
-          poderCalorifico: found.poderCalorifico,
-          factorCO2: found.factorCO2,
-          factorCH4: found.factorCH4,
-          factorN2O: found.factorN2O_mov || found.factorN2O_est || "",
-          factorSO2: found.factorSO2
+          poderCalorifico: found.poder_calorifico,
+          factorCO2: found.factor_co2,
+          factorCH4: found.factor_ch4,
+          factorN2O: found.factor_n2o || "",
+          factorSO2: found.factor_so2
         };
       } else {
         newRows[idx] = {
@@ -668,16 +703,17 @@ const FormularioHuella = ({ onFormComplete }) => {
   const handleGaseosoMovilChange = (idx, field, value) => {
     let newRows = [...gaseososMoviles];
     if (field === "combustible") {
-      const found = FACTORES_GASEOSOS.find(f => f.nombre === value);
+      // Obtener factor desde la base de datos
+      const found = getFactorByName('gas', value);
       if (found) {
         newRows[idx] = {
           ...newRows[idx],
           combustible: value,
-          poderCalorifico: found.poderCalorifico,
-          factorCO2: found.factorCO2,
-          factorCH4: found.factorCH4,
-          factorN2O: found.factorN2O_mov,
-          factorSO2: found.factorSO2
+          poderCalorifico: found.poder_calorifico,
+          factorCO2: found.factor_co2,
+          factorCH4: found.factor_ch4,
+          factorN2O: found.factor_n2o,
+          factorSO2: found.factor_so2 || ""
         };
       } else {
         newRows[idx] = {
@@ -1028,7 +1064,7 @@ const FormularioHuella = ({ onFormComplete }) => {
                                   style={{minWidth:180}}
                                 >
                                   <option value="">Seleccione...</option>
-                                  {FACTORES_SOLIDOS.map(f => (
+                                  {factors?.combustibles_solidos?.map(f => (
                                     <option key={f.nombre} value={f.nombre}>{f.nombre}</option>
                                   ))}
                                 </Input>
@@ -1122,7 +1158,7 @@ const FormularioHuella = ({ onFormComplete }) => {
                                   style={{minWidth:180}}
                                 >
                                   <option value="">Seleccione...</option>
-                                  {FACTORES_LIQUIDOS.map(f => (
+                                  {factors?.combustibles_liquidos?.map(f => (
                                     <option key={f.nombre} value={f.nombre}>{f.nombre}</option>
                                   ))}
                                 </Input>
@@ -1226,7 +1262,7 @@ const FormularioHuella = ({ onFormComplete }) => {
                                   style={{minWidth:180}}
                                 >
                                   <option value="">Seleccione...</option>
-                                  {FACTORES_LIQUIDOS.map(f => (
+                                  {factors?.combustibles_liquidos?.map(f => (
                                     <option key={f.nombre} value={f.nombre}>{f.nombre}</option>
                                   ))}
                                 </Input>
@@ -1323,7 +1359,7 @@ const FormularioHuella = ({ onFormComplete }) => {
                                   style={{minWidth:180}}
                                 >
                                   <option value="">Seleccione...</option>
-                                  {FACTORES_GASEOSOS.map(f => (
+                                  {factors?.combustibles_gaseosos?.map(f => (
                                     <option key={f.nombre} value={f.nombre}>{f.nombre}</option>
                                   ))}
                                 </Input>
@@ -1421,7 +1457,7 @@ const FormularioHuella = ({ onFormComplete }) => {
                                   style={{minWidth:180}}
                                 >
                                   <option value="">Seleccione...</option>
-                                  {FACTORES_GASEOSOS.map(f => (
+                                  {factors?.combustibles_gaseosos?.map(f => (
                                     <option key={f.nombre} value={f.nombre}>{f.nombre}</option>
                                   ))}
                                 </Input>
@@ -1603,10 +1639,14 @@ const FormularioHuella = ({ onFormComplete }) => {
                     <div style={{ textAlign: 'center', margin: '2rem 0' }}>
                       <button
                         className="btn btn-success"
-                        onClick={() => setResumenCalculado(true)}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          // Llamar a handleSubmit para guardar en BD y obtener código
+                          await handleSubmit(e);
+                        }}
                         style={{ fontSize: '1.2rem', padding: '0.7rem 2.5rem', borderRadius: '2rem', boxShadow: '0 2px 8px #b2dfdb' }}
                       >
-                        Calcular Resumen
+                        Calcular y Guardar Resumen
                       </button>
                     </div>
                   )}
@@ -1621,6 +1661,37 @@ const FormularioHuella = ({ onFormComplete }) => {
         <h2 style={{color:'#1b5e20', fontWeight:800, margin:0, fontSize:32, letterSpacing:0.5}}>{t('calculadora.form.consumptionSummary')}</h2>
       </div>
     </div>
+    
+    {/* CÓDIGO DE SEGUIMIENTO */}
+    {codigoSeguimiento && (
+      <div style={{
+        background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+        borderRadius: 16,
+        padding: '20px 32px',
+        marginBottom: 24,
+        boxShadow: '0 4px 20px rgba(33, 150, 243, 0.3)',
+        border: '2px solid #1976D2',
+        textAlign: 'center'
+      }}>
+        <div style={{color: '#fff', fontSize: 16, fontWeight: 600, marginBottom: 8, letterSpacing: 0.5}}>
+          📋 CÓDIGO DE SEGUIMIENTO
+        </div>
+        <div style={{
+          color: '#fff',
+          fontSize: 32,
+          fontWeight: 800,
+          letterSpacing: 2,
+          fontFamily: 'monospace',
+          textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+        }}>
+          {codigoSeguimiento}
+        </div>
+        <div style={{color: '#E3F2FD', fontSize: 14, marginTop: 8, fontStyle: 'italic'}}>
+          Guarda este código para consultar tu cálculo más tarde
+        </div>
+      </div>
+    )}
+    
     <div style={{display:'flex', flexWrap:'wrap', gap:32, justifyContent:'center'}}>
       <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #d8f3dc', padding:24, minWidth:260, maxWidth:320, flex:1, border:'2px solid #b7e4c7'}}>
         <h3 style={{color:'#1b5e20', fontWeight:700, marginBottom:16, fontSize:20}}>{t('calculadora.form.companyData')}</h3>
@@ -1728,23 +1799,32 @@ const FormularioHuella = ({ onFormComplete }) => {
           e.currentTarget.style.transform = 'translateY(0)';
         }}
         onClick={() => {
-          if (savedCalculation) {
-            // Calcular totalEmisiones actual
-            const totalEmisionesActual = emisiones.alcance1 + emisiones.alcance2 + emisiones.alcance3;
+          console.log('� BOTÓN EMAIL CLICKEADO');
+          
+          if (!codigoSeguimiento) {
+            alert('Primero debes calcular y guardar el resumen antes de enviar por email.');
+            return;
+          }
+
+          try {
+            console.log('� Preparando email con código:', codigoSeguimiento);
             
-            // Actualizar savedCalculation con los datos actuales de la empresa
-            // (por si el usuario llenó el correo DESPUÉS de calcular)
+            // Preparar datos para el email con el código ya guardado
+            const resultados = calcularEmisionesTotales();
+            const totalEmisiones = resultados.alcance1 + resultados.alcance2 + resultados.alcance3;
+            
+            // Preparar datos para el email con el código de seguimiento ya guardado
             const calculationActualizada = {
-              ...savedCalculation,
+              codigoSeguimiento: codigoSeguimiento,
               datosEmpresa: {
                 nombreEmpresa: datosEmpresa.nombreEmpresa || '',
                 nit: datosEmpresa.nit || '',
                 sector: datosEmpresa.sector || 'No especificado',
                 ciudad: `${datosEmpresa.municipio || ''}, ${datosEmpresa.departamento || ''}`,
                 telefono: datosEmpresa.telefono || '',
-                correo: datosEmpresa.correo || ''  // ← Tomar correo ACTUAL
+                correo: datosEmpresa.correo || ''
               },
-              totalEmisiones: totalEmisionesActual,  // ← Agregar total
+              totalEmisiones: totalEmisiones,
               alcances: {
                 alcance1: { total: emisiones.alcance1 },
                 alcance2: { total: emisiones.alcance2 },
@@ -1752,25 +1832,33 @@ const FormularioHuella = ({ onFormComplete }) => {
               },
               fecha: datosEmpresa.fechaReporte || new Date().toLocaleDateString('es-CO')
             };
-            
-            // Preparar TODOS los datos para el PDF
-            const datosCompletos = {
-              ...calculationActualizada,
-              // Agregar todas las tablas del formulario
-              solidos: solidos,
-              liquidos: liquidos,
-              gaseosos: gaseosos,
-              liquidosMoviles: liquidosMoviles,
-              gaseososMoviles: gaseososMoviles,
-              extintores: extintores,
-              electricidad: electricidad,
-              vuelos: vuelos
+
+            const datosCompletosEmail = {
+              datosEmpresa,
+              solidos,
+              liquidos,
+              liquidosMoviles,
+              gaseosos,
+              gaseososMoviles,
+              electricidad,
+              vuelos,
+              extintores,
+              resultados,
+              evaluacion: {
+                nivel: totalEmisiones <= 10 ? 'Excelente' : totalEmisiones <= 50 ? 'Aceptable' : 'Alto impacto',
+                arboles: arboles
+              }
             };
+
+            // Enviar por email con el código de seguimiento
+            EmailService.sendCarbonFootprintByEmail(calculationActualizada, datosCompletosEmail);
             
-            // Enviar por email con TODOS los datos
-            EmailService.sendCarbonFootprintByEmail(calculationActualizada, datosCompletos);
-          } else {
-            alert('Por favor espera un momento mientras se guarda el cálculo...');
+            console.log('Email enviado con codigo:', codigoSeguimiento);
+            alert(`Email enviado exitosamente con codigo ${codigoSeguimiento}`);
+
+          } catch (error) {
+            console.error('Error al enviar email:', error);
+            alert('Error al enviar el email. Por favor intenta nuevamente.');
           }
         }}
       >

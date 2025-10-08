@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Container, Row, Col, Card, CardBody, Button } from 'reactstrap';
 import ModalPoliticas from '../Legal/ModalPoliticas';
 
-// Utilidades de cálculo
+// Utilidades de cÃ¡lculo
 function selectionToScore(selection) {
   switch (selection) {
     case 'IMP': return 3;
@@ -31,10 +31,10 @@ function excelStyleFinalPercent(groupAverages, n) {
   return step2;
 }
 
-// Función para obtener el esquema de la sección A con traducción
+// FunciÃ³n para obtener el esquema de la secciÃ³n A con traducciÃ³n
 const getSectionA = (t) => ({
   id: 'A',
-  title: 'Diagnóstico Económico',
+  title: 'DiagnÃ³stico EconÃ³mico',
   finalFormulaDivisor: 7,
   blocks: [
     {
@@ -108,10 +108,10 @@ const getSectionA = (t) => ({
   ]
 });
 
-// Función para obtener el esquema de la sección B con traducción
+// FunciÃ³n para obtener el esquema de la secciÃ³n B con traducciÃ³n
 const getSectionB = (t) => ({
   id: 'B',
-  title: 'Gestión Ambiental',
+  title: 'GestiÃ³n Ambiental',
   finalFormulaDivisor: 6,
   blocks: [
     {
@@ -230,10 +230,10 @@ const getSectionB = (t) => ({
   ]
 });
 
-// Función para obtener el esquema de la sección C con traducción
+// FunciÃ³n para obtener el esquema de la secciÃ³n C con traducciÃ³n
 const getSectionC = (t) => ({
   id: 'C',
-  title: 'Gestión Energía',
+  title: 'GestiÃ³n EnergÃ­a',
   finalFormulaDivisor: 3,
   blocks: [
     {
@@ -273,7 +273,7 @@ const getSectionC = (t) => ({
   ]
 });
 
-// Función para obtener el esquema de la sección D con traducción
+// FunciÃ³n para obtener el esquema de la secciÃ³n D con traducciÃ³n
 const getSectionD = (t) => ({
   id: 'D',
   title: 'Seguridad y Salud en el Trabajo',
@@ -376,10 +376,10 @@ const getSectionD = (t) => ({
   ]
 });
 
-// Función para obtener el esquema de la sección E con traducción
+// FunciÃ³n para obtener el esquema de la secciÃ³n E con traducciÃ³n
 const getSectionE = (t) => ({
   id: 'E',
-  title: 'Diagnóstico Aspectos Sociales',
+  title: 'DiagnÃ³stico Aspectos Sociales',
   finalFormulaDivisor: 4,
   blocks: [
     {
@@ -412,10 +412,10 @@ const getSectionE = (t) => ({
   ]
 });
 
-// Función para obtener el esquema de la sección F con traducción
+// FunciÃ³n para obtener el esquema de la secciÃ³n F con traducciÃ³n
 const getSectionF = (t) => ({
   id: 'F',
-  title: 'Diagnóstico Almacén',
+  title: 'DiagnÃ³stico AlmacÃ©n',
   finalFormulaDivisor: 3,
   blocks: [
     {
@@ -497,7 +497,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     direccion: "",
     departamento: "",
     municipio: "",
-    añoBase: "",
+    aÃ±oBase: "",
     fechaReporte: "",
     telefono: "",
     correo: "",
@@ -518,7 +518,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     const { name, value } = e.target;
     setDatosEmpresa(prev => ({ ...prev, [name]: value }));
   }
-  // Estado para error de validación
+  // Estado para error de validaciÃ³n
   const [stepError, setStepError] = useState("");
   // Estado para mostrar el modal de error
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -530,27 +530,27 @@ const FormularioAutogestion = ({ noCard = false }) => {
   // Estado para preguntas faltantes
   const [missingQuestions, setMissingQuestions] = useState([]);
 
+  // Estados para guardado en base de datos
+  const [codigoSeguimiento, setCodigoSeguimiento] = useState('');
+  const [guardandoDatos, setGuardandoDatos] = useState(false);
+  const [datosGuardados, setDatosGuardados] = useState(false);
+
   // Wizard
   const [showWizard, setShowWizard] = useState(false);
   const [currentStep, setCurrentStep] = useState(0); // 0 = A, 1 = B, ...
   
-  // Estado para modal de políticas
+  // Estado para modal de polÃ­ticas
   const [showModalPoliticas, setShowModalPoliticas] = useState(false);
   const [consentimientoAceptado, setConsentimientoAceptado] = useState(false);
 
-  // Estados para optimización (igual que huella de carbono)
-  const [resumenCalculado, setResumenCalculado] = useState(false);
-  const [codigoSeguimiento, setCodigoSeguimiento] = useState('');
-  const [guardandoResumen, setGuardandoResumen] = useState(false);
-
-  // Verificar si el usuario ya aceptó el consentimiento
+  // Verificar si el usuario ya aceptÃ³ el consentimiento
   useEffect(() => {
     const consentimiento = localStorage.getItem('consentimientoAceptado');
     if (consentimiento === 'true') {
       setConsentimientoAceptado(true);
     }
   }, []);
-  // Mapeo de respuestas a score sección F
+  // Mapeo de respuestas a score secciÃ³n F
   const scoresF = useMemo(() => {
     const out = {};
     sectionF.blocks.forEach(block => {
@@ -561,7 +561,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [answersF, sectionF]);
 
-  // Promedios por bloque sección F
+  // Promedios por bloque secciÃ³n F
   const blockAveragesF = useMemo(() => {
     const out = {};
     sectionF.blocks.forEach(block => {
@@ -571,17 +571,17 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [scoresF, sectionF]);
 
-  // Porcentaje final sección F
+  // Porcentaje final secciÃ³n F
   const categoryPercentF = useMemo(() => {
     const groupAvgs = sectionF.blocks.map(b => blockAveragesF[b.id]);
     return excelStyleFinalPercent(groupAvgs, sectionF.finalFormulaDivisor);
   }, [blockAveragesF, sectionF]);
-  // Handler de respuesta sección F
+  // Handler de respuesta secciÃ³n F
   function handleAnswerChangeF(questionId, value) {
     setAnswersF(prev => ({ ...prev, [questionId]: value }));
   }
 
-  // Mapeo de respuestas a score sección A
+  // Mapeo de respuestas a score secciÃ³n A
   const scoresA = useMemo(() => {
     const out = {};
     sectionA.blocks.forEach(block => {
@@ -592,7 +592,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [answers, sectionA]);
 
-  // Mapeo de respuestas a score sección B
+  // Mapeo de respuestas a score secciÃ³n B
   const scoresB = useMemo(() => {
     const out = {};
     sectionB.blocks.forEach(block => {
@@ -603,7 +603,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [answers, sectionB]);
 
-  // Mapeo de respuestas a score sección C
+  // Mapeo de respuestas a score secciÃ³n C
   const scoresC = useMemo(() => {
     const out = {};
     sectionC.blocks.forEach(block => {
@@ -614,7 +614,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [answers, sectionC]);
 
-  // Mapeo de respuestas a score sección D
+  // Mapeo de respuestas a score secciÃ³n D
   const scoresD = useMemo(() => {
     const out = {};
     sectionD.blocks.forEach(block => {
@@ -625,7 +625,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [answers, sectionD]);
 
-  // Mapeo de respuestas a score sección E
+  // Mapeo de respuestas a score secciÃ³n E
   const scoresE = useMemo(() => {
     const out = {};
     sectionE.blocks.forEach(block => {
@@ -636,7 +636,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [answersE, optionsE, sectionE]);
 
-  // Promedios por bloque sección A
+  // Promedios por bloque secciÃ³n A
   const blockAveragesA = useMemo(() => {
     const out = {};
     sectionA.blocks.forEach(block => {
@@ -646,7 +646,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [scoresA, sectionA]);
 
-  // Promedios por bloque sección B
+  // Promedios por bloque secciÃ³n B
   const blockAveragesB = useMemo(() => {
     const out = {};
     sectionB.blocks.forEach(block => {
@@ -656,7 +656,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [scoresB, sectionB]);
 
-  // Promedios por bloque sección C
+  // Promedios por bloque secciÃ³n C
   const blockAveragesC = useMemo(() => {
     const out = {};
     sectionC.blocks.forEach(block => {
@@ -666,7 +666,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [scoresC, sectionC]);
 
-  // Promedios por bloque sección D
+  // Promedios por bloque secciÃ³n D
   const blockAveragesD = useMemo(() => {
     const out = {};
     sectionD.blocks.forEach(block => {
@@ -676,7 +676,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [scoresD, sectionD]);
 
-  // Promedios por bloque sección E
+  // Promedios por bloque secciÃ³n E
   const blockAveragesE = useMemo(() => {
     const out = {};
     sectionE.blocks.forEach(block => {
@@ -687,31 +687,31 @@ const FormularioAutogestion = ({ noCard = false }) => {
     return out;
   }, [scoresE, sectionE]);
 
-  // Porcentaje final sección A
+  // Porcentaje final secciÃ³n A
   const categoryPercentA = useMemo(() => {
     const groupAvgs = sectionA.blocks.map(b => blockAveragesA[b.id]);
     return excelStyleFinalPercent(groupAvgs, sectionA.finalFormulaDivisor);
   }, [blockAveragesA, sectionA]);
 
-  // Porcentaje final sección B
+  // Porcentaje final secciÃ³n B
   const categoryPercentB = useMemo(() => {
     const groupAvgs = sectionB.blocks.map(b => blockAveragesB[b.id]);
     return excelStyleFinalPercent(groupAvgs, sectionB.finalFormulaDivisor);
   }, [blockAveragesB, sectionB]);
 
-  // Porcentaje final sección C
+  // Porcentaje final secciÃ³n C
   const categoryPercentC = useMemo(() => {
     const groupAvgs = sectionC.blocks.map(b => blockAveragesC[b.id]);
     return excelStyleFinalPercent(groupAvgs, sectionC.finalFormulaDivisor);
   }, [blockAveragesC, sectionC]);
 
-  // Porcentaje final sección D
+  // Porcentaje final secciÃ³n D
   const categoryPercentD = useMemo(() => {
     const groupAvgs = sectionD.blocks.map(b => blockAveragesD[b.id]);
     return excelStyleFinalPercent(groupAvgs, sectionD.finalFormulaDivisor);
   }, [blockAveragesD, sectionD]);
 
-  // Porcentaje final sección E
+  // Porcentaje final secciÃ³n E
   const categoryPercentE = useMemo(() => {
     const groupAvgs = sectionE.blocks.map(b => blockAveragesE[b.id] ?? 0);
     const sum = groupAvgs.reduce((a,b) => a + b, 0);
@@ -725,7 +725,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   }
 
-  // Handler de respuesta sección E
+  // Handler de respuesta secciÃ³n E
   function handleAnswerChangeE(questionId, value) {
     setAnswersE(prev => ({ ...prev, [questionId]: value }));
   }
@@ -758,7 +758,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
       );
   });
 
-  // Render pregunta sección E
+  // Render pregunta secciÃ³n E
   const QuestionRowE = React.memo(function QuestionRowE({ question }) {
     return (
       <div className={`autogestion-question-row${question.missing ? ' autogestion-question-missing' : ''}`}>
@@ -785,7 +785,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     );
   });
 
-  // Render pregunta sección F
+  // Render pregunta secciÃ³n F
   const QuestionRowF = React.memo(function QuestionRowF({ question }) {
     const name = `${question.id}`;
     return (
@@ -823,14 +823,14 @@ const FormularioAutogestion = ({ noCard = false }) => {
             <QuestionRow key={q.id} question={{...q, missing: missingQuestions.includes(q.id)}} />
           ))}
           <div className="autogestion-block-average">
-            {t('autogestion.form.blockAverage')} {averages[block.id] !== null ? averages[block.id].toFixed(2) : '—'}
+            {t('autogestion.form.blockAverage')} {averages[block.id] !== null ? averages[block.id].toFixed(2) : 'â€”'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Render bloque sección E
+  // Render bloque secciÃ³n E
   function BlockGroupE({ block }) {
     return (
       <Card className="autogestion-block-card">
@@ -840,14 +840,14 @@ const FormularioAutogestion = ({ noCard = false }) => {
             <QuestionRowE key={q.id} question={{...q, missing: missingQuestions.includes(q.id)}} />
           ))}
           <div className="autogestion-block-average autogestion-block-average-e">
-            {t('autogestion.form.blockAverage')} {blockAveragesE[block.id] !== null ? blockAveragesE[block.id].toFixed(2) : '—'}
+            {t('autogestion.form.blockAverage')} {blockAveragesE[block.id] !== null ? blockAveragesE[block.id].toFixed(2) : 'â€”'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Render bloque sección F
+  // Render bloque secciÃ³n F
   function BlockGroupF({ block }) {
     return (
       <Card className="autogestion-block-card">
@@ -857,14 +857,14 @@ const FormularioAutogestion = ({ noCard = false }) => {
             <QuestionRowF key={q.id} question={{...q, missing: missingQuestions.includes(q.id)}} />
           ))}
           <div className="autogestion-block-average autogestion-block-average-f">
-            {t('autogestion.form.blockAverage')} {blockAveragesF[block.id] !== null ? blockAveragesF[block.id].toFixed(2) : '—'}
+            {t('autogestion.form.blockAverage')} {blockAveragesF[block.id] !== null ? blockAveragesF[block.id].toFixed(2) : 'â€”'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Render resumen sección A
+  // Render resumen secciÃ³n A
   function SummaryPanelA() {
     return (
       <Card className="mb-5" style={{borderRadius:16, boxShadow:'0 2px 12px 0 rgba(76,175,80,0.10)', background:'#f1f8e9'}}>
@@ -878,14 +878,14 @@ const FormularioAutogestion = ({ noCard = false }) => {
             ))}
           </ul>
           <div style={{marginTop:18, fontWeight:700, color:'#217a3a', fontSize:'1.18rem'}}>
-            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.economicDiagnosis').toLowerCase()}: {isNaN(categoryPercentA) ? '—' : categoryPercentA.toFixed(1) + ' %'}
+            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.economicDiagnosis').toLowerCase()}: {isNaN(categoryPercentA) ? 'â€”' : categoryPercentA.toFixed(1) + ' %'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Render resumen sección B
+  // Render resumen secciÃ³n B
   function SummaryPanelB() {
     return (
       <Card className="mb-5" style={{borderRadius:16, boxShadow:'0 2px 12px 0 rgba(76,175,80,0.10)', background:'#e3f2fd'}}>
@@ -899,14 +899,14 @@ const FormularioAutogestion = ({ noCard = false }) => {
             ))}
           </ul>
           <div style={{marginTop:18, fontWeight:700, color:'#1565c0', fontSize:'1.18rem'}}>
-            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.environmentalManagement').toLowerCase()}: {isNaN(categoryPercentB) ? '—' : categoryPercentB.toFixed(1) + ' %'}
+            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.environmentalManagement').toLowerCase()}: {isNaN(categoryPercentB) ? 'â€”' : categoryPercentB.toFixed(1) + ' %'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Render resumen sección C
+  // Render resumen secciÃ³n C
   function SummaryPanelC() {
     return (
       <Card className="mb-5" style={{borderRadius:16, boxShadow:'0 2px 12px 0 rgba(76,175,80,0.10)', background:'#e8f5e9'}}>
@@ -920,14 +920,14 @@ const FormularioAutogestion = ({ noCard = false }) => {
             ))}
           </ul>
           <div style={{marginTop:18, fontWeight:700, color:'#2e7d32', fontSize:'1.18rem'}}>
-            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.energyManagement').toLowerCase()}: {isNaN(categoryPercentC) ? '—' : categoryPercentC.toFixed(1) + ' %'}
+            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.energyManagement').toLowerCase()}: {isNaN(categoryPercentC) ? 'â€”' : categoryPercentC.toFixed(1) + ' %'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Render resumen sección D
+  // Render resumen secciÃ³n D
   function SummaryPanelD() {
     return (
       <Card className="mb-5" style={{borderRadius:16, boxShadow:'0 2px 12px 0 rgba(76,175,80,0.10)', background:'#f3e5f5'}}>
@@ -941,14 +941,14 @@ const FormularioAutogestion = ({ noCard = false }) => {
             ))}
           </ul>
           <div style={{marginTop:18, fontWeight:700, color:'#6a1b9a', fontSize:'1.18rem'}}>
-            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.occupationalSafety').toLowerCase()}: {isNaN(categoryPercentD) ? '—' : categoryPercentD.toFixed(1) + ' %'}
+            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.occupationalSafety').toLowerCase()}: {isNaN(categoryPercentD) ? 'â€”' : categoryPercentD.toFixed(1) + ' %'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Render resumen sección E
+  // Render resumen secciÃ³n E
   function SummaryPanelE() {
     return (
       <Card className="mb-5" style={{borderRadius:16, boxShadow:'0 2px 12px 0 rgba(21,101,192,0.10)', background:'#e3f2fd'}}>
@@ -962,14 +962,14 @@ const FormularioAutogestion = ({ noCard = false }) => {
             ))}
           </ul>
           <div style={{marginTop:18, fontWeight:700, color:'#1565c0', fontSize:'1.18rem'}}>
-            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.socialDiagnosis').toLowerCase()}: {isNaN(categoryPercentE) ? '—' : categoryPercentE.toFixed(1) + ' %'}
+            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.socialDiagnosis').toLowerCase()}: {isNaN(categoryPercentE) ? 'â€”' : categoryPercentE.toFixed(1) + ' %'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Render resumen sección F
+  // Render resumen secciÃ³n F
   function SummaryPanelF() {
     return (
       <Card className="mb-5" style={{borderRadius:16, boxShadow:'0 2px 12px 0 rgba(21,101,192,0.10)', background:'#f9fbe7'}}>
@@ -983,16 +983,16 @@ const FormularioAutogestion = ({ noCard = false }) => {
             ))}
           </ul>
           <div style={{marginTop:18, fontWeight:700, color:'#c0a115', fontSize:'1.18rem'}}>
-            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.warehouseDiagnosis').toLowerCase()}: {isNaN(categoryPercentF) ? '—' : categoryPercentF.toFixed(1) + ' %'}
+            {t('autogestion.form.summaries.finalPercentage')} {t('autogestion.form.sections.warehouseDiagnosis').toLowerCase()}: {isNaN(categoryPercentF) ? 'â€”' : categoryPercentF.toFixed(1) + ' %'}
           </div>
         </CardBody>
       </Card>
     );
   }
 
-  // Navegación wizard - Simplificada y mejorada
+  // NavegaciÃ³n wizard - Simplificada y mejorada
   function handleNextStep() {
-    // Validar que todas las preguntas del paso actual estén respondidas
+    // Validar que todas las preguntas del paso actual estÃ©n respondidas
     let missing = [];
     if (currentStep === 0) {
       sectionA.blocks.forEach(block => {
@@ -1054,12 +1054,12 @@ const FormularioAutogestion = ({ noCard = false }) => {
   }
   
   function handleStartWizard() {
-    // Si no ha aceptado el consentimiento, mostrar el modal de políticas
+    // Si no ha aceptado el consentimiento, mostrar el modal de polÃ­ticas
     if (!consentimientoAceptado) {
       setShowModalPoliticas(true);
       return;
     }
-    // Si ya aceptó, proceder con la validación normal
+    // Si ya aceptÃ³, proceder con la validaciÃ³n normal
     handleStartWizardInternal();
   }
 
@@ -1100,7 +1100,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
   const handleAceptarPoliticas = () => {
     setConsentimientoAceptado(true);
     setShowModalPoliticas(false);
-    // Proceder con la validación y apertura del wizard
+    // Proceder con la validaciÃ³n y apertura del wizard
     handleStartWizardInternal();
   };
 
@@ -1115,178 +1115,10 @@ const FormularioAutogestion = ({ noCard = false }) => {
     setCurrentStep(0);
   }
 
-  // Función para guardar autogestión optimizada (igual que huella de carbono)
-  const handleGuardarResumen = async () => {
-    setGuardandoResumen(true);
-    
-    try {
-      // 🆕 USAR prepararDatosCompletos() para tener toda la información
-      const datosCompletos = prepararDatosCompletos();
-      
-      // Preparar datos completos para enviar (combinando datos completos + resultados optimizados)
-      const porcentajeFinalCalculado = (
-        categoryPercentA + categoryPercentB + categoryPercentC + 
-        categoryPercentD + categoryPercentE + categoryPercentF
-      ) / 6;
-
-      const datosParaEnviar = {
-        // ✅ DATOS DE EMPRESA
-        datosEmpresa: {
-          nombreEmpresa: datosEmpresa.nombreEmpresa || '',
-          nit: datosEmpresa.nit || '',
-          sector: datosEmpresa.sector || '',
-          departamento: datosEmpresa.departamento || '',
-          municipio: datosEmpresa.municipio || '',
-          direccion: datosEmpresa.direccion || '',
-          telefono: datosEmpresa.telefono || '',
-          correo: datosEmpresa.correo || '',
-          personaElabora: datosEmpresa.personaElabora || '',
-          cargo: datosEmpresa.cargo || '',
-          fechaReporte: new Date().toISOString().split('T')[0],
-          añoBase: 2024
-        },
-        
-        // ✅ RESPUESTAS COMPLETAS (de prepararDatosCompletos)
-        respuestas: datosCompletos.respuestas,
-        
-        // ✅ RESULTADOS OPTIMIZADOS
-        resultados: {
-          porcentajeEconomico: categoryPercentA,
-          porcentajeAmbiental: categoryPercentB,
-          porcentajeEnergia: categoryPercentC,
-          porcentajeSeguridad: categoryPercentD,
-          porcentajeSocial: categoryPercentE,
-          porcentajeAlmacen: categoryPercentF,
-          porcentajeFinal: porcentajeFinalCalculado
-        },
-        
-        // ✅ PROMEDIOS COMPLETOS (de prepararDatosCompletos)
-        promedios: datosCompletos.promedios,
-        
-        // ✅ ESQUEMAS COMPLETOS (de prepararDatosCompletos) - ESTO ES LO QUE FALTABA
-        esquemas: datosCompletos.esquemas,
-        
-        // ✅ OPCIONES COMPLETAS (de prepararDatosCompletos) - ESTO ES LO QUE FALTABA  
-        opciones: datosCompletos.opciones,
-        
-        // ✅ FECHA
-        fecha: datosCompletos.fecha,
-        
-        // BLOQUES PARA COMPATIBILIDAD
-        promediosBloques: [
-          // Sección A
-          ...sectionA.blocks.map(block => ({
-            seccion: 'A',
-            bloque: block.id,
-            promedio: blockAveragesA[block.id] || 0
-          })),
-          // Sección B
-          ...sectionB.blocks.map(block => ({
-            seccion: 'B',
-            bloque: block.id,
-            promedio: blockAveragesB[block.id] || 0
-          })),
-          // Sección C
-          ...sectionC.blocks.map(block => ({
-            seccion: 'C',
-            bloque: block.id,
-            promedio: blockAveragesC[block.id] || 0
-          })),
-          // Sección D
-          ...sectionD.blocks.map(block => ({
-            seccion: 'D',
-            bloque: block.id,
-            promedio: blockAveragesD[block.id] || 0
-          })),
-          // Sección E
-          ...sectionE.blocks.map(block => ({
-            seccion: 'E',
-            bloque: block.id,
-            promedio: blockAveragesE[block.id] || 0
-          })),
-          // Sección F
-          ...sectionF.blocks.map(block => ({
-            seccion: 'F',
-            bloque: block.id,
-            promedio: blockAveragesF[block.id] || 0
-          }))
-        ],
-        nivelCumplimiento: obtenerNivelCumplimiento(porcentajeFinalCalculado)
-      };
-
-      console.log('🔵 Enviando autogestión optimizada CON DATOS COMPLETOS...', datosParaEnviar);
-
-      const response = await fetch('/api/guardar-autogestion', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(datosParaEnviar)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error HTTP: ${response.status}`);
-      }
-
-      const resultado = await response.json();
-      
-      if (resultado.success) {
-        setCodigoSeguimiento(resultado.data.codigo);
-        setResumenCalculado(true);
-        console.log('✅ AUTOGESTIÓN GUARDADA:', resultado.data.codigo);
-      } else {
-        throw new Error(resultado.message || 'Error al guardar');
-      }
-
-    } catch (error) {
-      console.error('❌ Error guardando autogestión:', error);
-      // Mostrar resumen aunque falle el guardado (como en huella de carbono)
-      setResumenCalculado(true);
-      setCodigoSeguimiento('AG-TEMP-' + Date.now());
-    } finally {
-      setGuardandoResumen(false);
-    }
-  };
-
-  // Función auxiliar para determinar nivel de cumplimiento
-  const obtenerNivelCumplimiento = (porcentaje) => {
-    if (porcentaje >= 80) return 'Excelente';
-    if (porcentaje >= 60) return 'Bueno';
-    if (porcentaje >= 40) return 'Aceptable';
-    return 'Necesita Mejoras';
-  };
-
-  // Función para descargar PDF
+  // FunciÃ³n para descargar PDF
   async function handleDescargarPDF() {
     try {
       if (window.confirm(t('autogestion.form.actions.confirmDownload'))) {
-        
-        // 🆕 SI EXISTE CÓDIGO DE SEGUIMIENTO, INTENTAR DESCARGAR PDF GUARDADO PRIMERO
-        if (codigoSeguimiento && codigoSeguimiento.startsWith('AG-')) {
-          console.log('📥 Intentando descargar PDF guardado desde BD:', codigoSeguimiento);
-          
-          const response = await fetch(`/api/descargar-pdf-autogestion-bd/${codigoSeguimiento}`);
-          
-          if (response.ok) {
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Autogestion_${codigoSeguimiento}_GUARDADO.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            alert(t('autogestion.form.actions.downloadSuccess') + `\n\nPDF guardado con código: ${codigoSeguimiento}`);
-            return;
-          } else {
-            console.warn('⚠️ PDF guardado no encontrado, generando uno nuevo...');
-          }
-        }
-        
-        // FALLBACK: Generar PDF dinámicamente si no hay PDF guardado
-        console.log(' Generando PDF...');
         const datosCompletos = prepararDatosCompletos();
         
         const response = await fetch('/api/generar-pdf-autogestion', {
@@ -1318,7 +1150,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     }
   }
 
-  // Función para enviar por email
+  // FunciÃ³n para enviar por email
   async function handleEnviarEmail() {
     try {
       if (!datosEmpresa.correo) {
@@ -1347,7 +1179,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
     }
   }
 
-  // Función auxiliar para preparar datos completos
+  // FunciÃ³n auxiliar para preparar datos completos
   function prepararDatosCompletos() {
     return {
       datosEmpresa: datosEmpresa,
@@ -1383,6 +1215,75 @@ const FormularioAutogestion = ({ noCard = false }) => {
     };
   }
 
+  // FunciÃ³n para guardar en base de datos
+  async function handleMostrarResumen() {
+    try {
+      if (!datosEmpresa.nombreEmpresa || !datosEmpresa.nit) {
+        alert('âš ï¸ Nombre de empresa y NIT son obligatorios para guardar');
+        return;
+      }
+
+      setGuardandoDatos(true);
+
+      const datosCompletos = prepararDatosCompletos();
+      const datosParaGuardar = {
+        datosEmpresa: datosEmpresa,
+        respuestas: datosCompletos.respuestas, // Todas las respuestas estructuradas
+        porcentajeA: categoryPercentA,
+        porcentajeB: categoryPercentB,
+        porcentajeC: categoryPercentC,
+        porcentajeD: categoryPercentD,
+        porcentajeE: categoryPercentE,
+        porcentajeF: categoryPercentF,
+        porcentajeFinal: Math.round(((categoryPercentA + categoryPercentB + categoryPercentC + categoryPercentD + categoryPercentE + categoryPercentF) / 6) * 100) / 100
+      };
+
+      console.log('ðŸ“¤ Enviando datos de autogestiÃ³n:', datosParaGuardar);
+
+      const response = await fetch('/api/autogestion/guardar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datosParaGuardar)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setCodigoSeguimiento(result.codigo);
+        setDatosGuardados(true);
+        
+        // Mostrar resumen completo
+        const resumen = `
+ðŸŽ‰ AUTODIAGNÃ“STICO GUARDADO EXITOSAMENTE
+
+ï¿½ RESUMEN DE DATOS:
+ðŸ†” ID en Base de Datos: ${result.id}
+ï¿½ CÃ³digo de Seguimiento: ${result.codigo}
+ðŸ¢ Empresa: ${result.datosEmpresa.nombreEmpresa}
+ðŸ“„ NIT: ${result.datosEmpresa.nit}
+
+ï¿½ RESULTADOS:
+â€¢ Porcentaje Final: ${result.porcentajeFinal}%
+â€¢ Nivel de Cumplimiento: ${result.nivelCumplimiento}
+â€¢ Respuestas Guardadas: ${result.respuestasGuardadas}
+
+âœ… ${result.mensaje}
+        `;
+        
+        alert(resumen);
+        
+      } else {
+        throw new Error(result.error || 'Error desconocido al guardar');
+      }
+
+    } catch (error) {
+      console.error('âŒ Error guardando autogestiÃ³n:', error);
+      alert(`âŒ Error al guardar en base de datos\n\nDetalle: ${error.message}`);
+    } finally {
+      setGuardandoDatos(false);
+    }
+  }
+
   return (
   <>
       {/* Modal de error emergente */}
@@ -1413,7 +1314,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
               color: '#d32f2f',
               marginBottom: '16px',
               textAlign: 'center'
-            }}>⚠️ {t('autogestion.form.validation.error')}</div>
+            }}>âš ï¸ {t('autogestion.form.validation.error')}</div>
             <div className="autogestion-modal-body" style={{
               fontSize: '1.1rem',
               color: '#333',
@@ -1463,7 +1364,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
                     <option key={mun} value={mun}>{mun}</option>
                   ))}
                 </select>
-                <input name="añoBase" value={datosEmpresa.añoBase} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.baseYear')} className="form-control" style={{flex:'1 1 80px', marginBottom:10}} />
+                <input name="aÃ±oBase" value={datosEmpresa.aÃ±oBase} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.baseYear')} className="form-control" style={{flex:'1 1 80px', marginBottom:10}} />
                 <input name="fechaReporte" value={datosEmpresa.fechaReporte} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.reportDate')} type="date" className="form-control" style={{flex:'1 1 140px', marginBottom:10}} />
                 <input name="telefono" value={datosEmpresa.telefono} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.phone')} className="form-control" style={{flex:'1 1 120px', marginBottom:10}} />
                 <input name="correo" value={datosEmpresa.correo} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.email')} className="form-control" style={{flex:'1 1 180px', marginBottom:10}} />
@@ -1499,7 +1400,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
                     <option key={mun} value={mun}>{mun}</option>
                   ))}
                 </select>
-                <input name="añoBase" value={datosEmpresa.añoBase} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.baseYear')} className="form-control" style={{flex:'1 1 80px', marginBottom:10}} />
+                <input name="aÃ±oBase" value={datosEmpresa.aÃ±oBase} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.baseYear')} className="form-control" style={{flex:'1 1 80px', marginBottom:10}} />
                 <input name="fechaReporte" value={datosEmpresa.fechaReporte} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.reportDate')} type="date" className="form-control" style={{flex:'1 1 140px', marginBottom:10}} />
                 <input name="telefono" value={datosEmpresa.telefono} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.phone')} className="form-control" style={{flex:'1 1 120px', marginBottom:10}} />
                 <input name="correo" value={datosEmpresa.correo} onChange={handleEmpresaChange} placeholder={t('autogestion.form.fields.email')} className="form-control" style={{flex:'1 1 180px', marginBottom:10}} />
@@ -1515,7 +1416,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
           </div>
         )
       )}
-      {/* Wizard pantalla completa - REDISEÑADO PARA EVITAR SOBREPOSICIÓN */}
+      {/* Wizard pantalla completa - REDISEÃ‘ADO PARA EVITAR SOBREPOSICIÃ“N */}
       {showWizard && (
         <div style={{
           position:'fixed',
@@ -1660,115 +1561,116 @@ const FormularioAutogestion = ({ noCard = false }) => {
                     <BlockGroupF key={block.id} block={block} />
                   ))}
                   <SummaryPanelF />
+                  
+                  {/* BOTÃ“N PRINCIPAL: Calcular y Guardar Resumen */}
+                  <div style={{width:'100%', display:'flex', justifyContent:'center', marginTop:32}}>
+                    <button
+                      style={{
+                        fontWeight: 800,
+                        fontSize: 20,
+                        borderRadius: 28,
+                        padding: '16px 48px',
+                        background: guardandoDatos 
+                          ? 'linear-gradient(90deg, #9E9E9E 0%, #757575 100%)'
+                          : 'linear-gradient(90deg, #FF9800 0%, #F57C00 100%)',
+                        color: '#fff',
+                        border: 'none',
+                        boxShadow: guardandoDatos ? '0 4px 20px #bdbdbd' : '0 4px 20px #ffcc80',
+                        transition: 'all 0.3s ease',
+                        cursor: guardandoDatos ? 'not-allowed' : 'pointer',
+                        outline: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 12,
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px'
+                      }}
+                      onClick={handleMostrarResumen}
+                      disabled={guardandoDatos}
+                    >
+                      {guardandoDatos ? 'â³ Guardando Datos...' : 'ðŸ“Š Calcular y Guardar Resumen'}
+                    </button>
+                  </div>
 
-                  {!resumenCalculado ? (
-                    // ANTES DE CALCULAR - Solo mostrar botón (igual que huella de carbono)
-                    <div style={{textAlign: 'center', marginTop: 40}}>
+                  {/* MOSTRAR RESULTADOS SOLO DESPUÃ‰S DE GUARDAR */}
+                  {datosGuardados && codigoSeguimiento && (
+                    <>
+                      {/* Mostrar cÃ³digo de seguimiento */}
                       <div style={{
                         maxWidth: 600,
-                        margin: '0 auto',
-                        background: '#fff',
-                        borderRadius: 18,
-                        boxShadow: '0 4px 20px rgba(76,175,80,0.15)',
-                        padding: '40px 32px',
-                        border: '2px solid #4caf50'
+                        margin: '32px auto',
+                        padding: '24px 32px',
+                        background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                        border: '3px solid #2196F3',
+                        borderRadius: 20,
+                        textAlign: 'center',
+                        boxShadow: '0 8px 32px rgba(33, 150, 243, 0.25)'
                       }}>
-                        <h4 style={{
-                          color: '#388e3c',
+                        <h3 style={{
+                          color: '#1976D2',
                           fontWeight: 900,
-                          fontSize: '1.4rem',
-                          marginBottom: 20
+                          fontSize: '1.5rem',
+                          marginBottom: 16,
+                          textTransform: 'uppercase',
+                          letterSpacing: '1px'
                         }}>
-                          🎯 Autodiagnóstico Completado
-                        </h4>
-                        
+                          âœ… AutodiagnÃ³stico Completado
+                        </h3>
+                        <div style={{
+                          background: '#fff',
+                          padding: '20px 24px',
+                          borderRadius: 16,
+                          marginBottom: 20,
+                          border: '2px solid #e3f2fd'
+                        }}>
+                          <p style={{
+                            color: '#424242',
+                            fontWeight: 600,
+                            marginBottom: 12,
+                            fontSize: '1.1rem'
+                          }}>
+                            CÃ³digo de seguimiento:
+                          </p>
+                          <p style={{
+                            color: '#1976D2',
+                            fontWeight: 900,
+                            fontSize: '2rem',
+                            margin: 0,
+                            fontFamily: 'monospace',
+                            letterSpacing: '3px'
+                          }}>
+                            {codigoSeguimiento}
+                          </p>
+                        </div>
                         <p style={{
-                          color: '#666',
-                          fontSize: '1.1rem',
-                          marginBottom: 30,
+                          color: '#546e7a',
+                          fontSize: '1rem',
+                          margin: 0,
                           lineHeight: 1.6
                         }}>
-                          Has completado todas las secciones del autodiagnóstico. 
-                          Haz clic en el botón para calcular y guardar tu resumen ejecutivo.
+                          ðŸ’¡ Conserve este cÃ³digo para consultar su autodiagnÃ³stico en el futuro
                         </p>
-                        
-                        <button 
-                          style={{
-                            fontWeight: 800,
-                            fontSize: 18,
-                            borderRadius: 25,
-                            padding: '16px 48px',
-                            background: guardandoResumen 
-                              ? 'linear-gradient(90deg, #9e9e9e 0%, #757575 100%)' 
-                              : 'linear-gradient(90deg, #43a047 0%, #388e3c 100%)',
-                            color: '#fff',
-                            border: 'none',
-                            boxShadow: '0 4px 15px rgba(67,160,71,0.3)',
-                            transition: 'all 0.3s ease',
-                            cursor: guardandoResumen ? 'not-allowed' : 'pointer',
-                            outline: 'none',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 12,
-                            margin: '0 auto'
-                          }}
-                          onClick={handleGuardarResumen}
-                          disabled={guardandoResumen}
-                        >
-                          {guardandoResumen ? (
-                            <>
-                              ⏳ Calculando y Guardando...
-                            </>
-                          ) : (
-                            <>
-                              📊 Calcular y Guardar Resumen
-                            </>
-                          )}
-                        </button>
                       </div>
-                    </div>
-                  ) : (
-                    // DESPUÉS DE CALCULAR - Mostrar todo el resumen (igual que huella de carbono)
-                    <div style={{marginTop: 40}}>
-                      
-                      {/* CÓDIGO DE SEGUIMIENTO PROMINENTE */}
-                      {codigoSeguimiento && (
-                        <div style={{
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          color: 'white',
-                          fontSize: '1.2rem',
-                          fontWeight: 700,
-                          textAlign: 'center',
-                          marginBottom: 32,
-                          padding: '20px 32px',
-                          borderRadius: 15,
-                          boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)'
-                        }}>
-                          🆔 Código de Seguimiento: {codigoSeguimiento}
-                        </div>
-                      )}
 
-                      {/* DATOS DE LA EMPRESA */}
-                      <div style={{maxWidth:700, margin:'0 auto 32px auto', background:'#fff', borderRadius:18, boxShadow:'0 2px 12px 0 rgba(76,175,80,0.10)', padding:'32px 28px'}}>
-                        <h3 style={{fontWeight:900, fontSize:'1.25rem', marginBottom:18, color:'#388e3c'}}>
-                          🏢 {t('autogestion.form.companyData')}
-                        </h3>
+                      {/* Mostrar datos de empresa */}
+                      <div style={{maxWidth:700, margin:'24px auto 0 auto', background:'#fff', borderRadius:18, boxShadow:'0 2px 12px 0 rgba(76,175,80,0.10)', padding:'32px 28px'}}>
+                        <h3 style={{fontWeight:900, fontSize:'1.25rem', marginBottom:18, color:'#388e3c'}}>{t('autogestion.form.companyData')}</h3>
                         <div style={{display:'flex', flexWrap:'wrap', gap:'18px'}}>
                           <div style={{flex:'1 1 220px', marginBottom:10}}><b>Nombre:</b> {datosEmpresa.nombreEmpresa}</div>
                           <div style={{flex:'1 1 120px', marginBottom:10}}><b>NIT:</b> {datosEmpresa.nit}</div>
-                          <div style={{flex:'1 1 220px', marginBottom:10}}><b>Dirección:</b> {datosEmpresa.direccion}</div>
+                          <div style={{flex:'1 1 220px', marginBottom:10}}><b>DirecciÃ³n:</b> {datosEmpresa.direccion}</div>
                           <div style={{flex:'1 1 120px', marginBottom:10}}><b>Departamento:</b> {datosEmpresa.departamento}</div>
                           <div style={{flex:'1 1 120px', marginBottom:10}}><b>Municipio:</b> {datosEmpresa.municipio}</div>
-                          <div style={{flex:'1 1 80px', marginBottom:10}}><b>Año base:</b> 2024</div>
-                          <div style={{flex:'1 1 140px', marginBottom:10}}><b>Fecha de reporte:</b> {new Date().toLocaleDateString()}</div>
-                          <div style={{flex:'1 1 120px', marginBottom:10}}><b>Teléfono:</b> {datosEmpresa.telefono}</div>
+                          <div style={{flex:'1 1 80px', marginBottom:10}}><b>AÃ±o base:</b> {datosEmpresa.aÃ±oBase}</div>
+                          <div style={{flex:'1 1 140px', marginBottom:10}}><b>Fecha de reporte:</b> {datosEmpresa.fechaReporte}</div>
+                          <div style={{flex:'1 1 120px', marginBottom:10}}><b>TelÃ©fono:</b> {datosEmpresa.telefono}</div>
                           <div style={{flex:'1 1 180px', marginBottom:10}}><b>Correo:</b> {datosEmpresa.correo}</div>
                           <div style={{flex:'1 1 180px', marginBottom:10}}><b>Persona que elabora:</b> {datosEmpresa.personaElabora}</div>
                           <div style={{flex:'1 1 120px', marginBottom:10}}><b>Cargo:</b> {datosEmpresa.cargo}</div>
                         </div>
                       </div>
 
-                      {/* RESUMEN GLOBAL CON PORCENTAJES */}
+                      {/* Mostrar resumen global */}
                       <ResumenGlobal
                         porcentajes={{
                           A: categoryPercentA,
@@ -1780,7 +1682,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
                         }}
                       />
 
-                      {/* BOTONES DE ACCIÓN - Solo habilitados después de guardar */}
+                      {/* Botones de descarga y envÃ­o - SOLO DESPUÃ‰S DE GUARDAR */}
                       <div style={{width:'100%', display:'flex', justifyContent:'center', gap:24, marginTop:32, flexWrap:'wrap'}}>
                         <button
                           className="btn-download-green"
@@ -1802,7 +1704,7 @@ const FormularioAutogestion = ({ noCard = false }) => {
                           }}
                           onClick={handleDescargarPDF}
                         >
-                          📥 {t('autogestion.form.actions.downloadPDF') || 'Descargar PDF'}
+                          ðŸ“¥ {t('autogestion.form.actions.downloadPDF') || 'Descargar PDF'}
                         </button>
                         <button
                           className="btn-email-green"
@@ -1824,36 +1726,8 @@ const FormularioAutogestion = ({ noCard = false }) => {
                           }}
                           onClick={handleEnviarEmail}
                         >
-                          📧 {t('autogestion.form.actions.sendByEmail') || 'Enviar por Email'}
+                          ðŸ“§ {t('autogestion.form.actions.sendByEmail') || 'Enviar por Email'}
                         </button>
                       </div>
-                    </div>
+                    </>
                   )}
-
-                  <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:32}}>
-                    <Button color="secondary" onClick={handlePrevStep} style={{fontWeight:700, fontSize:'1.15rem', borderRadius:14, padding:'14px 38px'}}>
-                      {t('autogestion.form.navigation.previous')}
-                    </Button>
-                    <Button color="primary" onClick={handleCloseWizard} style={{fontWeight:700, fontSize:'1.15rem', borderRadius:14, padding:'14px 38px'}}>
-                      {t('autogestion.form.navigation.finish')}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Políticas y Consentimiento */}
-      <ModalPoliticas
-        show={showModalPoliticas}
-        onHide={handleCancelarPoliticas}
-        onAceptar={handleAceptarPoliticas}
-        tipo="diagnostico"
-      />
-    </>
-  );
-};
-
-export default FormularioAutogestion;

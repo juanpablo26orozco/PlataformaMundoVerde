@@ -4,8 +4,8 @@ import {
     useParams
 } from "react-router-dom";
 
-function withRouter(Component : any) {
-    function ComponentWithRouterProp(props : any) {
+function withRouter(Component) {
+    function ComponentWithRouterProp(props) {
         let location = useLocation();
         let navigate = useNavigate();
         let params = useParams();

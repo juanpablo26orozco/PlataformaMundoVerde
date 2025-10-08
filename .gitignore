@@ -1,0 +1,135 @@
+# ============================================================================
+# GITIGNORE - PLATAFORMA MUNDO VERDE
+# ============================================================================
+
+# ============================================================================
+# ARCHIVOS DE CONFIGURACIÓN SENSIBLES (NO SUBIR!)
+# ============================================================================
+
+# Variables de entorno con credenciales de base de datos
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# ============================================================================
+# DEPENDENCIAS
+# ============================================================================
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============================================================================
+# ARCHIVOS DE BUILD
+# ============================================================================
+
+# React build
+/build
+/dist
+/.cache
+
+# ============================================================================
+# TESTING
+# ============================================================================
+
+/coverage
+*.log
+
+# ============================================================================
+# IDEs Y EDITORES
+# ============================================================================
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# JetBrains (WebStorm, IntelliJ)
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ============================================================================
+# SISTEMA OPERATIVO
+# ============================================================================
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+
+# ============================================================================
+# ARCHIVOS TEMPORALES
+# ============================================================================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.#*
+
+# ============================================================================
+# PDFS GENERADOS (OPCIONAL - puedes comentar si quieres guardarlos)
+# ============================================================================
+
+# Descomentar si no quieres subir PDFs generados
+# /pdfs_generados/
+# *.pdf
+
+# ============================================================================
+# BACKUPS DE BASE DE DATOS (OPCIONAL)
+# ============================================================================
+
+# Descomentar si haces backups locales
+# /backups/
+# *.sql.backup
+# *.dump
+
+# ============================================================================
+# OTROS
+# ============================================================================
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# TypeScript cache
+*.tsbuildinfo
+
+# ESLint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# ============================================================================
+# IMPORTANTE: VERIFICAR QUE .env ESTÉ IGNORADO
+# ============================================================================
+# Ejecuta: git check-ignore .env
+# Debe retornar: .env
+# Si no, el archivo NO está siendo ignorado y podrías subir credenciales!

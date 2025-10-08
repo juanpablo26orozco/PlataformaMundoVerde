@@ -141,7 +141,7 @@ const AutogestionPage = () => {
                 <h5 style={{color:'#217a3a', fontWeight:900, marginBottom:'12px', textAlign:'center'}}>{t('autogestion.downloads.selfDiagnosis.title')}</h5>
                 <p style={{color:'#4b5c53', fontSize:'1rem', textAlign:'center', marginBottom:'18px'}}>{t('autogestion.downloads.selfDiagnosis.description')}</p>
                 <a
-                  href="/Autodiagnostico_docs/1. Autodiagnóstico de sostenibilidad SuperSociedades - GRI.xlsx"
+                  href="/Autodiagnostico_docs/2.Autodiagnostico_de_Sostenibilidad.xlsx"
                   download
                   style={{
                     display: 'inline-block',
@@ -167,7 +167,7 @@ const AutogestionPage = () => {
                 <h5 style={{color:'#217a3a', fontWeight:900, marginBottom:'12px', textAlign:'center'}}>{t('autogestion.downloads.questionnaire.title')}</h5>
                 <p style={{color:'#4b5c53', fontSize:'1rem', textAlign:'center', marginBottom:'18px'}}>{t('autogestion.downloads.questionnaire.description')}</p>
                 <a
-                  href="/Autodiagnostico_docs/2. Cuestionario de Sostenibilidad Organizaciones.xls"
+                  href="/Autodiagnostico_docs/3.Plan_de_accion_inclusion_de_Sostenibilidad.xlsx"
                   download
                   style={{
                     display: 'inline-block',

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Container, 
   Row, 
@@ -14,38 +14,58 @@ import {
 
 import FeatherIcon from "feather-icons-react";
 import FormularioHuella from "../HuellaCarbono/FormularioHuella";
-import ResultadosHuella from "../HuellaCarbono/ResultadosHuella";
 import DocumentViewer from "../DocumentViewer";
 import BosqueVerdeImage from "../../assets/images/mundo-verde/vista-de-los-arboles-del-bosque-verde-con-co2.jpg";
 import { useTranslation } from 'react-i18next';
+import ModalPoliticas from "../Legal/ModalPoliticas";
 
 
 const CalculadoraSection = () => {
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [calculationData, setCalculationData] = useState(null);
   const [showInstructivo, setShowInstructivo] = useState(false);
+  const [showModalPoliticas, setShowModalPoliticas] = useState(false);
+  const [consentimientoAceptado, setConsentimientoAceptado] = useState(false);
+  
   const handleOpenInstructivo = () => setShowInstructivo(true);
   const handleCloseInstructivo = () => setShowInstructivo(false);
 
-  const toggle = () => {
-    setModal(!modal);
-    if (!modal) {
-      // Reset state when opening modal
-      setShowResults(false);
-      setCalculationData(null);
+  // Verificar si el usuario ya aceptó el consentimiento
+  useEffect(() => {
+    const consentimiento = localStorage.getItem('consentimientoAceptado');
+    if (consentimiento === 'true') {
+      setConsentimientoAceptado(true);
+    }
+  }, []);
+
+  const handleIniciarCalculo = () => {
+    // Si no ha aceptado el consentimiento, mostrar el modal de políticas
+    if (!consentimientoAceptado) {
+      setShowModalPoliticas(true);
+    } else {
+      // Si ya aceptó, abrir directamente el formulario
+      toggle();
     }
   };
 
-  const handleFormComplete = (formData) => {
-    setCalculationData(formData);
-    setShowResults(true);
+  const handleAceptarPoliticas = () => {
+    setConsentimientoAceptado(true);
+    setShowModalPoliticas(false);
+    // Abrir el formulario después de aceptar
+    toggle();
   };
 
-  const handleNewCalculation = () => {
-    setShowResults(false);
-    setCalculationData(null);
+  const handleCancelarPoliticas = () => {
+    setShowModalPoliticas(false);
+  };
+
+  const toggle = () => {
+    setModal(!modal);
+  };
+
+  const handleFormComplete = (formData) => {
+    // El formulario se completa automáticamente, no necesitamos hacer nada aquí
+    console.log('Formulario completado:', formData);
   };
 
   return (
@@ -219,7 +239,7 @@ const CalculadoraSection = () => {
                       <Button 
                         className="calculadora-btn"
                         size="lg"
-                        onClick={toggle}
+                        onClick={handleIniciarCalculo}
                       >
                         <span className="calculadora-btn-icon">
                           <FeatherIcon icon="play" size={18} />
@@ -389,19 +409,12 @@ const CalculadoraSection = () => {
       {/* Modal for Calculator */}
       <Modal isOpen={modal} toggle={toggle} size="xl" className="modal-dialog-scrollable">
         <ModalHeader toggle={toggle}>
-          {showResults ? t('calculadora.modal.results') : t('calculadora.modal.calculator')}
+          {t('calculadora.modal.calculator')}
         </ModalHeader>
         <ModalBody className="p-0">
-          {showResults ? (
-            <ResultadosHuella 
-              formData={calculationData} 
-              onNewCalculation={handleNewCalculation}
-            />
-          ) : (
-            <FormularioHuella 
-              onFormComplete={handleFormComplete}
-            />
-          )}
+          <FormularioHuella 
+            onFormComplete={handleFormComplete}
+          />
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={toggle}>
@@ -409,6 +422,14 @@ const CalculadoraSection = () => {
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* Modal de Políticas y Consentimiento */}
+      <ModalPoliticas
+        show={showModalPoliticas}
+        onHide={handleCancelarPoliticas}
+        onAceptar={handleAceptarPoliticas}
+        tipo="calculo"
+      />
     </React.Fragment>
   );
 };
