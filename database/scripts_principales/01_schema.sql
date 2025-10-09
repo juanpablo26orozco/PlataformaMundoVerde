@@ -1,10 +1,11 @@
 -- ============================================================================
 -- SCRIPT DE CREACIÓN DE BASE DE DATOS - PLATAFORMA MUNDO VERDE
 -- ============================================================================
--- Versión: 1.0.0
--- Fecha: 3 de Octubre, 2025
+-- Versión: 1.1.0
+-- Fecha: 9 de Octubre, 2025 (actualizado)
 -- Descripción: Esquema completo para sistema de gestión ambiental
--- Incluye: 17 tablas + índices + constraints + funciones
+-- Incluye: 21 tablas + índices + constraints + funciones
+-- Actualización: Se agregó tabla factores_vuelos faltante
 -- ============================================================================
 
 -- ============================================================================
@@ -654,6 +655,35 @@ CREATE INDEX idx_factores_electricidad_pais ON factores_electricidad_pais(pais, 
 CREATE INDEX idx_factores_electricidad_activo ON factores_electricidad_pais(activo);
 
 COMMENT ON TABLE factores_electricidad_pais IS 'Factores de emisión de electricidad por país y año';
+
+-- ============================================================================
+-- TABLA: factores_vuelos
+-- Descripción: Catálogo de factores de emisión para vuelos aéreos por clase
+-- ============================================================================
+
+CREATE TABLE factores_vuelos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    clase VARCHAR(100) NOT NULL,
+    
+    -- Factor de emisión único (sin distinción de distancia)
+    factor_emision DECIMAL(10,6) NOT NULL,
+    
+    -- Fuente oficial
+    fuente VARCHAR(500),
+    año_publicacion INTEGER,
+    
+    activo BOOLEAN DEFAULT true,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT factor_positivo CHECK (factor_emision > 0)
+);
+
+CREATE INDEX idx_factores_vuelos_clase ON factores_vuelos(clase);
+CREATE INDEX idx_factores_vuelos_activo ON factores_vuelos(activo);
+
+COMMENT ON TABLE factores_vuelos IS 'Catálogo de factores de emisión para vuelos aéreos por clase';
+COMMENT ON COLUMN factores_vuelos.factor_emision IS 'kg CO2e por pasajero por km (factor único, sin distinción de distancia)';
 
 -- ============================================================================
 -- TABLA: auditoria

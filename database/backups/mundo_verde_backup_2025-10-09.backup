@@ -1,0 +1,2891 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict Uh5dzlye82XeaajMYJdKjJrCE5YVj2GtJvhjCzdmYs0iyyWLTO5XekFudgf4Mke
+
+-- Dumped from database version 18.0
+-- Dumped by pg_dump version 18.0
+
+-- Started on 2025-10-09 06:33:25
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 3 (class 3079 OID 16400)
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- TOC entry 5476 (class 0 OID 0)
+-- Dependencies: 3
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+--
+-- TOC entry 2 (class 3079 OID 16389)
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- TOC entry 5477 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
+--
+-- TOC entry 320 (class 1255 OID 16954)
+-- Name: actualizar_fecha_modificacion(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.actualizar_fecha_modificacion() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.fecha_actualizacion := CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.actualizar_fecha_modificacion() OWNER TO postgres;
+
+--
+-- TOC entry 5478 (class 0 OID 0)
+-- Dependencies: 320
+-- Name: FUNCTION actualizar_fecha_modificacion(); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.actualizar_fecha_modificacion() IS 'Actualiza automáticamente la fecha de modificación de registros';
+
+
+--
+-- TOC entry 319 (class 1255 OID 16947)
+-- Name: actualizar_totales_huella(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.actualizar_totales_huella() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_calculo_id UUID;
+    v_total_alcance_1 DECIMAL(15,4);
+    v_total_alcance_2 DECIMAL(15,4);
+    v_total_alcance_3 DECIMAL(15,4);
+BEGIN
+    -- Determinar el ID del cálculo según la tabla
+    IF TG_TABLE_NAME IN ('combustibles_solidos', 'combustibles_liquidos', 'combustibles_gaseosos', 'extintores') THEN
+        IF TG_OP = 'DELETE' THEN
+            v_calculo_id := OLD.calculo_id;
+        ELSE
+            v_calculo_id := NEW.calculo_id;
+        END IF;
+    ELSIF TG_TABLE_NAME = 'consumo_electricidad' THEN
+        IF TG_OP = 'DELETE' THEN
+            v_calculo_id := OLD.calculo_id;
+        ELSE
+            v_calculo_id := NEW.calculo_id;
+        END IF;
+    ELSIF TG_TABLE_NAME = 'vuelos_aereos' THEN
+        IF TG_OP = 'DELETE' THEN
+            v_calculo_id := OLD.calculo_id;
+        ELSE
+            v_calculo_id := NEW.calculo_id;
+        END IF;
+    END IF;
+    
+    -- Calcular Alcance 1: Combustibles + Extintores
+    SELECT COALESCE(SUM(emisiones_totales), 0) INTO v_total_alcance_1
+    FROM (
+        SELECT COALESCE(SUM(emisiones_totales), 0) as emisiones_totales
+        FROM combustibles_solidos WHERE calculo_id = v_calculo_id
+        UNION ALL
+        SELECT COALESCE(SUM(emisiones_totales), 0)
+        FROM combustibles_liquidos WHERE calculo_id = v_calculo_id
+        UNION ALL
+        SELECT COALESCE(SUM(emisiones_totales), 0)
+        FROM combustibles_gaseosos WHERE calculo_id = v_calculo_id
+        UNION ALL
+        SELECT COALESCE(SUM(emisiones_parciales), 0) / 1000
+        FROM extintores WHERE calculo_id = v_calculo_id
+    ) t;
+    
+    -- Calcular Alcance 2: Electricidad
+    SELECT COALESCE(SUM(emisiones_totales), 0) INTO v_total_alcance_2
+    FROM consumo_electricidad
+    WHERE calculo_id = v_calculo_id;
+    
+    -- Calcular Alcance 3: Vuelos
+    SELECT COALESCE(SUM(emision_ton), 0) INTO v_total_alcance_3
+    FROM vuelos_aereos
+    WHERE calculo_id = v_calculo_id;
+    
+    -- Actualizar totales en calculos_huella_carbono
+    UPDATE calculos_huella_carbono
+    SET 
+        emisiones_alcance_1 = v_total_alcance_1,
+        emisiones_alcance_2 = v_total_alcance_2,
+        emisiones_alcance_3 = v_total_alcance_3,
+        fecha_actualizacion = CURRENT_TIMESTAMP
+    WHERE id = v_calculo_id;
+    
+    RETURN NULL;
+END;
+$$;
+
+
+ALTER FUNCTION public.actualizar_totales_huella() OWNER TO postgres;
+
+--
+-- TOC entry 5479 (class 0 OID 0)
+-- Dependencies: 319
+-- Name: FUNCTION actualizar_totales_huella(); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.actualizar_totales_huella() IS 'Recalcula automáticamente los totales por alcance en la huella de carbono';
+
+
+--
+-- TOC entry 298 (class 1255 OID 16914)
+-- Name: actualizar_updated_at(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.actualizar_updated_at() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.actualizar_updated_at() OWNER TO postgres;
+
+--
+-- TOC entry 317 (class 1255 OID 16943)
+-- Name: calcular_emisiones_electricidad(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.calcular_emisiones_electricidad() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Calcular emisiones parciales (kg CO₂)
+    NEW.emisiones_parciales := NEW.consumo_anual * NEW.factor_emision_co2;
+    
+    -- Convertir a toneladas CO₂
+    NEW.emisiones_totales := NEW.emisiones_parciales / 1000;
+    
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calcular_emisiones_electricidad() OWNER TO postgres;
+
+--
+-- TOC entry 5480 (class 0 OID 0)
+-- Dependencies: 317
+-- Name: FUNCTION calcular_emisiones_electricidad(); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.calcular_emisiones_electricidad() IS 'Calcula automáticamente emisiones del consumo eléctrico';
+
+
+--
+-- TOC entry 316 (class 1255 OID 16941)
+-- Name: calcular_emisiones_gaseosos(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.calcular_emisiones_gaseosos() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Calcular energía consumida (TJ)
+    NEW.energia_consumida := (NEW.consumo_anual * NEW.poder_calorifico) / 1000000;
+    
+    -- Calcular emisiones individuales (kg)
+    NEW.emision_co2 := NEW.energia_consumida * NEW.factor_co2 / 1000;
+    NEW.emision_ch4 := NEW.energia_consumida * NEW.factor_ch4 / 1000;
+    NEW.emision_n2o := NEW.energia_consumida * NEW.factor_n2o / 1000;
+    
+    IF NEW.factor_so2 IS NOT NULL THEN
+        NEW.emision_so2 := NEW.energia_consumida * NEW.factor_so2 / 1000;
+    ELSE
+        NEW.emision_so2 := 0;
+    END IF;
+    
+    -- Calcular emisiones totales en CO₂ equivalente (Ton)
+    -- GWP: CH4=25, N2O=298
+    NEW.emisiones_totales := (
+        NEW.emision_co2 + 
+        (NEW.emision_ch4 * 25) + 
+        (NEW.emision_n2o * 298)
+    ) / 1000;
+    
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calcular_emisiones_gaseosos() OWNER TO postgres;
+
+--
+-- TOC entry 5481 (class 0 OID 0)
+-- Dependencies: 316
+-- Name: FUNCTION calcular_emisiones_gaseosos(); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.calcular_emisiones_gaseosos() IS 'Calcula automáticamente emisiones de combustibles gaseosos';
+
+
+--
+-- TOC entry 315 (class 1255 OID 16939)
+-- Name: calcular_emisiones_liquidos(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.calcular_emisiones_liquidos() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Calcular masa del combustible (kg)
+    NEW.masa_combustible := NEW.consumo_anual * NEW.densidad;
+    
+    -- Calcular energía consumida (TJ)
+    NEW.energia_consumida := (NEW.masa_combustible * NEW.poder_calorifico) / 1000000;
+    
+    -- Calcular emisiones individuales (kg)
+    NEW.emision_co2 := NEW.energia_consumida * NEW.factor_co2 / 1000;
+    NEW.emision_ch4 := NEW.energia_consumida * NEW.factor_ch4 / 1000;
+    NEW.emision_n2o := NEW.energia_consumida * NEW.factor_n2o / 1000;
+    
+    IF NEW.factor_so2 IS NOT NULL THEN
+        NEW.emision_so2 := NEW.energia_consumida * NEW.factor_so2 / 1000;
+    ELSE
+        NEW.emision_so2 := 0;
+    END IF;
+    
+    -- Calcular emisiones totales en CO₂ equivalente (Ton)
+    -- GWP: CH4=25, N2O=298
+    NEW.emisiones_totales := (
+        NEW.emision_co2 + 
+        (NEW.emision_ch4 * 25) + 
+        (NEW.emision_n2o * 298)
+    ) / 1000;
+    
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calcular_emisiones_liquidos() OWNER TO postgres;
+
+--
+-- TOC entry 5482 (class 0 OID 0)
+-- Dependencies: 315
+-- Name: FUNCTION calcular_emisiones_liquidos(); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.calcular_emisiones_liquidos() IS 'Calcula automáticamente emisiones de combustibles líquidos';
+
+
+--
+-- TOC entry 314 (class 1255 OID 16937)
+-- Name: calcular_emisiones_solidos(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.calcular_emisiones_solidos() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Calcular energía consumida (TJ)
+    NEW.energia_consumida := (NEW.consumo_anual * NEW.poder_calorifico) / 1000000;
+    
+    -- Calcular emisiones individuales (kg)
+    NEW.emision_co2 := NEW.energia_consumida * NEW.factor_co2 / 1000;
+    NEW.emision_ch4 := NEW.energia_consumida * NEW.factor_ch4 / 1000;
+    NEW.emision_n2o := NEW.energia_consumida * NEW.factor_n2o / 1000;
+    
+    IF NEW.factor_so2 IS NOT NULL THEN
+        NEW.emision_so2 := NEW.energia_consumida * NEW.factor_so2 / 1000;
+    ELSE
+        NEW.emision_so2 := 0;
+    END IF;
+    
+    -- Calcular emisiones totales en CO₂ equivalente (Ton)
+    -- GWP: CH4=25, N2O=298, SO2=0 (no es GEI pero se registra)
+    NEW.emisiones_totales := (
+        NEW.emision_co2 + 
+        (NEW.emision_ch4 * 25) + 
+        (NEW.emision_n2o * 298)
+    ) / 1000;
+    
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calcular_emisiones_solidos() OWNER TO postgres;
+
+--
+-- TOC entry 5483 (class 0 OID 0)
+-- Dependencies: 314
+-- Name: FUNCTION calcular_emisiones_solidos(); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.calcular_emisiones_solidos() IS 'Calcula automáticamente emisiones de combustibles sólidos';
+
+
+--
+-- TOC entry 318 (class 1255 OID 16945)
+-- Name: calcular_emisiones_vuelos(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.calcular_emisiones_vuelos() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Calcular emisión en kg CO₂
+    NEW.emision_kg := NEW.distancia_km * NEW.factor_emision * NEW.numero_pasajeros;
+    
+    -- Convertir a toneladas
+    NEW.emision_ton := NEW.emision_kg / 1000;
+    
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calcular_emisiones_vuelos() OWNER TO postgres;
+
+--
+-- TOC entry 5484 (class 0 OID 0)
+-- Dependencies: 318
+-- Name: FUNCTION calcular_emisiones_vuelos(); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.calcular_emisiones_vuelos() IS 'Calcula automáticamente emisiones de vuelos aéreos';
+
+
+--
+-- TOC entry 299 (class 1255 OID 16918)
+-- Name: calcular_fecha_limite_eliminacion(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.calcular_fecha_limite_eliminacion() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF NEW.fecha_limite_legal IS NULL THEN
+        NEW.fecha_limite_legal = NEW.fecha_solicitud + INTERVAL '30 days';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calcular_fecha_limite_eliminacion() OWNER TO postgres;
+
+--
+-- TOC entry 301 (class 1255 OID 17005)
+-- Name: extraer_pdf_autogestion(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.extraer_pdf_autogestion(p_codigo_seguimiento character varying) RETURNS TABLE(codigo character varying, nombre_archivo character varying, "tamaño_bytes" bigint, pdf_base64 text)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        a.codigo_seguimiento,
+        a.pdf_nombre,
+        a.pdf_size,
+        encode(a.pdf_reporte, 'base64') as pdf_base64
+    FROM calculos_autogestion a
+    WHERE a.codigo_seguimiento = p_codigo_seguimiento
+    AND a.pdf_reporte IS NOT NULL;
+END;
+$$;
+
+
+ALTER FUNCTION public.extraer_pdf_autogestion(p_codigo_seguimiento character varying) OWNER TO postgres;
+
+--
+-- TOC entry 5485 (class 0 OID 0)
+-- Dependencies: 301
+-- Name: FUNCTION extraer_pdf_autogestion(p_codigo_seguimiento character varying); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.extraer_pdf_autogestion(p_codigo_seguimiento character varying) IS 'Extrae PDF de autogestión como base64 para descarga';
+
+
+--
+-- TOC entry 306 (class 1255 OID 16936)
+-- Name: generar_codigo_seguimiento(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.generar_codigo_seguimiento(p_prefijo character varying) RETURNS character varying
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_año VARCHAR(4);
+    v_secuencia INTEGER;
+    v_codigo VARCHAR(20);
+BEGIN
+    -- Obtener año actual
+    v_año := EXTRACT(YEAR FROM CURRENT_DATE)::VARCHAR;
+    
+    -- Obtener siguiente número de la secuencia correspondiente
+    IF p_prefijo = 'HC' THEN
+        v_secuencia := nextval('seq_huella_carbono_codigo');
+    ELSIF p_prefijo = 'AG' THEN
+        v_secuencia := nextval('seq_autogestion_codigo');
+    ELSE
+        RAISE EXCEPTION 'Prefijo inválido: %. Use HC o AG', p_prefijo;
+    END IF;
+    
+    -- Formatear código: PREFIJO-YYYY-NNNNNN (6 dígitos con ceros a la izquierda)
+    v_codigo := p_prefijo || '-' || v_año || '-' || LPAD(v_secuencia::VARCHAR, 6, '0');
+    
+    RETURN v_codigo;
+END;
+$$;
+
+
+ALTER FUNCTION public.generar_codigo_seguimiento(p_prefijo character varying) OWNER TO postgres;
+
+--
+-- TOC entry 5486 (class 0 OID 0)
+-- Dependencies: 306
+-- Name: FUNCTION generar_codigo_seguimiento(p_prefijo character varying); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.generar_codigo_seguimiento(p_prefijo character varying) IS 'Genera códigos únicos HC-YYYY-NNNNNN o AG-YYYY-NNNNNN';
+
+
+--
+-- TOC entry 322 (class 1255 OID 16975)
+-- Name: obtener_factor_combustible(character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.obtener_factor_combustible(p_tipo character varying, p_nombre character varying) RETURNS jsonb
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_resultado JSONB;
+BEGIN
+    IF p_tipo = 'solido' THEN
+        SELECT jsonb_build_object(
+            'poder_calorifico', poder_calorifico,
+            'factor_co2', factor_co2,
+            'factor_ch4', factor_ch4,
+            'factor_n2o', factor_n2o,
+            'factor_so2', factor_so2
+        ) INTO v_resultado
+        FROM catalogo_combustibles_solidos
+        WHERE nombre = p_nombre AND activo = true;
+        
+    ELSIF p_tipo = 'liquido' THEN
+        SELECT jsonb_build_object(
+            'densidad', densidad,
+            'poder_calorifico', poder_calorifico,
+            'factor_co2', factor_co2,
+            'factor_ch4', factor_ch4,
+            'factor_n2o', factor_n2o,
+            'factor_so2', factor_so2
+        ) INTO v_resultado
+        FROM catalogo_combustibles_liquidos
+        WHERE nombre = p_nombre AND activo = true;
+        
+    ELSIF p_tipo = 'gaseoso' THEN
+        SELECT jsonb_build_object(
+            'poder_calorifico', poder_calorifico,
+            'factor_co2', factor_co2,
+            'factor_ch4', factor_ch4,
+            'factor_n2o', factor_n2o,
+            'factor_so2', factor_so2
+        ) INTO v_resultado
+        FROM catalogo_combustibles_gaseosos
+        WHERE nombre = p_nombre AND activo = true;
+    ELSE
+        RAISE EXCEPTION 'Tipo de combustible inválido: %', p_tipo;
+    END IF;
+    
+    IF v_resultado IS NULL THEN
+        RAISE EXCEPTION 'Combustible no encontrado: % - %', p_tipo, p_nombre;
+    END IF;
+    
+    RETURN v_resultado;
+END;
+$$;
+
+
+ALTER FUNCTION public.obtener_factor_combustible(p_tipo character varying, p_nombre character varying) OWNER TO postgres;
+
+--
+-- TOC entry 5487 (class 0 OID 0)
+-- Dependencies: 322
+-- Name: FUNCTION obtener_factor_combustible(p_tipo character varying, p_nombre character varying); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.obtener_factor_combustible(p_tipo character varying, p_nombre character varying) IS 'Obtiene factores de emisión de catálogos';
+
+
+--
+-- TOC entry 323 (class 1255 OID 16976)
+-- Name: obtener_factor_electricidad(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.obtener_factor_electricidad(p_pais character varying DEFAULT 'Colombia'::character varying, "p_año" integer DEFAULT NULL::integer) RETURNS numeric
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_factor DECIMAL(10,6);
+    v_año_usar INTEGER;
+BEGIN
+    -- Si no se especifica año, usar el actual
+    IF p_año IS NULL THEN
+        v_año_usar := EXTRACT(YEAR FROM CURRENT_DATE);
+    ELSE
+        v_año_usar := p_año;
+    END IF;
+    
+    -- Buscar factor para el país y año especificado
+    SELECT factor_emision INTO v_factor
+    FROM factores_electricidad_pais
+    WHERE pais = p_pais 
+    AND año = v_año_usar
+    AND activo = true;
+    
+    -- Si no se encuentra, buscar el año más reciente disponible
+    IF v_factor IS NULL THEN
+        SELECT factor_emision INTO v_factor
+        FROM factores_electricidad_pais
+        WHERE pais = p_pais
+        AND activo = true
+        ORDER BY año DESC
+        LIMIT 1;
+    END IF;
+    
+    -- Si aún no hay factor, usar Colombia por defecto
+    IF v_factor IS NULL THEN
+        v_factor := 0.391;  -- Colombia 2024
+    END IF;
+    
+    RETURN v_factor;
+END;
+$$;
+
+
+ALTER FUNCTION public.obtener_factor_electricidad(p_pais character varying, "p_año" integer) OWNER TO postgres;
+
+--
+-- TOC entry 5488 (class 0 OID 0)
+-- Dependencies: 323
+-- Name: FUNCTION obtener_factor_electricidad(p_pais character varying, "p_año" integer); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.obtener_factor_electricidad(p_pais character varying, "p_año" integer) IS 'Obtiene factor de emisión de electricidad por país y año';
+
+
+--
+-- TOC entry 321 (class 1255 OID 16957)
+-- Name: registrar_auditoria(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.registrar_auditoria() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_accion VARCHAR(100);
+    v_entidad VARCHAR(100);
+BEGIN
+    -- Determinar la acción
+    IF TG_OP = 'INSERT' THEN
+        v_accion := 'CREATE';
+    ELSIF TG_OP = 'UPDATE' THEN
+        v_accion := 'UPDATE';
+    ELSIF TG_OP = 'DELETE' THEN
+        v_accion := 'DELETE';
+    END IF;
+    
+    -- Determinar la entidad
+    v_entidad := TG_TABLE_NAME;
+    
+    -- Insertar en auditoría
+    IF TG_OP = 'DELETE' THEN
+        INSERT INTO auditoria (accion, entidad, entidad_id, datos_anteriores)
+        VALUES (v_accion, v_entidad, OLD.id, row_to_json(OLD));
+    ELSE
+        INSERT INTO auditoria (accion, entidad, entidad_id, datos_anteriores, datos_nuevos)
+        VALUES (
+            v_accion, 
+            v_entidad, 
+            NEW.id, 
+            CASE WHEN TG_OP = 'UPDATE' THEN row_to_json(OLD) ELSE NULL END,
+            row_to_json(NEW)
+        );
+    END IF;
+    
+    IF TG_OP = 'DELETE' THEN
+        RETURN OLD;
+    ELSE
+        RETURN NEW;
+    END IF;
+END;
+$$;
+
+
+ALTER FUNCTION public.registrar_auditoria() OWNER TO postgres;
+
+--
+-- TOC entry 5489 (class 0 OID 0)
+-- Dependencies: 321
+-- Name: FUNCTION registrar_auditoria(); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON FUNCTION public.registrar_auditoria() IS 'Registra todas las operaciones en la tabla de auditoría';
+
+
+--
+-- TOC entry 300 (class 1255 OID 16920)
+-- Name: registrar_revocacion_consentimiento(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.registrar_revocacion_consentimiento() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF NEW.consentimiento_revocado = true AND OLD.consentimiento_revocado = false THEN
+        INSERT INTO log_acceso_datos (
+            usuario_id,
+            email_usuario,
+            accion,
+            tipo_dato,
+            descripcion,
+            resultado
+        ) VALUES (
+            NEW.usuario_id,
+            NEW.email_usuario,
+            'MODIFY',
+            'CONSENTIMIENTOS',
+            'Revocación de consentimiento - Motivo: ' || COALESCE(NEW.motivo_revocacion, 'No especificado'),
+            'SUCCESS'
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.registrar_revocacion_consentimiento() OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 236 (class 1259 OID 16796)
+-- Name: auditoria; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.auditoria (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    accion character varying(100) NOT NULL,
+    entidad character varying(100) NOT NULL,
+    entidad_id uuid,
+    ip_address character varying(50),
+    user_agent text,
+    datos_anteriores jsonb,
+    datos_nuevos jsonb,
+    fecha_accion timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.auditoria OWNER TO postgres;
+
+--
+-- TOC entry 5490 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: TABLE auditoria; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.auditoria IS 'Log de auditoría para trazabilidad de todas las operaciones';
+
+
+--
+-- TOC entry 228 (class 1259 OID 16597)
+-- Name: calculos_autogestion; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.calculos_autogestion (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    codigo_seguimiento character varying(20) NOT NULL,
+    nombre_empresa character varying(500) NOT NULL,
+    nit character varying(50) NOT NULL,
+    sector character varying(255),
+    departamento character varying(100),
+    municipio character varying(100),
+    direccion text,
+    telefono character varying(50),
+    correo character varying(255),
+    persona_elabora character varying(255),
+    cargo character varying(255),
+    "año_reporte" integer NOT NULL,
+    fecha_reporte date NOT NULL,
+    porcentaje_economico numeric(5,2) DEFAULT 0,
+    porcentaje_ambiental numeric(5,2) DEFAULT 0,
+    porcentaje_energia numeric(5,2) DEFAULT 0,
+    porcentaje_seguridad numeric(5,2) DEFAULT 0,
+    porcentaje_social numeric(5,2) DEFAULT 0,
+    porcentaje_almacen numeric(5,2) DEFAULT 0,
+    porcentaje_final numeric(5,2) GENERATED ALWAYS AS (((((((porcentaje_economico + porcentaje_ambiental) + porcentaje_energia) + porcentaje_seguridad) + porcentaje_social) + porcentaje_almacen) / 6.0)) STORED,
+    nivel_cumplimiento character varying(50),
+    estado character varying(50) DEFAULT 'finalizado'::character varying,
+    version integer DEFAULT 1,
+    notas text,
+    fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    pdf_reporte bytea,
+    pdf_nombre character varying(255),
+    pdf_size bigint,
+    resumen_ejecutivo jsonb,
+    CONSTRAINT "año_reporte_valido" CHECK ((("año_reporte" >= 2000) AND ("año_reporte" <= 2100))),
+    CONSTRAINT codigo_formato_valido CHECK (((codigo_seguimiento)::text ~ '^AG-[0-9]{4}-[0-9]{6}$'::text)),
+    CONSTRAINT porcentajes_validos CHECK ((((porcentaje_economico >= (0)::numeric) AND (porcentaje_economico <= (100)::numeric)) AND ((porcentaje_ambiental >= (0)::numeric) AND (porcentaje_ambiental <= (100)::numeric)) AND ((porcentaje_energia >= (0)::numeric) AND (porcentaje_energia <= (100)::numeric)) AND ((porcentaje_seguridad >= (0)::numeric) AND (porcentaje_seguridad <= (100)::numeric)) AND ((porcentaje_social >= (0)::numeric) AND (porcentaje_social <= (100)::numeric)) AND ((porcentaje_almacen >= (0)::numeric) AND (porcentaje_almacen <= (100)::numeric))))
+);
+
+
+ALTER TABLE public.calculos_autogestion OWNER TO postgres;
+
+--
+-- TOC entry 5491 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: TABLE calculos_autogestion; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.calculos_autogestion IS 'Autodiagnósticos de sostenibilidad empresarial';
+
+
+--
+-- TOC entry 5492 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: COLUMN calculos_autogestion.codigo_seguimiento; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.calculos_autogestion.codigo_seguimiento IS 'Código único formato: AG-YYYY-NNNNNN';
+
+
+--
+-- TOC entry 5493 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: COLUMN calculos_autogestion.pdf_reporte; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.calculos_autogestion.pdf_reporte IS 'PDF completo con las 210 respuestas - evita guardar respuestas individuales';
+
+
+--
+-- TOC entry 5494 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: COLUMN calculos_autogestion.resumen_ejecutivo; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.calculos_autogestion.resumen_ejecutivo IS 'JSON con resúmenes por bloque para consultas rápidas sin PDF';
+
+
+--
+-- TOC entry 221 (class 1259 OID 16438)
+-- Name: calculos_huella_carbono; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.calculos_huella_carbono (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    codigo_seguimiento character varying(20) NOT NULL,
+    nombre_empresa character varying(500) NOT NULL,
+    nit character varying(50) NOT NULL,
+    sector character varying(255),
+    departamento character varying(100),
+    municipio character varying(100),
+    direccion text,
+    telefono character varying(50),
+    correo character varying(255),
+    persona_elabora character varying(255),
+    cargo character varying(255),
+    "año_reporte" integer NOT NULL,
+    fecha_reporte date NOT NULL,
+    periodo_inicio date,
+    periodo_fin date,
+    emisiones_alcance_1 numeric(15,4) DEFAULT 0,
+    emisiones_alcance_2 numeric(15,4) DEFAULT 0,
+    emisiones_alcance_3 numeric(15,4) DEFAULT 0,
+    emisiones_totales numeric(15,4) GENERATED ALWAYS AS (((emisiones_alcance_1 + emisiones_alcance_2) + emisiones_alcance_3)) STORED,
+    nivel_evaluacion character varying(50),
+    arboles_compensar integer,
+    estado character varying(50) DEFAULT 'finalizado'::character varying,
+    version integer DEFAULT 1,
+    notas text,
+    fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "año_reporte_valido" CHECK ((("año_reporte" >= 2000) AND ("año_reporte" <= 2100))),
+    CONSTRAINT codigo_formato_valido CHECK (((codigo_seguimiento)::text ~ '^HC-[0-9]{4}-[0-9]{6}$'::text))
+);
+
+
+ALTER TABLE public.calculos_huella_carbono OWNER TO postgres;
+
+--
+-- TOC entry 5495 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: TABLE calculos_huella_carbono; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.calculos_huella_carbono IS 'Cálculos principales de huella de carbono por empresa';
+
+
+--
+-- TOC entry 5496 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: COLUMN calculos_huella_carbono.codigo_seguimiento; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.calculos_huella_carbono.codigo_seguimiento IS 'Código único formato: HC-YYYY-NNNNNN';
+
+
+--
+-- TOC entry 234 (class 1259 OID 16755)
+-- Name: catalogo_combustibles_gaseosos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.catalogo_combustibles_gaseosos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    nombre character varying(255) NOT NULL,
+    poder_calorifico numeric(15,6) NOT NULL,
+    factor_co2 numeric(15,6) NOT NULL,
+    factor_ch4 numeric(15,6) NOT NULL,
+    factor_n2o numeric(15,6) NOT NULL,
+    factor_so2 numeric(15,6),
+    fuente character varying(500),
+    "año_publicacion" integer,
+    pais_aplicable character varying(100) DEFAULT 'Colombia'::character varying,
+    activo boolean DEFAULT true,
+    fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.catalogo_combustibles_gaseosos OWNER TO postgres;
+
+--
+-- TOC entry 5497 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: TABLE catalogo_combustibles_gaseosos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.catalogo_combustibles_gaseosos IS 'Catálogo de factores de emisión para combustibles gaseosos';
+
+
+--
+-- TOC entry 233 (class 1259 OID 16732)
+-- Name: catalogo_combustibles_liquidos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.catalogo_combustibles_liquidos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    nombre character varying(255) NOT NULL,
+    densidad numeric(10,6) NOT NULL,
+    poder_calorifico numeric(15,6) NOT NULL,
+    factor_co2 numeric(15,6) NOT NULL,
+    factor_ch4 numeric(15,6) NOT NULL,
+    factor_n2o numeric(15,6) NOT NULL,
+    factor_so2 numeric(15,6),
+    fuente character varying(500),
+    "año_publicacion" integer,
+    pais_aplicable character varying(100) DEFAULT 'Colombia'::character varying,
+    activo boolean DEFAULT true,
+    fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.catalogo_combustibles_liquidos OWNER TO postgres;
+
+--
+-- TOC entry 5498 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: TABLE catalogo_combustibles_liquidos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.catalogo_combustibles_liquidos IS 'Catálogo de factores de emisión para combustibles líquidos';
+
+
+--
+-- TOC entry 232 (class 1259 OID 16710)
+-- Name: catalogo_combustibles_solidos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.catalogo_combustibles_solidos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    nombre character varying(255) NOT NULL,
+    poder_calorifico numeric(15,6) NOT NULL,
+    factor_co2 numeric(15,6) NOT NULL,
+    factor_ch4 numeric(15,6) NOT NULL,
+    factor_n2o numeric(15,6) NOT NULL,
+    factor_so2 numeric(15,6),
+    fuente character varying(500),
+    "año_publicacion" integer,
+    pais_aplicable character varying(100) DEFAULT 'Colombia'::character varying,
+    activo boolean DEFAULT true,
+    fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.catalogo_combustibles_solidos OWNER TO postgres;
+
+--
+-- TOC entry 5499 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: TABLE catalogo_combustibles_solidos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.catalogo_combustibles_solidos IS 'Catálogo de factores de emisión para combustibles sólidos';
+
+
+--
+-- TOC entry 224 (class 1259 OID 16505)
+-- Name: combustibles_gaseosos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.combustibles_gaseosos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_id uuid NOT NULL,
+    tipo_combustible character varying(255) NOT NULL,
+    tipo_fuente character varying(50),
+    consumo_anual numeric(15,4),
+    unidad_medida character varying(20) DEFAULT 'm³'::character varying,
+    poder_calorifico numeric(15,6),
+    factor_co2 numeric(15,6),
+    factor_ch4 numeric(15,6),
+    factor_n2o numeric(15,6),
+    factor_so2 numeric(15,6),
+    energia_consumida numeric(15,6),
+    emision_co2 numeric(15,4),
+    emision_ch4 numeric(15,4),
+    emision_n2o numeric(15,4),
+    emision_so2 numeric(15,4),
+    emisiones_totales numeric(15,4),
+    fecha_registro timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT tipo_fuente_valido CHECK (((tipo_fuente)::text = ANY ((ARRAY['Estacionario'::character varying, 'Móvil'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.combustibles_gaseosos OWNER TO postgres;
+
+--
+-- TOC entry 5500 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: TABLE combustibles_gaseosos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.combustibles_gaseosos IS 'Consumo de combustibles gaseosos estacionarios y móviles';
+
+
+--
+-- TOC entry 223 (class 1259 OID 16486)
+-- Name: combustibles_liquidos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.combustibles_liquidos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_id uuid NOT NULL,
+    tipo_combustible character varying(255) NOT NULL,
+    tipo_fuente character varying(50),
+    consumo_anual numeric(15,4),
+    densidad numeric(10,6),
+    masa_combustible numeric(15,4),
+    poder_calorifico numeric(15,6),
+    factor_co2 numeric(15,6),
+    factor_ch4 numeric(15,6),
+    factor_n2o numeric(15,6),
+    factor_so2 numeric(15,6),
+    energia_consumida numeric(15,6),
+    emision_co2 numeric(15,4),
+    emision_ch4 numeric(15,4),
+    emision_n2o numeric(15,4),
+    emision_so2 numeric(15,4),
+    emisiones_totales numeric(15,4),
+    fecha_registro timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT tipo_fuente_valido CHECK (((tipo_fuente)::text = ANY ((ARRAY['Estacionario'::character varying, 'Móvil'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.combustibles_liquidos OWNER TO postgres;
+
+--
+-- TOC entry 5501 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: TABLE combustibles_liquidos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.combustibles_liquidos IS 'Consumo de combustibles líquidos estacionarios y móviles';
+
+
+--
+-- TOC entry 222 (class 1259 OID 16468)
+-- Name: combustibles_solidos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.combustibles_solidos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_id uuid NOT NULL,
+    tipo_combustible character varying(255) NOT NULL,
+    consumo_anual numeric(15,4),
+    unidad_medida character varying(20) DEFAULT 'kg'::character varying,
+    poder_calorifico numeric(15,6),
+    factor_co2 numeric(15,6),
+    factor_ch4 numeric(15,6),
+    factor_n2o numeric(15,6),
+    factor_so2 numeric(15,6),
+    energia_consumida numeric(15,6),
+    emision_co2 numeric(15,4),
+    emision_ch4 numeric(15,4),
+    emision_n2o numeric(15,4),
+    emision_so2 numeric(15,4),
+    emisiones_totales numeric(15,4),
+    fecha_registro timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.combustibles_solidos OWNER TO postgres;
+
+--
+-- TOC entry 5502 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: TABLE combustibles_solidos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.combustibles_solidos IS 'Consumo de combustibles sólidos estacionarios';
+
+
+--
+-- TOC entry 239 (class 1259 OID 16813)
+-- Name: consentimientos_usuario; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.consentimientos_usuario (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    usuario_id uuid,
+    email_usuario character varying(255),
+    nombre_usuario character varying(255),
+    acepta_terminos boolean DEFAULT false NOT NULL,
+    acepta_privacidad boolean DEFAULT false NOT NULL,
+    acepta_cookies_necesarias boolean DEFAULT true NOT NULL,
+    acepta_cookies_analiticas boolean DEFAULT false,
+    acepta_cookies_marketing boolean DEFAULT false,
+    acepta_emails_promocionales boolean DEFAULT false,
+    version_terminos character varying(20) DEFAULT 'v1.0'::character varying NOT NULL,
+    version_privacidad character varying(20) DEFAULT 'v1.0'::character varying NOT NULL,
+    ip_address character varying(50),
+    user_agent text,
+    navegador character varying(100),
+    sistema_operativo character varying(100),
+    fecha_consentimiento timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    fecha_actualizacion timestamp without time zone,
+    consentimiento_revocado boolean DEFAULT false,
+    fecha_revocacion timestamp without time zone,
+    motivo_revocacion text,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT consentimiento_valido CHECK (((acepta_terminos = true) AND (acepta_privacidad = true)))
+);
+
+
+ALTER TABLE public.consentimientos_usuario OWNER TO postgres;
+
+--
+-- TOC entry 5503 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: TABLE consentimientos_usuario; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.consentimientos_usuario IS 'Registro de consentimientos GDPR/Ley 1581 - Auditoría legal de aceptaciones';
+
+
+--
+-- TOC entry 225 (class 1259 OID 16525)
+-- Name: consumo_electricidad; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.consumo_electricidad (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_id uuid NOT NULL,
+    "año" integer,
+    instalacion character varying(255),
+    enero numeric(15,2) DEFAULT 0,
+    febrero numeric(15,2) DEFAULT 0,
+    marzo numeric(15,2) DEFAULT 0,
+    abril numeric(15,2) DEFAULT 0,
+    mayo numeric(15,2) DEFAULT 0,
+    junio numeric(15,2) DEFAULT 0,
+    julio numeric(15,2) DEFAULT 0,
+    agosto numeric(15,2) DEFAULT 0,
+    septiembre numeric(15,2) DEFAULT 0,
+    octubre numeric(15,2) DEFAULT 0,
+    noviembre numeric(15,2) DEFAULT 0,
+    diciembre numeric(15,2) DEFAULT 0,
+    consumo_anual numeric(15,2) GENERATED ALWAYS AS ((((((((((((enero + febrero) + marzo) + abril) + mayo) + junio) + julio) + agosto) + septiembre) + octubre) + noviembre) + diciembre)) STORED,
+    factor_emision_co2 numeric(10,6) DEFAULT 0.391,
+    emisiones_parciales numeric(15,4),
+    emisiones_totales numeric(15,4),
+    fecha_registro timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.consumo_electricidad OWNER TO postgres;
+
+--
+-- TOC entry 5504 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: TABLE consumo_electricidad; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.consumo_electricidad IS 'Consumo mensual de electricidad por instalación';
+
+
+--
+-- TOC entry 5505 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: COLUMN consumo_electricidad.factor_emision_co2; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.consumo_electricidad.factor_emision_co2 IS 'Factor para Colombia UPME 2024: 0.391 kg CO2/kWh';
+
+
+--
+-- TOC entry 231 (class 1259 OID 16681)
+-- Name: documentos_generados; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.documentos_generados (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_huella_id uuid,
+    calculo_autogestion_id uuid,
+    tipo_documento character varying(50) NOT NULL,
+    nombre_archivo character varying(500) NOT NULL,
+    ruta_archivo text,
+    "tamaño_bytes" bigint,
+    hash_archivo character varying(64),
+    enviado_email boolean DEFAULT false,
+    email_destinatario character varying(255),
+    fecha_envio_email timestamp without time zone,
+    fecha_generacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    fecha_expiracion timestamp without time zone,
+    CONSTRAINT tipo_doc_valido CHECK (((tipo_documento)::text = ANY ((ARRAY['PDF_HUELLA'::character varying, 'PDF_AUTOGESTION'::character varying, 'EXCEL_RESUMEN'::character varying, 'INFORME_CUSTOM'::character varying])::text[]))),
+    CONSTRAINT un_calculo_minimo CHECK (((calculo_huella_id IS NOT NULL) OR (calculo_autogestion_id IS NOT NULL)))
+);
+
+
+ALTER TABLE public.documentos_generados OWNER TO postgres;
+
+--
+-- TOC entry 5506 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: TABLE documentos_generados; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.documentos_generados IS 'Registro de todos los documentos PDF generados';
+
+
+--
+-- TOC entry 227 (class 1259 OID 16578)
+-- Name: extintores; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.extintores (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_id uuid NOT NULL,
+    tipo_gas character varying(100) NOT NULL,
+    cantidad numeric(15,4),
+    pcg integer,
+    emisiones_parciales numeric(15,4),
+    fecha_registro timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT cantidad_positiva CHECK ((cantidad >= (0)::numeric)),
+    CONSTRAINT pcg_positivo CHECK ((pcg >= 0))
+);
+
+
+ALTER TABLE public.extintores OWNER TO postgres;
+
+--
+-- TOC entry 5507 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: TABLE extintores; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.extintores IS 'Recargas de extintores - emisiones fugitivas Alcance 1';
+
+
+--
+-- TOC entry 5508 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: COLUMN extintores.pcg; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.extintores.pcg IS 'Potencial de Calentamiento Global (GWP)';
+
+
+--
+-- TOC entry 235 (class 1259 OID 16777)
+-- Name: factores_electricidad_pais; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.factores_electricidad_pais (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    pais character varying(100) NOT NULL,
+    "año" integer NOT NULL,
+    factor_emision numeric(10,6) NOT NULL,
+    fuente character varying(500),
+    fecha_publicacion date,
+    activo boolean DEFAULT true,
+    CONSTRAINT "año_valido" CHECK ((("año" >= 2000) AND ("año" <= 2100))),
+    CONSTRAINT factor_positivo CHECK ((factor_emision > (0)::numeric))
+);
+
+
+ALTER TABLE public.factores_electricidad_pais OWNER TO postgres;
+
+--
+-- TOC entry 5509 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: TABLE factores_electricidad_pais; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.factores_electricidad_pais IS 'Factores de emisión de electricidad por país y año';
+
+
+--
+-- TOC entry 249 (class 1259 OID 16977)
+-- Name: factores_vuelos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.factores_vuelos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    clase character varying(100) NOT NULL,
+    factor_emision numeric(10,6) NOT NULL,
+    fuente character varying(500),
+    "año_publicacion" integer,
+    activo boolean DEFAULT true,
+    fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT factor_positivo CHECK ((factor_emision > (0)::numeric))
+);
+
+
+ALTER TABLE public.factores_vuelos OWNER TO postgres;
+
+--
+-- TOC entry 5510 (class 0 OID 0)
+-- Dependencies: 249
+-- Name: TABLE factores_vuelos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.factores_vuelos IS 'Catálogo de factores de emisión para vuelos aéreos por clase';
+
+
+--
+-- TOC entry 5511 (class 0 OID 0)
+-- Dependencies: 249
+-- Name: COLUMN factores_vuelos.factor_emision; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factores_vuelos.factor_emision IS 'kg CO2e por pasajero por km (factor único, sin distinción de distancia)';
+
+
+--
+-- TOC entry 240 (class 1259 OID 16845)
+-- Name: historial_politicas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.historial_politicas (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    tipo character varying(50) NOT NULL,
+    version character varying(20) NOT NULL,
+    titulo character varying(500) NOT NULL,
+    contenido text NOT NULL,
+    resumen text,
+    cambios_principales text,
+    fecha_vigencia date NOT NULL,
+    fecha_fin_vigencia date,
+    activa boolean DEFAULT true,
+    creado_por character varying(255),
+    aprobado_por character varying(255),
+    fecha_aprobacion timestamp without time zone,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT tipo_politica_valido CHECK (((tipo)::text = ANY ((ARRAY['TERMINOS'::character varying, 'PRIVACIDAD'::character varying, 'COOKIES'::character varying, 'CONFIDENCIALIDAD'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.historial_politicas OWNER TO postgres;
+
+--
+-- TOC entry 5512 (class 0 OID 0)
+-- Dependencies: 240
+-- Name: TABLE historial_politicas; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.historial_politicas IS 'Versiones históricas de términos legales - Trazabilidad de cambios';
+
+
+--
+-- TOC entry 241 (class 1259 OID 16868)
+-- Name: log_acceso_datos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.log_acceso_datos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    usuario_id uuid,
+    email_usuario character varying(255),
+    empresa_id uuid,
+    calculo_id uuid,
+    accion character varying(100) NOT NULL,
+    tipo_dato character varying(100) NOT NULL,
+    descripcion text,
+    endpoint character varying(500),
+    metodo_http character varying(10),
+    parametros jsonb,
+    resultado character varying(50),
+    ip_address character varying(50),
+    user_agent text,
+    ubicacion_geografica character varying(255),
+    fecha_acceso timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    duracion_ms integer,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT accion_valida CHECK (((accion)::text = ANY ((ARRAY['VIEW'::character varying, 'VIEW_ALL'::character varying, 'EXPORT'::character varying, 'EXPORT_PDF'::character varying, 'EXPORT_JSON'::character varying, 'DELETE'::character varying, 'DELETE_ALL'::character varying, 'MODIFY'::character varying, 'CREATE'::character varying, 'DOWNLOAD'::character varying, 'SHARE'::character varying, 'PRINT'::character varying])::text[]))),
+    CONSTRAINT tipo_dato_valido CHECK (((tipo_dato)::text = ANY ((ARRAY['DATOS_EMPRESA'::character varying, 'CALCULO_HUELLA'::character varying, 'CALCULO_AUTOGESTION'::character varying, 'COMBUSTIBLES'::character varying, 'ELECTRICIDAD'::character varying, 'VUELOS'::character varying, 'EXTINTORES'::character varying, 'RESPUESTAS_AUTOGESTION'::character varying, 'DOCUMENTOS_PDF'::character varying, 'REPORTES'::character varying, 'DATOS_PERSONALES'::character varying, 'CONSENTIMIENTOS'::character varying, 'PERFIL_USUARIO'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.log_acceso_datos OWNER TO postgres;
+
+--
+-- TOC entry 5513 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: TABLE log_acceso_datos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.log_acceso_datos IS 'Auditoría GDPR Art. 30 - Log de accesos a datos sensibles';
+
+
+--
+-- TOC entry 230 (class 1259 OID 16660)
+-- Name: promedios_bloques_autogestion; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.promedios_bloques_autogestion (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_id uuid NOT NULL,
+    seccion character(1) NOT NULL,
+    bloque character varying(10) NOT NULL,
+    nombre_bloque character varying(255),
+    promedio_bloque numeric(5,3),
+    total_preguntas integer,
+    preguntas_respondidas integer,
+    fecha_calculo timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT promedio_valido CHECK (((promedio_bloque >= (0)::numeric) AND (promedio_bloque <= (3)::numeric))),
+    CONSTRAINT seccion_valida CHECK ((seccion = ANY (ARRAY['A'::bpchar, 'B'::bpchar, 'C'::bpchar, 'D'::bpchar, 'E'::bpchar, 'F'::bpchar])))
+);
+
+
+ALTER TABLE public.promedios_bloques_autogestion OWNER TO postgres;
+
+--
+-- TOC entry 5514 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: TABLE promedios_bloques_autogestion; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.promedios_bloques_autogestion IS 'Promedios calculados por bloque de preguntas';
+
+
+--
+-- TOC entry 229 (class 1259 OID 16631)
+-- Name: respuestas_autogestion; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.respuestas_autogestion (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_id uuid NOT NULL,
+    seccion character(1) NOT NULL,
+    bloque character varying(10) NOT NULL,
+    pregunta_id character varying(20) NOT NULL,
+    numero_pregunta integer NOT NULL,
+    texto_pregunta text NOT NULL,
+    respuesta character varying(50) NOT NULL,
+    puntaje integer,
+    fecha_respuesta timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT puntaje_valido CHECK (((puntaje >= 0) AND (puntaje <= 3))),
+    CONSTRAINT respuesta_valida CHECK (((respuesta)::text = ANY ((ARRAY['IMP'::character varying, 'M'::character varying, 'AC'::character varying, 'NA'::character varying, 'Siempre'::character varying, 'Casi siempre'::character varying, 'Algunas veces'::character varying, 'Nunca'::character varying])::text[]))),
+    CONSTRAINT seccion_valida CHECK ((seccion = ANY (ARRAY['A'::bpchar, 'B'::bpchar, 'C'::bpchar, 'D'::bpchar, 'E'::bpchar, 'F'::bpchar])))
+);
+
+
+ALTER TABLE public.respuestas_autogestion OWNER TO postgres;
+
+--
+-- TOC entry 5515 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: TABLE respuestas_autogestion; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.respuestas_autogestion IS 'Respuestas individuales de cada pregunta del autodiagnóstico';
+
+
+--
+-- TOC entry 238 (class 1259 OID 16812)
+-- Name: seq_autogestion_codigo; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.seq_autogestion_codigo
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.seq_autogestion_codigo OWNER TO postgres;
+
+--
+-- TOC entry 5516 (class 0 OID 0)
+-- Dependencies: 238
+-- Name: SEQUENCE seq_autogestion_codigo; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON SEQUENCE public.seq_autogestion_codigo IS 'Secuencia para generar números únicos en códigos AG-YYYY-NNNNNN';
+
+
+--
+-- TOC entry 237 (class 1259 OID 16811)
+-- Name: seq_huella_carbono_codigo; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.seq_huella_carbono_codigo
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.seq_huella_carbono_codigo OWNER TO postgres;
+
+--
+-- TOC entry 5517 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: SEQUENCE seq_huella_carbono_codigo; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON SEQUENCE public.seq_huella_carbono_codigo IS 'Secuencia para generar números únicos en códigos HC-YYYY-NNNNNN';
+
+
+--
+-- TOC entry 242 (class 1259 OID 16889)
+-- Name: solicitudes_eliminacion; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.solicitudes_eliminacion (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    usuario_id uuid,
+    email_solicitante character varying(255) NOT NULL,
+    nombre_solicitante character varying(255),
+    empresa_solicitante character varying(500),
+    tipo_eliminacion character varying(100) NOT NULL,
+    alcance text,
+    motivo text,
+    categoria_motivo character varying(100),
+    estado character varying(50) DEFAULT 'PENDIENTE'::character varying NOT NULL,
+    prioridad character varying(20) DEFAULT 'NORMAL'::character varying,
+    fecha_solicitud timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    fecha_limite_legal timestamp without time zone,
+    fecha_inicio_procesamiento timestamp without time zone,
+    fecha_completada timestamp without time zone,
+    procesado_por character varying(255),
+    procesado_por_email character varying(255),
+    notas_admin text,
+    acciones_realizadas jsonb,
+    datos_eliminados jsonb,
+    certificado_eliminacion text,
+    hash_verificacion character varying(255),
+    telefono_contacto character varying(50),
+    metodo_notificacion_preferido character varying(50),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT estado_valido CHECK (((estado)::text = ANY ((ARRAY['PENDIENTE'::character varying, 'EN_REVISION'::character varying, 'APROBADA'::character varying, 'PROCESANDO'::character varying, 'COMPLETADA'::character varying, 'RECHAZADA'::character varying, 'CANCELADA'::character varying])::text[]))),
+    CONSTRAINT prioridad_valida CHECK (((prioridad)::text = ANY ((ARRAY['BAJA'::character varying, 'NORMAL'::character varying, 'ALTA'::character varying, 'URGENTE'::character varying])::text[]))),
+    CONSTRAINT tipo_eliminacion_valido CHECK (((tipo_eliminacion)::text = ANY ((ARRAY['CUENTA_COMPLETA'::character varying, 'CALCULOS_ESPECIFICOS'::character varying, 'DATOS_EMPRESA'::character varying, 'CONSENTIMIENTOS'::character varying, 'HISTORIAL_COMPLETO'::character varying, 'DATOS_PERSONALES'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.solicitudes_eliminacion OWNER TO postgres;
+
+--
+-- TOC entry 5518 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: TABLE solicitudes_eliminacion; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.solicitudes_eliminacion IS 'Gestión de Derecho al Olvido GDPR Art. 17 - Solicitudes de eliminación';
+
+
+--
+-- TOC entry 248 (class 1259 OID 16970)
+-- Name: v_historico_autogestion; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.v_historico_autogestion AS
+ SELECT id,
+    codigo_seguimiento,
+    nombre_empresa,
+    nit,
+    "año_reporte",
+    fecha_reporte,
+    porcentaje_economico,
+    porcentaje_ambiental,
+    porcentaje_energia,
+    porcentaje_seguridad,
+    porcentaje_social,
+    porcentaje_almacen,
+    porcentaje_final,
+    nivel_cumplimiento,
+    ( SELECT count(*) AS count
+           FROM public.respuestas_autogestion
+          WHERE (respuestas_autogestion.calculo_id = a.id)) AS total_respuestas
+   FROM public.calculos_autogestion a
+  ORDER BY nit, "año_reporte" DESC;
+
+
+ALTER VIEW public.v_historico_autogestion OWNER TO postgres;
+
+--
+-- TOC entry 5519 (class 0 OID 0)
+-- Dependencies: 248
+-- Name: VIEW v_historico_autogestion; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON VIEW public.v_historico_autogestion IS 'Histórico de autogestión con métricas consolidadas';
+
+
+--
+-- TOC entry 247 (class 1259 OID 16965)
+-- Name: v_ranking_empresas; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.v_ranking_empresas AS
+ SELECT nit,
+    nombre_empresa,
+    count(*) AS total_calculos,
+    avg(emisiones_totales) AS promedio_emisiones,
+    max(emisiones_totales) AS max_emisiones,
+    min(emisiones_totales) AS min_emisiones,
+    max("año_reporte") AS "ultimo_año"
+   FROM public.calculos_huella_carbono
+  GROUP BY nit, nombre_empresa
+  ORDER BY (avg(emisiones_totales)) DESC;
+
+
+ALTER VIEW public.v_ranking_empresas OWNER TO postgres;
+
+--
+-- TOC entry 5520 (class 0 OID 0)
+-- Dependencies: 247
+-- Name: VIEW v_ranking_empresas; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON VIEW public.v_ranking_empresas IS 'Ranking de empresas por emisiones promedio';
+
+
+--
+-- TOC entry 226 (class 1259 OID 16555)
+-- Name: vuelos_aereos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.vuelos_aereos (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    calculo_id uuid NOT NULL,
+    ciudad_origen character varying(255) NOT NULL,
+    ciudad_destino character varying(255) NOT NULL,
+    pais_origen character varying(100),
+    pais_destino character varying(100),
+    tipo_vuelo character varying(50),
+    clase character varying(50),
+    numero_pasajeros integer DEFAULT 1,
+    distancia_km numeric(15,2),
+    factor_emision numeric(10,6),
+    emision_kg numeric(15,4),
+    emision_ton numeric(15,4),
+    fecha_registro timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT distancia_positiva CHECK ((distancia_km > (0)::numeric)),
+    CONSTRAINT pasajeros_positivo CHECK ((numero_pasajeros > 0))
+);
+
+
+ALTER TABLE public.vuelos_aereos OWNER TO postgres;
+
+--
+-- TOC entry 5521 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: TABLE vuelos_aereos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON TABLE public.vuelos_aereos IS 'Vuelos corporativos - emisiones Alcance 3';
+
+
+--
+-- TOC entry 246 (class 1259 OID 16960)
+-- Name: v_resumen_emisiones; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.v_resumen_emisiones AS
+ SELECT id,
+    codigo_seguimiento,
+    nombre_empresa,
+    nit,
+    "año_reporte",
+    fecha_reporte,
+    emisiones_alcance_1,
+    emisiones_alcance_2,
+    emisiones_alcance_3,
+    emisiones_totales,
+    nivel_evaluacion,
+    arboles_compensar,
+    ( SELECT count(*) AS count
+           FROM public.combustibles_solidos
+          WHERE (combustibles_solidos.calculo_id = h.id)) AS num_solidos,
+    ( SELECT count(*) AS count
+           FROM public.combustibles_liquidos
+          WHERE (combustibles_liquidos.calculo_id = h.id)) AS num_liquidos,
+    ( SELECT count(*) AS count
+           FROM public.combustibles_gaseosos
+          WHERE (combustibles_gaseosos.calculo_id = h.id)) AS num_gaseosos,
+    ( SELECT count(*) AS count
+           FROM public.consumo_electricidad
+          WHERE (consumo_electricidad.calculo_id = h.id)) AS num_instalaciones_elect,
+    ( SELECT count(*) AS count
+           FROM public.vuelos_aereos
+          WHERE (vuelos_aereos.calculo_id = h.id)) AS num_vuelos,
+    ( SELECT count(*) AS count
+           FROM public.extintores
+          WHERE (extintores.calculo_id = h.id)) AS num_extintores
+   FROM public.calculos_huella_carbono h
+  ORDER BY fecha_reporte DESC;
+
+
+ALTER VIEW public.v_resumen_emisiones OWNER TO postgres;
+
+--
+-- TOC entry 5522 (class 0 OID 0)
+-- Dependencies: 246
+-- Name: VIEW v_resumen_emisiones; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON VIEW public.v_resumen_emisiones IS 'Vista consolidada de emisiones con contadores por tipo de fuente';
+
+
+--
+-- TOC entry 245 (class 1259 OID 16931)
+-- Name: vista_accesos_recientes; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.vista_accesos_recientes AS
+ SELECT email_usuario,
+    accion,
+    tipo_dato,
+    fecha_acceso,
+    ip_address,
+    resultado
+   FROM public.log_acceso_datos
+  WHERE (fecha_acceso >= (CURRENT_TIMESTAMP - '30 days'::interval))
+  ORDER BY fecha_acceso DESC;
+
+
+ALTER VIEW public.vista_accesos_recientes OWNER TO postgres;
+
+--
+-- TOC entry 5523 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: VIEW vista_accesos_recientes; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON VIEW public.vista_accesos_recientes IS 'Log de accesos últimos 30 días - Auditoría continua';
+
+
+--
+-- TOC entry 250 (class 1259 OID 17000)
+-- Name: vista_autogestion_optimizada; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.vista_autogestion_optimizada AS
+ SELECT id,
+    codigo_seguimiento,
+    nombre_empresa,
+    nit,
+    sector,
+    "año_reporte",
+    fecha_reporte,
+    porcentaje_economico,
+    porcentaje_ambiental,
+    porcentaje_energia,
+    porcentaje_seguridad,
+    porcentaje_social,
+    porcentaje_almacen,
+    porcentaje_final,
+    nivel_cumplimiento,
+    pdf_nombre,
+    pdf_size,
+        CASE
+            WHEN (pdf_reporte IS NOT NULL) THEN true
+            ELSE false
+        END AS tiene_pdf,
+    fecha_creacion,
+    estado
+   FROM public.calculos_autogestion
+  ORDER BY fecha_creacion DESC;
+
+
+ALTER VIEW public.vista_autogestion_optimizada OWNER TO postgres;
+
+--
+-- TOC entry 243 (class 1259 OID 16922)
+-- Name: vista_consentimientos_activos; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.vista_consentimientos_activos AS
+ SELECT id,
+    email_usuario,
+    nombre_usuario,
+    acepta_terminos,
+    acepta_privacidad,
+    acepta_cookies_analiticas,
+    acepta_emails_promocionales,
+    version_terminos,
+    version_privacidad,
+    fecha_consentimiento,
+    fecha_actualizacion
+   FROM public.consentimientos_usuario
+  WHERE (consentimiento_revocado = false);
+
+
+ALTER VIEW public.vista_consentimientos_activos OWNER TO postgres;
+
+--
+-- TOC entry 5524 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: VIEW vista_consentimientos_activos; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON VIEW public.vista_consentimientos_activos IS 'Consentimientos vigentes - Para reportes de cumplimiento';
+
+
+--
+-- TOC entry 244 (class 1259 OID 16926)
+-- Name: vista_eliminaciones_pendientes; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.vista_eliminaciones_pendientes AS
+ SELECT id,
+    email_solicitante,
+    nombre_solicitante,
+    tipo_eliminacion,
+    estado,
+    fecha_solicitud,
+    fecha_limite_legal,
+    EXTRACT(day FROM ((fecha_limite_legal)::timestamp with time zone - CURRENT_TIMESTAMP)) AS dias_restantes,
+    prioridad
+   FROM public.solicitudes_eliminacion
+  WHERE ((estado)::text = ANY ((ARRAY['PENDIENTE'::character varying, 'EN_REVISION'::character varying, 'APROBADA'::character varying, 'PROCESANDO'::character varying])::text[]))
+  ORDER BY fecha_limite_legal;
+
+
+ALTER VIEW public.vista_eliminaciones_pendientes OWNER TO postgres;
+
+--
+-- TOC entry 5525 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: VIEW vista_eliminaciones_pendientes; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON VIEW public.vista_eliminaciones_pendientes IS 'Solicitudes de eliminación pendientes - Alertas de plazos legales';
+
+
+--
+-- TOC entry 5249 (class 2606 OID 16807)
+-- Name: auditoria auditoria_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.auditoria
+    ADD CONSTRAINT auditoria_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5198 (class 2606 OID 16626)
+-- Name: calculos_autogestion calculos_autogestion_codigo_seguimiento_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calculos_autogestion
+    ADD CONSTRAINT calculos_autogestion_codigo_seguimiento_key UNIQUE (codigo_seguimiento);
+
+
+--
+-- TOC entry 5200 (class 2606 OID 16624)
+-- Name: calculos_autogestion calculos_autogestion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calculos_autogestion
+    ADD CONSTRAINT calculos_autogestion_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5164 (class 2606 OID 16463)
+-- Name: calculos_huella_carbono calculos_huella_carbono_codigo_seguimiento_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calculos_huella_carbono
+    ADD CONSTRAINT calculos_huella_carbono_codigo_seguimiento_key UNIQUE (codigo_seguimiento);
+
+
+--
+-- TOC entry 5166 (class 2606 OID 16461)
+-- Name: calculos_huella_carbono calculos_huella_carbono_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calculos_huella_carbono
+    ADD CONSTRAINT calculos_huella_carbono_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5237 (class 2606 OID 16774)
+-- Name: catalogo_combustibles_gaseosos catalogo_combustibles_gaseosos_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.catalogo_combustibles_gaseosos
+    ADD CONSTRAINT catalogo_combustibles_gaseosos_nombre_key UNIQUE (nombre);
+
+
+--
+-- TOC entry 5239 (class 2606 OID 16772)
+-- Name: catalogo_combustibles_gaseosos catalogo_combustibles_gaseosos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.catalogo_combustibles_gaseosos
+    ADD CONSTRAINT catalogo_combustibles_gaseosos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5231 (class 2606 OID 16752)
+-- Name: catalogo_combustibles_liquidos catalogo_combustibles_liquidos_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.catalogo_combustibles_liquidos
+    ADD CONSTRAINT catalogo_combustibles_liquidos_nombre_key UNIQUE (nombre);
+
+
+--
+-- TOC entry 5233 (class 2606 OID 16750)
+-- Name: catalogo_combustibles_liquidos catalogo_combustibles_liquidos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.catalogo_combustibles_liquidos
+    ADD CONSTRAINT catalogo_combustibles_liquidos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5225 (class 2606 OID 16729)
+-- Name: catalogo_combustibles_solidos catalogo_combustibles_solidos_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.catalogo_combustibles_solidos
+    ADD CONSTRAINT catalogo_combustibles_solidos_nombre_key UNIQUE (nombre);
+
+
+--
+-- TOC entry 5227 (class 2606 OID 16727)
+-- Name: catalogo_combustibles_solidos catalogo_combustibles_solidos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.catalogo_combustibles_solidos
+    ADD CONSTRAINT catalogo_combustibles_solidos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5181 (class 2606 OID 16516)
+-- Name: combustibles_gaseosos combustibles_gaseosos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.combustibles_gaseosos
+    ADD CONSTRAINT combustibles_gaseosos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5176 (class 2606 OID 16496)
+-- Name: combustibles_liquidos combustibles_liquidos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.combustibles_liquidos
+    ADD CONSTRAINT combustibles_liquidos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5172 (class 2606 OID 16478)
+-- Name: combustibles_solidos combustibles_solidos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.combustibles_solidos
+    ADD CONSTRAINT combustibles_solidos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5254 (class 2606 OID 16840)
+-- Name: consentimientos_usuario consentimientos_usuario_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.consentimientos_usuario
+    ADD CONSTRAINT consentimientos_usuario_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5186 (class 2606 OID 16547)
+-- Name: consumo_electricidad consumo_electricidad_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.consumo_electricidad
+    ADD CONSTRAINT consumo_electricidad_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5219 (class 2606 OID 16695)
+-- Name: documentos_generados documentos_generados_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.documentos_generados
+    ADD CONSTRAINT documentos_generados_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5194 (class 2606 OID 16589)
+-- Name: extintores extintores_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.extintores
+    ADD CONSTRAINT extintores_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5243 (class 2606 OID 16793)
+-- Name: factores_electricidad_pais factor_unico; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factores_electricidad_pais
+    ADD CONSTRAINT factor_unico UNIQUE (pais, "año");
+
+
+--
+-- TOC entry 5245 (class 2606 OID 16791)
+-- Name: factores_electricidad_pais factores_electricidad_pais_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factores_electricidad_pais
+    ADD CONSTRAINT factores_electricidad_pais_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5282 (class 2606 OID 16993)
+-- Name: factores_vuelos factores_vuelos_clase_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factores_vuelos
+    ADD CONSTRAINT factores_vuelos_clase_key UNIQUE (clase);
+
+
+--
+-- TOC entry 5284 (class 2606 OID 16991)
+-- Name: factores_vuelos factores_vuelos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factores_vuelos
+    ADD CONSTRAINT factores_vuelos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5260 (class 2606 OID 16862)
+-- Name: historial_politicas historial_politicas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.historial_politicas
+    ADD CONSTRAINT historial_politicas_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5262 (class 2606 OID 16864)
+-- Name: historial_politicas historial_politicas_tipo_version_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.historial_politicas
+    ADD CONSTRAINT historial_politicas_tipo_version_key UNIQUE (tipo, version);
+
+
+--
+-- TOC entry 5273 (class 2606 OID 16882)
+-- Name: log_acceso_datos log_acceso_datos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.log_acceso_datos
+    ADD CONSTRAINT log_acceso_datos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5217 (class 2606 OID 16672)
+-- Name: promedios_bloques_autogestion promedios_bloques_autogestion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.promedios_bloques_autogestion
+    ADD CONSTRAINT promedios_bloques_autogestion_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5212 (class 2606 OID 16650)
+-- Name: respuestas_autogestion respuestas_autogestion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.respuestas_autogestion
+    ADD CONSTRAINT respuestas_autogestion_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5280 (class 2606 OID 16908)
+-- Name: solicitudes_eliminacion solicitudes_eliminacion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.solicitudes_eliminacion
+    ADD CONSTRAINT solicitudes_eliminacion_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5192 (class 2606 OID 16570)
+-- Name: vuelos_aereos vuelos_aereos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vuelos_aereos
+    ADD CONSTRAINT vuelos_aereos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5250 (class 1259 OID 16810)
+-- Name: idx_auditoria_accion; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_auditoria_accion ON public.auditoria USING btree (accion);
+
+
+--
+-- TOC entry 5251 (class 1259 OID 16809)
+-- Name: idx_auditoria_entidad; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_auditoria_entidad ON public.auditoria USING btree (entidad);
+
+
+--
+-- TOC entry 5252 (class 1259 OID 16808)
+-- Name: idx_auditoria_fecha; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_auditoria_fecha ON public.auditoria USING btree (fecha_accion);
+
+
+--
+-- TOC entry 5201 (class 1259 OID 16630)
+-- Name: idx_autogestion_año; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_autogestion_año" ON public.calculos_autogestion USING btree ("año_reporte");
+
+
+--
+-- TOC entry 5202 (class 1259 OID 16627)
+-- Name: idx_autogestion_codigo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_autogestion_codigo ON public.calculos_autogestion USING btree (codigo_seguimiento);
+
+
+--
+-- TOC entry 5203 (class 1259 OID 16999)
+-- Name: idx_autogestion_empresa; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_autogestion_empresa ON public.calculos_autogestion USING btree (nombre_empresa);
+
+
+--
+-- TOC entry 5204 (class 1259 OID 16629)
+-- Name: idx_autogestion_fecha; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_autogestion_fecha ON public.calculos_autogestion USING btree (fecha_reporte);
+
+
+--
+-- TOC entry 5205 (class 1259 OID 16628)
+-- Name: idx_autogestion_nit; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_autogestion_nit ON public.calculos_autogestion USING btree (nit);
+
+
+--
+-- TOC entry 5206 (class 1259 OID 16998)
+-- Name: idx_autogestion_pdf; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_autogestion_pdf ON public.calculos_autogestion USING btree (pdf_nombre) WHERE (pdf_reporte IS NOT NULL);
+
+
+--
+-- TOC entry 5240 (class 1259 OID 16776)
+-- Name: idx_catalogo_gaseosos_activo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_catalogo_gaseosos_activo ON public.catalogo_combustibles_gaseosos USING btree (activo);
+
+
+--
+-- TOC entry 5241 (class 1259 OID 16775)
+-- Name: idx_catalogo_gaseosos_nombre; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_catalogo_gaseosos_nombre ON public.catalogo_combustibles_gaseosos USING btree (nombre);
+
+
+--
+-- TOC entry 5234 (class 1259 OID 16754)
+-- Name: idx_catalogo_liquidos_activo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_catalogo_liquidos_activo ON public.catalogo_combustibles_liquidos USING btree (activo);
+
+
+--
+-- TOC entry 5235 (class 1259 OID 16753)
+-- Name: idx_catalogo_liquidos_nombre; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_catalogo_liquidos_nombre ON public.catalogo_combustibles_liquidos USING btree (nombre);
+
+
+--
+-- TOC entry 5228 (class 1259 OID 16731)
+-- Name: idx_catalogo_solidos_activo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_catalogo_solidos_activo ON public.catalogo_combustibles_solidos USING btree (activo);
+
+
+--
+-- TOC entry 5229 (class 1259 OID 16730)
+-- Name: idx_catalogo_solidos_nombre; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_catalogo_solidos_nombre ON public.catalogo_combustibles_solidos USING btree (nombre);
+
+
+--
+-- TOC entry 5255 (class 1259 OID 16842)
+-- Name: idx_consenti_email; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_consenti_email ON public.consentimientos_usuario USING btree (email_usuario);
+
+
+--
+-- TOC entry 5256 (class 1259 OID 16843)
+-- Name: idx_consenti_fecha; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_consenti_fecha ON public.consentimientos_usuario USING btree (fecha_consentimiento);
+
+
+--
+-- TOC entry 5257 (class 1259 OID 16844)
+-- Name: idx_consenti_revocado; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_consenti_revocado ON public.consentimientos_usuario USING btree (consentimiento_revocado);
+
+
+--
+-- TOC entry 5258 (class 1259 OID 16841)
+-- Name: idx_consenti_usuario; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_consenti_usuario ON public.consentimientos_usuario USING btree (usuario_id);
+
+
+--
+-- TOC entry 5220 (class 1259 OID 16707)
+-- Name: idx_documentos_autogestion; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_documentos_autogestion ON public.documentos_generados USING btree (calculo_autogestion_id);
+
+
+--
+-- TOC entry 5221 (class 1259 OID 16709)
+-- Name: idx_documentos_fecha; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_documentos_fecha ON public.documentos_generados USING btree (fecha_generacion);
+
+
+--
+-- TOC entry 5222 (class 1259 OID 16706)
+-- Name: idx_documentos_huella; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_documentos_huella ON public.documentos_generados USING btree (calculo_huella_id);
+
+
+--
+-- TOC entry 5223 (class 1259 OID 16708)
+-- Name: idx_documentos_tipo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_documentos_tipo ON public.documentos_generados USING btree (tipo_documento);
+
+
+--
+-- TOC entry 5187 (class 1259 OID 16554)
+-- Name: idx_electricidad_año; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_electricidad_año" ON public.consumo_electricidad USING btree ("año");
+
+
+--
+-- TOC entry 5188 (class 1259 OID 16553)
+-- Name: idx_electricidad_calculo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_electricidad_calculo ON public.consumo_electricidad USING btree (calculo_id);
+
+
+--
+-- TOC entry 5274 (class 1259 OID 16909)
+-- Name: idx_elim_email; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_elim_email ON public.solicitudes_eliminacion USING btree (email_solicitante);
+
+
+--
+-- TOC entry 5275 (class 1259 OID 16911)
+-- Name: idx_elim_estado; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_elim_estado ON public.solicitudes_eliminacion USING btree (estado);
+
+
+--
+-- TOC entry 5276 (class 1259 OID 16913)
+-- Name: idx_elim_fecha_limite; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_elim_fecha_limite ON public.solicitudes_eliminacion USING btree (fecha_limite_legal);
+
+
+--
+-- TOC entry 5277 (class 1259 OID 16912)
+-- Name: idx_elim_fecha_solicitud; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_elim_fecha_solicitud ON public.solicitudes_eliminacion USING btree (fecha_solicitud);
+
+
+--
+-- TOC entry 5278 (class 1259 OID 16910)
+-- Name: idx_elim_usuario; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_elim_usuario ON public.solicitudes_eliminacion USING btree (usuario_id);
+
+
+--
+-- TOC entry 5195 (class 1259 OID 16595)
+-- Name: idx_extintores_calculo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_extintores_calculo ON public.extintores USING btree (calculo_id);
+
+
+--
+-- TOC entry 5196 (class 1259 OID 16596)
+-- Name: idx_extintores_tipo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_extintores_tipo ON public.extintores USING btree (tipo_gas);
+
+
+--
+-- TOC entry 5246 (class 1259 OID 16795)
+-- Name: idx_factores_electricidad_activo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_factores_electricidad_activo ON public.factores_electricidad_pais USING btree (activo);
+
+
+--
+-- TOC entry 5247 (class 1259 OID 16794)
+-- Name: idx_factores_electricidad_pais; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_factores_electricidad_pais ON public.factores_electricidad_pais USING btree (pais, "año");
+
+
+--
+-- TOC entry 5285 (class 1259 OID 16995)
+-- Name: idx_factores_vuelos_activo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_factores_vuelos_activo ON public.factores_vuelos USING btree (activo);
+
+
+--
+-- TOC entry 5286 (class 1259 OID 16994)
+-- Name: idx_factores_vuelos_clase; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_factores_vuelos_clase ON public.factores_vuelos USING btree (clase);
+
+
+--
+-- TOC entry 5182 (class 1259 OID 16522)
+-- Name: idx_gaseosos_calculo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_gaseosos_calculo ON public.combustibles_gaseosos USING btree (calculo_id);
+
+
+--
+-- TOC entry 5183 (class 1259 OID 16524)
+-- Name: idx_gaseosos_fuente; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_gaseosos_fuente ON public.combustibles_gaseosos USING btree (tipo_fuente);
+
+
+--
+-- TOC entry 5184 (class 1259 OID 16523)
+-- Name: idx_gaseosos_tipo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_gaseosos_tipo ON public.combustibles_gaseosos USING btree (tipo_combustible);
+
+
+--
+-- TOC entry 5167 (class 1259 OID 16467)
+-- Name: idx_huella_año; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_huella_año" ON public.calculos_huella_carbono USING btree ("año_reporte");
+
+
+--
+-- TOC entry 5168 (class 1259 OID 16464)
+-- Name: idx_huella_codigo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_huella_codigo ON public.calculos_huella_carbono USING btree (codigo_seguimiento);
+
+
+--
+-- TOC entry 5169 (class 1259 OID 16466)
+-- Name: idx_huella_fecha; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_huella_fecha ON public.calculos_huella_carbono USING btree (fecha_reporte);
+
+
+--
+-- TOC entry 5170 (class 1259 OID 16465)
+-- Name: idx_huella_nit; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_huella_nit ON public.calculos_huella_carbono USING btree (nit);
+
+
+--
+-- TOC entry 5177 (class 1259 OID 16502)
+-- Name: idx_liquidos_calculo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_liquidos_calculo ON public.combustibles_liquidos USING btree (calculo_id);
+
+
+--
+-- TOC entry 5178 (class 1259 OID 16504)
+-- Name: idx_liquidos_fuente; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_liquidos_fuente ON public.combustibles_liquidos USING btree (tipo_fuente);
+
+
+--
+-- TOC entry 5179 (class 1259 OID 16503)
+-- Name: idx_liquidos_tipo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_liquidos_tipo ON public.combustibles_liquidos USING btree (tipo_combustible);
+
+
+--
+-- TOC entry 5266 (class 1259 OID 16887)
+-- Name: idx_log_accion; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_log_accion ON public.log_acceso_datos USING btree (accion);
+
+
+--
+-- TOC entry 5267 (class 1259 OID 16884)
+-- Name: idx_log_email; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_log_email ON public.log_acceso_datos USING btree (email_usuario);
+
+
+--
+-- TOC entry 5268 (class 1259 OID 16885)
+-- Name: idx_log_empresa; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_log_empresa ON public.log_acceso_datos USING btree (empresa_id);
+
+
+--
+-- TOC entry 5269 (class 1259 OID 16886)
+-- Name: idx_log_fecha; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_log_fecha ON public.log_acceso_datos USING btree (fecha_acceso);
+
+
+--
+-- TOC entry 5270 (class 1259 OID 16888)
+-- Name: idx_log_tipo_dato; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_log_tipo_dato ON public.log_acceso_datos USING btree (tipo_dato);
+
+
+--
+-- TOC entry 5271 (class 1259 OID 16883)
+-- Name: idx_log_usuario; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_log_usuario ON public.log_acceso_datos USING btree (usuario_id);
+
+
+--
+-- TOC entry 5263 (class 1259 OID 16866)
+-- Name: idx_politicas_activa; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_politicas_activa ON public.historial_politicas USING btree (activa);
+
+
+--
+-- TOC entry 5264 (class 1259 OID 16865)
+-- Name: idx_politicas_tipo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_politicas_tipo ON public.historial_politicas USING btree (tipo);
+
+
+--
+-- TOC entry 5265 (class 1259 OID 16867)
+-- Name: idx_politicas_vigencia; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_politicas_vigencia ON public.historial_politicas USING btree (fecha_vigencia);
+
+
+--
+-- TOC entry 5213 (class 1259 OID 16680)
+-- Name: idx_promedios_bloque; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_promedios_bloque ON public.promedios_bloques_autogestion USING btree (bloque);
+
+
+--
+-- TOC entry 5214 (class 1259 OID 16678)
+-- Name: idx_promedios_calculo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_promedios_calculo ON public.promedios_bloques_autogestion USING btree (calculo_id);
+
+
+--
+-- TOC entry 5215 (class 1259 OID 16679)
+-- Name: idx_promedios_seccion; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_promedios_seccion ON public.promedios_bloques_autogestion USING btree (seccion);
+
+
+--
+-- TOC entry 5207 (class 1259 OID 16658)
+-- Name: idx_respuestas_bloque; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_respuestas_bloque ON public.respuestas_autogestion USING btree (bloque);
+
+
+--
+-- TOC entry 5208 (class 1259 OID 16656)
+-- Name: idx_respuestas_calculo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_respuestas_calculo ON public.respuestas_autogestion USING btree (calculo_id);
+
+
+--
+-- TOC entry 5209 (class 1259 OID 16659)
+-- Name: idx_respuestas_pregunta; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_respuestas_pregunta ON public.respuestas_autogestion USING btree (pregunta_id);
+
+
+--
+-- TOC entry 5210 (class 1259 OID 16657)
+-- Name: idx_respuestas_seccion; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_respuestas_seccion ON public.respuestas_autogestion USING btree (seccion);
+
+
+--
+-- TOC entry 5173 (class 1259 OID 16484)
+-- Name: idx_solidos_calculo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_solidos_calculo ON public.combustibles_solidos USING btree (calculo_id);
+
+
+--
+-- TOC entry 5174 (class 1259 OID 16485)
+-- Name: idx_solidos_tipo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_solidos_tipo ON public.combustibles_solidos USING btree (tipo_combustible);
+
+
+--
+-- TOC entry 5189 (class 1259 OID 16576)
+-- Name: idx_vuelos_calculo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_vuelos_calculo ON public.vuelos_aereos USING btree (calculo_id);
+
+
+--
+-- TOC entry 5190 (class 1259 OID 16577)
+-- Name: idx_vuelos_tipo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_vuelos_tipo ON public.vuelos_aereos USING btree (tipo_vuelo);
+
+
+--
+-- TOC entry 5305 (class 2620 OID 16951)
+-- Name: consumo_electricidad trg_actualizar_huella_electricidad; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_actualizar_huella_electricidad AFTER INSERT OR DELETE OR UPDATE ON public.consumo_electricidad FOR EACH ROW EXECUTE FUNCTION public.actualizar_totales_huella();
+
+
+--
+-- TOC entry 5309 (class 2620 OID 16953)
+-- Name: extintores trg_actualizar_huella_extintores; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_actualizar_huella_extintores AFTER INSERT OR DELETE OR UPDATE ON public.extintores FOR EACH ROW EXECUTE FUNCTION public.actualizar_totales_huella();
+
+
+--
+-- TOC entry 5303 (class 2620 OID 16950)
+-- Name: combustibles_gaseosos trg_actualizar_huella_gaseosos; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_actualizar_huella_gaseosos AFTER INSERT OR DELETE OR UPDATE ON public.combustibles_gaseosos FOR EACH ROW EXECUTE FUNCTION public.actualizar_totales_huella();
+
+
+--
+-- TOC entry 5301 (class 2620 OID 16949)
+-- Name: combustibles_liquidos trg_actualizar_huella_liquidos; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_actualizar_huella_liquidos AFTER INSERT OR DELETE OR UPDATE ON public.combustibles_liquidos FOR EACH ROW EXECUTE FUNCTION public.actualizar_totales_huella();
+
+
+--
+-- TOC entry 5299 (class 2620 OID 16948)
+-- Name: combustibles_solidos trg_actualizar_huella_solidos; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_actualizar_huella_solidos AFTER INSERT OR DELETE OR UPDATE ON public.combustibles_solidos FOR EACH ROW EXECUTE FUNCTION public.actualizar_totales_huella();
+
+
+--
+-- TOC entry 5307 (class 2620 OID 16952)
+-- Name: vuelos_aereos trg_actualizar_huella_vuelos; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_actualizar_huella_vuelos AFTER INSERT OR DELETE OR UPDATE ON public.vuelos_aereos FOR EACH ROW EXECUTE FUNCTION public.actualizar_totales_huella();
+
+
+--
+-- TOC entry 5310 (class 2620 OID 16959)
+-- Name: calculos_autogestion trg_audit_autogestion; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_audit_autogestion AFTER INSERT OR DELETE OR UPDATE ON public.calculos_autogestion FOR EACH ROW EXECUTE FUNCTION public.registrar_auditoria();
+
+
+--
+-- TOC entry 5297 (class 2620 OID 16958)
+-- Name: calculos_huella_carbono trg_audit_huella; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_audit_huella AFTER INSERT OR DELETE OR UPDATE ON public.calculos_huella_carbono FOR EACH ROW EXECUTE FUNCTION public.registrar_auditoria();
+
+
+--
+-- TOC entry 5306 (class 2620 OID 16944)
+-- Name: consumo_electricidad trg_calcular_emisiones_electricidad; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_calcular_emisiones_electricidad BEFORE INSERT OR UPDATE ON public.consumo_electricidad FOR EACH ROW EXECUTE FUNCTION public.calcular_emisiones_electricidad();
+
+
+--
+-- TOC entry 5304 (class 2620 OID 16942)
+-- Name: combustibles_gaseosos trg_calcular_emisiones_gaseosos; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_calcular_emisiones_gaseosos BEFORE INSERT OR UPDATE ON public.combustibles_gaseosos FOR EACH ROW EXECUTE FUNCTION public.calcular_emisiones_gaseosos();
+
+
+--
+-- TOC entry 5302 (class 2620 OID 16940)
+-- Name: combustibles_liquidos trg_calcular_emisiones_liquidos; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_calcular_emisiones_liquidos BEFORE INSERT OR UPDATE ON public.combustibles_liquidos FOR EACH ROW EXECUTE FUNCTION public.calcular_emisiones_liquidos();
+
+
+--
+-- TOC entry 5300 (class 2620 OID 16938)
+-- Name: combustibles_solidos trg_calcular_emisiones_solidos; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_calcular_emisiones_solidos BEFORE INSERT OR UPDATE ON public.combustibles_solidos FOR EACH ROW EXECUTE FUNCTION public.calcular_emisiones_solidos();
+
+
+--
+-- TOC entry 5308 (class 2620 OID 16946)
+-- Name: vuelos_aereos trg_calcular_emisiones_vuelos; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_calcular_emisiones_vuelos BEFORE INSERT OR UPDATE ON public.vuelos_aereos FOR EACH ROW EXECUTE FUNCTION public.calcular_emisiones_vuelos();
+
+
+--
+-- TOC entry 5311 (class 2620 OID 16956)
+-- Name: calculos_autogestion trg_fecha_autogestion; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_fecha_autogestion BEFORE UPDATE ON public.calculos_autogestion FOR EACH ROW EXECUTE FUNCTION public.actualizar_fecha_modificacion();
+
+
+--
+-- TOC entry 5298 (class 2620 OID 16955)
+-- Name: calculos_huella_carbono trg_fecha_huella; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_fecha_huella BEFORE UPDATE ON public.calculos_huella_carbono FOR EACH ROW EXECUTE FUNCTION public.actualizar_fecha_modificacion();
+
+
+--
+-- TOC entry 5312 (class 2620 OID 16915)
+-- Name: consentimientos_usuario trigger_consenti_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_consenti_updated_at BEFORE UPDATE ON public.consentimientos_usuario FOR EACH ROW EXECUTE FUNCTION public.actualizar_updated_at();
+
+
+--
+-- TOC entry 5315 (class 2620 OID 16917)
+-- Name: solicitudes_eliminacion trigger_elim_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_elim_updated_at BEFORE UPDATE ON public.solicitudes_eliminacion FOR EACH ROW EXECUTE FUNCTION public.actualizar_updated_at();
+
+
+--
+-- TOC entry 5316 (class 2620 OID 16919)
+-- Name: solicitudes_eliminacion trigger_fecha_limite_eliminacion; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_fecha_limite_eliminacion BEFORE INSERT ON public.solicitudes_eliminacion FOR EACH ROW EXECUTE FUNCTION public.calcular_fecha_limite_eliminacion();
+
+
+--
+-- TOC entry 5313 (class 2620 OID 16921)
+-- Name: consentimientos_usuario trigger_log_revocacion; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_log_revocacion AFTER UPDATE ON public.consentimientos_usuario FOR EACH ROW EXECUTE FUNCTION public.registrar_revocacion_consentimiento();
+
+
+--
+-- TOC entry 5314 (class 2620 OID 16916)
+-- Name: historial_politicas trigger_politicas_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_politicas_updated_at BEFORE UPDATE ON public.historial_politicas FOR EACH ROW EXECUTE FUNCTION public.actualizar_updated_at();
+
+
+--
+-- TOC entry 5289 (class 2606 OID 16517)
+-- Name: combustibles_gaseosos combustibles_gaseosos_calculo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.combustibles_gaseosos
+    ADD CONSTRAINT combustibles_gaseosos_calculo_id_fkey FOREIGN KEY (calculo_id) REFERENCES public.calculos_huella_carbono(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5288 (class 2606 OID 16497)
+-- Name: combustibles_liquidos combustibles_liquidos_calculo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.combustibles_liquidos
+    ADD CONSTRAINT combustibles_liquidos_calculo_id_fkey FOREIGN KEY (calculo_id) REFERENCES public.calculos_huella_carbono(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5287 (class 2606 OID 16479)
+-- Name: combustibles_solidos combustibles_solidos_calculo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.combustibles_solidos
+    ADD CONSTRAINT combustibles_solidos_calculo_id_fkey FOREIGN KEY (calculo_id) REFERENCES public.calculos_huella_carbono(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5290 (class 2606 OID 16548)
+-- Name: consumo_electricidad consumo_electricidad_calculo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.consumo_electricidad
+    ADD CONSTRAINT consumo_electricidad_calculo_id_fkey FOREIGN KEY (calculo_id) REFERENCES public.calculos_huella_carbono(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5295 (class 2606 OID 16701)
+-- Name: documentos_generados documentos_generados_calculo_autogestion_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.documentos_generados
+    ADD CONSTRAINT documentos_generados_calculo_autogestion_id_fkey FOREIGN KEY (calculo_autogestion_id) REFERENCES public.calculos_autogestion(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5296 (class 2606 OID 16696)
+-- Name: documentos_generados documentos_generados_calculo_huella_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.documentos_generados
+    ADD CONSTRAINT documentos_generados_calculo_huella_id_fkey FOREIGN KEY (calculo_huella_id) REFERENCES public.calculos_huella_carbono(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5292 (class 2606 OID 16590)
+-- Name: extintores extintores_calculo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.extintores
+    ADD CONSTRAINT extintores_calculo_id_fkey FOREIGN KEY (calculo_id) REFERENCES public.calculos_huella_carbono(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5294 (class 2606 OID 16673)
+-- Name: promedios_bloques_autogestion promedios_bloques_autogestion_calculo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.promedios_bloques_autogestion
+    ADD CONSTRAINT promedios_bloques_autogestion_calculo_id_fkey FOREIGN KEY (calculo_id) REFERENCES public.calculos_autogestion(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5293 (class 2606 OID 16651)
+-- Name: respuestas_autogestion respuestas_autogestion_calculo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.respuestas_autogestion
+    ADD CONSTRAINT respuestas_autogestion_calculo_id_fkey FOREIGN KEY (calculo_id) REFERENCES public.calculos_autogestion(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5291 (class 2606 OID 16571)
+-- Name: vuelos_aereos vuelos_aereos_calculo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vuelos_aereos
+    ADD CONSTRAINT vuelos_aereos_calculo_id_fkey FOREIGN KEY (calculo_id) REFERENCES public.calculos_huella_carbono(id) ON DELETE CASCADE;
+
+
+-- Completed on 2025-10-09 06:33:25
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict Uh5dzlye82XeaajMYJdKjJrCE5YVj2GtJvhjCzdmYs0iyyWLTO5XekFudgf4Mke
+
