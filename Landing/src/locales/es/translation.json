@@ -84,6 +84,11 @@
       "breadcrumbHome": "Inicio",
       "breadcrumbConcepts": "Conceptos Claves"
     },
+    "results": {
+      "title": "Resultados de Huella de Carbono",
+      "description": "Aquí puedes ver los resultados de la evaluación de la huella de carbono de tu organización.",
+      "cardDescription": "Documento que resume los resultados de la evaluación de la huella de carbono, incluyendo recomendaciones para la reducción de emisiones."
+    },
     "environmentalProblems": {
       "title": "Problemas Medio Ambientales",
       "subtitle": "Comprende los principales desafíos ambientales que enfrentamos y su impacto en el cambio climático global.",

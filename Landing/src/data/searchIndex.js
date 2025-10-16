@@ -274,7 +274,7 @@ const searchIndex = [
       type: "documento",
       description: "Recomendaciones para optimizar el consumo energético.",
       action: { route: "/huella-carbono", sectionId: "uso-energia", docId: "7.Uso_eficiente_y_ahorro_de_energia.pdf" }
-    },
+    }
 ];
 
 export default searchIndex;

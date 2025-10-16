@@ -8,7 +8,7 @@ require('dotenv').config();
 // IMPORT SERVICES
 // ============================================================================
 const { verificarConexion, ejecutarQuery } = require('./database/config');
-const DatabaseService = require('./services/DatabaseService');
+const DatabaseService = require('./database/DatabaseService');
 
 module.exports = function(app) {
   app.use(express.json({ limit: '50mb' }));

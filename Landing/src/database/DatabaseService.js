@@ -171,7 +171,7 @@ class DatabaseService {
             // 9. Obtener totales calculados automáticamente por los triggers
             const totalesResult = await client.query(
                 `SELECT emisiones_alcance_1, emisiones_alcance_2, emisiones_alcance_3, emisiones_totales
-                 FROM calculos_huella_carbono WHERE id = $1`,
+                FROM calculos_huella_carbono WHERE id = $1`,
                 [calculoId]
             );
             

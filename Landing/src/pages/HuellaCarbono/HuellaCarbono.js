@@ -111,6 +111,7 @@ class HuellaCarbono extends Component {
                   <p className="text-white-70 para-desc mb-0 mx-auto">
                     {t('huellaCarbono.hero.description')}
                   </p>
+                  
                   <nav aria-label="breadcrumb" className="d-inline-block mt-4">
                     <ul className="breadcrumb bg-transparent mb-0 p-0">
                       <li className="breadcrumb-item">

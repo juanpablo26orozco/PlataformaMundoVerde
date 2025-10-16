@@ -336,6 +336,7 @@ const FormularioHuella = ({ onFormComplete }) => {
       }
     };
     
+    console.log('DEBUG ENVÍO HUELLA DE CARBONO:', JSON.stringify(datosCompletos, null, 2));
     try {
       // Guardar en base de datos
       const response = await fetch('/api/huella-carbono/guardar', {
