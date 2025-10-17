@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/PlataformaMundoVerde/static/css/main.551ef2b3.css",
-    "main.js": "/PlataformaMundoVerde/static/js/main.6d6192b0.js",
-    "static/js/356.a716582d.chunk.js": "/PlataformaMundoVerde/static/js/356.a716582d.chunk.js",
-    "static/js/302.0f66428a.chunk.js": "/PlataformaMundoVerde/static/js/302.0f66428a.chunk.js",
-    "static/js/301.7cd7adad.chunk.js": "/PlataformaMundoVerde/static/js/301.7cd7adad.chunk.js",
+    "main.css": "/PlataformaMundoVerde/static/css/main.ef3d7f6f.css",
+    "main.js": "/PlataformaMundoVerde/static/js/main.8d94d370.js",
+    "static/js/356.98800a6e.chunk.js": "/PlataformaMundoVerde/static/js/356.98800a6e.chunk.js",
+    "static/js/302.dcc828f5.chunk.js": "/PlataformaMundoVerde/static/js/302.dcc828f5.chunk.js",
+    "static/js/301.f600efbb.chunk.js": "/PlataformaMundoVerde/static/js/301.f600efbb.chunk.js",
     "static/css/706.b96c7094.chunk.css": "/PlataformaMundoVerde/static/css/706.b96c7094.chunk.css",
-    "static/js/706.585f3ae3.chunk.js": "/PlataformaMundoVerde/static/js/706.585f3ae3.chunk.js",
+    "static/js/706.e60d88b9.chunk.js": "/PlataformaMundoVerde/static/js/706.e60d88b9.chunk.js",
     "static/css/836.e71fb104.chunk.css": "/PlataformaMundoVerde/static/css/836.e71fb104.chunk.css",
-    "static/js/836.1023788a.chunk.js": "/PlataformaMundoVerde/static/js/836.1023788a.chunk.js",
+    "static/js/836.17668e9a.chunk.js": "/PlataformaMundoVerde/static/js/836.17668e9a.chunk.js",
     "static/media/vista-de-los-arboles-del-bosque-verde-con-co2.jpg": "/PlataformaMundoVerde/static/media/vista-de-los-arboles-del-bosque-verde-con-co2.a0592c918116d6053e4a.jpg",
     "static/media/iot-de-agricultura-inteligente-con-fondo-de-arbol-de-plantacion-manual.jpg": "/PlataformaMundoVerde/static/media/iot-de-agricultura-inteligente-con-fondo-de-arbol-de-plantacion-manual.027d8aa0c8aa149e129a.jpg",
     "static/media/materialdesignicons-webfont.eot": "/PlataformaMundoVerde/static/media/materialdesignicons-webfont.7a50c73b9b770af3fa7e.eot",
@@ -42,18 +42,18 @@
     "static/media/auth-bg-dark.png": "/PlataformaMundoVerde/static/media/auth-bg-dark.650043f166b652ca5f9f.png",
     "static/media/hero-5-bg-dark.png": "/PlataformaMundoVerde/static/media/hero-5-bg-dark.47879615476b009de6b4.png",
     "index.html": "/PlataformaMundoVerde/index.html",
-    "main.551ef2b3.css.map": "/PlataformaMundoVerde/static/css/main.551ef2b3.css.map",
-    "main.6d6192b0.js.map": "/PlataformaMundoVerde/static/js/main.6d6192b0.js.map",
-    "356.a716582d.chunk.js.map": "/PlataformaMundoVerde/static/js/356.a716582d.chunk.js.map",
-    "302.0f66428a.chunk.js.map": "/PlataformaMundoVerde/static/js/302.0f66428a.chunk.js.map",
-    "301.7cd7adad.chunk.js.map": "/PlataformaMundoVerde/static/js/301.7cd7adad.chunk.js.map",
+    "main.ef3d7f6f.css.map": "/PlataformaMundoVerde/static/css/main.ef3d7f6f.css.map",
+    "main.8d94d370.js.map": "/PlataformaMundoVerde/static/js/main.8d94d370.js.map",
+    "356.98800a6e.chunk.js.map": "/PlataformaMundoVerde/static/js/356.98800a6e.chunk.js.map",
+    "302.dcc828f5.chunk.js.map": "/PlataformaMundoVerde/static/js/302.dcc828f5.chunk.js.map",
+    "301.f600efbb.chunk.js.map": "/PlataformaMundoVerde/static/js/301.f600efbb.chunk.js.map",
     "706.b96c7094.chunk.css.map": "/PlataformaMundoVerde/static/css/706.b96c7094.chunk.css.map",
-    "706.585f3ae3.chunk.js.map": "/PlataformaMundoVerde/static/js/706.585f3ae3.chunk.js.map",
+    "706.e60d88b9.chunk.js.map": "/PlataformaMundoVerde/static/js/706.e60d88b9.chunk.js.map",
     "836.e71fb104.chunk.css.map": "/PlataformaMundoVerde/static/css/836.e71fb104.chunk.css.map",
-    "836.1023788a.chunk.js.map": "/PlataformaMundoVerde/static/js/836.1023788a.chunk.js.map"
+    "836.17668e9a.chunk.js.map": "/PlataformaMundoVerde/static/js/836.17668e9a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.551ef2b3.css",
-    "static/js/main.6d6192b0.js"
+    "static/css/main.ef3d7f6f.css",
+    "static/js/main.8d94d370.js"
   ]
 }
