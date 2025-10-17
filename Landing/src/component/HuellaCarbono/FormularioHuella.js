@@ -356,11 +356,14 @@ const FormularioHuella = ({ onFormComplete }) => {
       const resultado = await response.json();
       
       if (resultado.success) {
-        console.log('✅ Cálculo guardado en BD:', resultado.codigo);
-        console.log('✅ ID del cálculo:', resultado.id);
+        const codigoGenerado = resultado.codigo || resultado.data?.codigo || null;
+        const idGenerado = resultado.id || resultado.data?.id || null;
+
+        console.log('✅ Cálculo guardado en BD:', codigoGenerado);
+        console.log('✅ ID del cálculo:', idGenerado);
         
         // Guardar el código para mostrarlo en pantalla
-        setCodigoSeguimiento(resultado.codigo);
+        setCodigoSeguimiento(codigoGenerado);
         
         // Mostrar el resumen (avanzar al paso final)
         setResumenCalculado(true);
@@ -1654,6 +1657,54 @@ const FormularioHuella = ({ onFormComplete }) => {
                   {/* Mostrar resumen solo después de calcular */}
                   {resumenCalculado && (
                     <div ref={resumenRef} style={{ maxWidth: 900, margin: '2rem auto', background: '#f6fff7', borderRadius: 28, boxShadow: '0 8px 32px #b7e4c7', border: '2px solid #b7e4c7', padding: 48, textAlign: 'center' }}>
+                      {codigoSeguimiento && (
+                        <div style={{
+                          maxWidth: 580,
+                          margin: '0 auto 32px auto',
+                          padding: '26px 36px',
+                          borderRadius: 20,
+                          background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                          border: '3px solid #2196F3',
+                          boxShadow: '0 12px 32px rgba(33, 150, 243, 0.25)'
+                        }}>
+                          <h3 style={{
+                            color: '#1976D2',
+                            fontWeight: 900,
+                            fontSize: '1.5rem',
+                            marginBottom: 18,
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px'
+                          }}>
+                            
+                          </h3>
+                          <p style={{
+                            color: '#424242',
+                            fontWeight: 600,
+                            marginBottom: 12,
+                            fontSize: '1.1rem'
+                          }}>
+                            ID del cálculo:
+                          </p>
+                          <p style={{
+                            color: '#1976D2',
+                            fontWeight: 900,
+                            fontSize: '2rem',
+                            margin: 0,
+                            fontFamily: 'monospace',
+                            letterSpacing: '3px'
+                          }}>
+                            {codigoSeguimiento}
+                          </p>
+                          <p style={{
+                            color: '#546e7a',
+                            fontSize: '1rem',
+                            marginTop: 16,
+                            lineHeight: 1.6
+                          }}>
+                            Guarda este identificador para consultar o descargar el cálculo en el futuro.
+                          </p>
+                        </div>
+                      )}
                       <div style={{display:'flex', alignItems:'center', justifyContent:'center', marginBottom:24}}>
       <div style={{background:'#d8f3dc', borderRadius:'50%', width:60, height:60, display:'flex', alignItems:'center', justifyContent:'center', marginRight:16, boxShadow:'0 2px 8px #b7e4c7'}}>
         <FeatherIcon icon="activity" size={36} color="#1b5e20" />
@@ -1662,36 +1713,6 @@ const FormularioHuella = ({ onFormComplete }) => {
         <h2 style={{color:'#1b5e20', fontWeight:800, margin:0, fontSize:32, letterSpacing:0.5}}>{t('calculadora.form.consumptionSummary')}</h2>
       </div>
     </div>
-    
-    {/* CÓDIGO DE SEGUIMIENTO */}
-    {codigoSeguimiento && (
-      <div style={{
-        background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
-        borderRadius: 16,
-        padding: '20px 32px',
-        marginBottom: 24,
-        boxShadow: '0 4px 20px rgba(33, 150, 243, 0.3)',
-        border: '2px solid #1976D2',
-        textAlign: 'center'
-      }}>
-        <div style={{color: '#fff', fontSize: 16, fontWeight: 600, marginBottom: 8, letterSpacing: 0.5}}>
-          📋 CÓDIGO DE SEGUIMIENTO
-        </div>
-        <div style={{
-          color: '#fff',
-          fontSize: 32,
-          fontWeight: 800,
-          letterSpacing: 2,
-          fontFamily: 'monospace',
-          textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-        }}>
-          {codigoSeguimiento}
-        </div>
-        <div style={{color: '#E3F2FD', fontSize: 14, marginTop: 8, fontStyle: 'italic'}}>
-          Guarda este código para consultar tu cálculo más tarde
-        </div>
-      </div>
-    )}
     
     <div style={{display:'flex', flexWrap:'wrap', gap:32, justifyContent:'center'}}>
       <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #d8f3dc', padding:24, minWidth:260, maxWidth:320, flex:1, border:'2px solid #b7e4c7'}}>

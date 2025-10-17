@@ -1522,9 +1522,323 @@ module.exports = function(app) {
     try {
       console.log('💾 Recibida solicitud de guardado de huella de carbono...');
       console.log('📊 Datos recibidos:', JSON.stringify(req.body, null, 2));
-      
-      const resultado = await DatabaseService.guardarHuellaCarbono(req.body);
-      
+
+      const datosCompletos = req.body;
+      if (!datosCompletos || !datosCompletos.datosEmpresa) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Faltan datos de la empresa' 
+        });
+      }
+
+      // Helpers para normalizar datos numéricos y de texto
+      const toNumber = (value) => {
+        if (value === null || value === undefined) return 0;
+        if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (trimmed.length === 0) return 0;
+
+          const cleaned = trimmed.replace(/[^0-9.,-]/g, '');
+          if (!cleaned || cleaned === '-' || cleaned === '.' || cleaned === ',') {
+            return 0;
+          }
+
+          const hasComma = cleaned.includes(',');
+          const hasDot = cleaned.includes('.');
+          let normalized = cleaned;
+
+          if (hasComma && hasDot) {
+            if (cleaned.lastIndexOf(',') > cleaned.lastIndexOf('.')) {
+              normalized = cleaned.replace(/\./g, '').replace(',', '.');
+            } else {
+              normalized = cleaned.replace(/,/g, '');
+            }
+          } else if (hasComma) {
+            normalized = cleaned.replace(/,/g, '.');
+          } else if (hasDot) {
+            const parts = cleaned.split('.');
+            if (parts.length > 2) {
+              const decimal = parts.pop();
+              normalized = parts.join('') + '.' + decimal;
+            }
+          }
+
+          const parsed = Number(normalized);
+          return Number.isFinite(parsed) ? parsed : 0;
+        }
+        return 0;
+      };
+
+      const sanitizeText = (value, { allowEmpty = false } = {}) => {
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (trimmed.length === 0) {
+            return allowEmpty ? '' : null;
+          }
+          return trimmed;
+        }
+        if (value === null || value === undefined) {
+          return allowEmpty ? '' : null;
+        }
+        return value;
+      };
+
+      const ensureDate = (value) => {
+        if (!value) {
+          return new Date().toISOString().split('T')[0];
+        }
+        const parsed = new Date(value);
+        if (Number.isNaN(parsed.getTime())) {
+          return new Date().toISOString().split('T')[0];
+        }
+        return parsed.toISOString().split('T')[0];
+      };
+
+      const parseYear = (value, fallbackYear) => {
+        const year = parseInt(value, 10);
+        if (!Number.isNaN(year) && year >= 1900 && year <= 9999) {
+          return year;
+        }
+        return fallbackYear;
+      };
+
+      const mapCombustiblesSolidos = (lista = []) => {
+        return (lista || [])
+          .map((item) => {
+            const tipo = sanitizeText(item?.combustible || item?.tipo || item?.nombre);
+            const consumo = toNumber(item?.consumoAnual || item?.consumo || item?.cantidad);
+            if (!tipo || consumo <= 0) {
+              return null;
+            }
+            return {
+              tipo,
+              consumoAnual: consumo,
+              unidad: 'kg',
+              factores: {
+                poderCalorifico: toNumber(item?.poderCalorifico || item?.poder_calorifico),
+                factorCO2: toNumber(item?.factorCO2 || item?.factor_co2),
+                factorCH4: toNumber(item?.factorCH4 || item?.factor_ch4),
+                factorN2O: toNumber(item?.factorN2O || item?.factor_n2o),
+                factorSO2: toNumber(item?.factorSO2 || item?.factor_so2)
+              }
+            };
+          })
+          .filter(Boolean);
+      };
+
+      const mapCombustiblesLiquidos = (lista = [], tipoFuente = 'Estacionario') => {
+        return (lista || [])
+          .map((item) => {
+            const tipo = sanitizeText(item?.combustible || item?.tipo || item?.nombre);
+            if (!tipo) {
+              return null;
+            }
+
+            const unidad = sanitizeText(item?.unidad || item?.unidadMedida || item?.unidad_consumo);
+            const consumoReferencia = toNumber(item?.consumoAnual || item?.consumo || item?.cantidad);
+            let consumoLitros = consumoReferencia;
+
+            if (unidad) {
+              const unidadLower = unidad.toLowerCase();
+              if (unidadLower.includes('gal')) {
+                consumoLitros = consumoReferencia * 3.78541;
+              } else if (unidadLower.includes('m3')) {
+                consumoLitros = consumoReferencia * 1000;
+              } else if (unidadLower.includes('l')) {
+                consumoLitros = consumoReferencia;
+              }
+            } else if (!item?.consumoAnual) {
+              consumoLitros = consumoReferencia * 3.78541;
+            }
+
+            if (consumoLitros <= 0) {
+              return null;
+            }
+
+            return {
+              tipo,
+              tipoFuente,
+              consumoAnual: consumoLitros,
+              factores: {
+                densidad: toNumber(item?.densidad),
+                poderCalorifico: toNumber(item?.poderCalorifico || item?.poder_calorifico),
+                factorCO2: toNumber(item?.factorCO2 || item?.factor_co2),
+                factorCH4: toNumber(item?.factorCH4 || item?.factor_ch4),
+                factorN2O: toNumber(item?.factorN2O || item?.factor_n2o),
+                factorSO2: toNumber(item?.factorSO2 || item?.factor_so2)
+              }
+            };
+          })
+          .filter(Boolean);
+      };
+
+      const mapCombustiblesGaseosos = (lista = [], tipoFuente = 'Estacionario') => {
+        return (lista || [])
+          .map((item) => {
+            const tipo = sanitizeText(item?.combustible || item?.tipo || item?.nombre);
+            const consumo = toNumber(item?.consumoAnual || item?.consumo || item?.cantidad);
+            if (!tipo || consumo <= 0) {
+              return null;
+            }
+            return {
+              tipo,
+              tipoFuente,
+              consumoAnual: consumo,
+              unidad: sanitizeText(item?.unidad || item?.unidadMedida) || 'm³',
+              factores: {
+                poderCalorifico: toNumber(item?.poderCalorifico || item?.poder_calorifico),
+                factorCO2: toNumber(item?.factorCO2 || item?.factor_co2),
+                factorCH4: toNumber(item?.factorCH4 || item?.factor_ch4),
+                factorN2O: toNumber(item?.factorN2O || item?.factor_n2o),
+                factorSO2: toNumber(item?.factorSO2 || item?.factor_so2)
+              }
+            };
+          })
+          .filter(Boolean);
+      };
+
+      const mapElectricidad = (lista = [], añoFallback, factorDefault = 0.164) => {
+        const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+        return (lista || [])
+          .map((item, index) => {
+            const consumoMensual = {};
+            let consumoTotal = 0;
+
+            meses.forEach((mes) => {
+              const valor = toNumber(item?.[mes]);
+              consumoMensual[mes] = valor;
+              consumoTotal += valor;
+            });
+
+            const nombreInstalacion = sanitizeText(item?.instalacion || item?.sede);
+            if (!nombreInstalacion && consumoTotal <= 0) {
+              return null;
+            }
+
+            return {
+              año: parseYear(item?.año, añoFallback),
+              nombreInstalacion: nombreInstalacion || `Instalación ${index + 1}`,
+              consumoMensual,
+              factorEmision: toNumber(item?.factor || item?.factorEmision || factorDefault)
+            };
+          })
+          .filter(Boolean);
+      };
+
+      const mapVuelos = (lista = []) => {
+        return (lista || [])
+          .map((item) => {
+            const origenCiudad = sanitizeText(item?.origen?.ciudad || item?.ciudadOrigen || item?.origen);
+            const destinoCiudad = sanitizeText(item?.destino?.ciudad || item?.ciudadDestino || item?.destino);
+            const distancia = toNumber(item?.distanciaKm || item?.distancia);
+            if (!origenCiudad || !destinoCiudad || distancia <= 0) {
+              return null;
+            }
+
+            return {
+              origen: {
+                ciudad: origenCiudad,
+                pais: sanitizeText(item?.origen?.pais || item?.paisOrigen) || 'Colombia'
+              },
+              destino: {
+                ciudad: destinoCiudad,
+                pais: sanitizeText(item?.destino?.pais || item?.paisDestino) || 'Colombia'
+              },
+              tipoVuelo: sanitizeText(item?.tipoVuelo || item?.tipo) || 'Nacional',
+              clase: sanitizeText(item?.clase) || 'Economica',
+              numeroPasajeros: Math.max(parseInt(item?.personas || item?.numeroPasajeros, 10) || 1, 1),
+              distanciaKm: distancia,
+              factorEmision: toNumber(item?.factorEmision || item?.factor)
+            };
+          })
+          .filter(Boolean);
+      };
+
+      const mapExtintores = (lista = []) => {
+        return (lista || [])
+          .map((item) => {
+            const tipoGas = sanitizeText(item?.tipo || item?.tipoGas);
+            const cantidad = toNumber(item?.cantidad);
+            const pcg = toNumber(item?.pcg);
+            if (!tipoGas || cantidad <= 0 || pcg <= 0) {
+              return null;
+            }
+            return { tipoGas, cantidad, pcg };
+          })
+          .filter(Boolean);
+      };
+
+      const fechaReporte = ensureDate(datosCompletos?.datosEmpresa?.fechaReporte || datosCompletos?.fecha);
+      const añoReporte = parseYear(datosCompletos?.datosEmpresa?.añoBase, new Date(fechaReporte).getFullYear());
+
+      const combustiblesSolidos = mapCombustiblesSolidos(datosCompletos?.solidos);
+      const combustiblesLiquidos = [
+        ...mapCombustiblesLiquidos(datosCompletos?.liquidos, 'Estacionario'),
+        ...mapCombustiblesLiquidos(datosCompletos?.liquidosMoviles, 'Móvil')
+      ];
+      const combustiblesGaseosos = [
+        ...mapCombustiblesGaseosos(datosCompletos?.gaseosos, 'Estacionario'),
+        ...mapCombustiblesGaseosos(datosCompletos?.gaseososMoviles, 'Móvil')
+      ];
+      const electricidad = mapElectricidad(datosCompletos?.electricidad, añoReporte);
+      const vuelosAereos = mapVuelos(datosCompletos?.vuelos);
+      const extintores = mapExtintores(datosCompletos?.extintores);
+
+      const alcance1 = toNumber(datosCompletos?.resultados?.alcance1);
+      const alcance2 = toNumber(datosCompletos?.resultados?.alcance2);
+      const alcance3 = toNumber(datosCompletos?.resultados?.alcance3);
+      const totalEmisionesTon = alcance1 + alcance2 + alcance3;
+
+      const evaluacionNivel = sanitizeText(datosCompletos?.evaluacion?.nivel);
+      const evaluacionArboles = parseInt(
+        datosCompletos?.evaluacion?.arboles ?? datosCompletos?.evaluacion?.arbolesCompensar,
+        10
+      );
+
+      const datosParaBD = {
+        empresa: {
+          nombre: sanitizeText(datosCompletos.datosEmpresa.nombreEmpresa, { allowEmpty: true }),
+          nit: sanitizeText(datosCompletos.datosEmpresa.nit, { allowEmpty: true }),
+          sector: sanitizeText(datosCompletos.datosEmpresa.sector),
+          departamento: sanitizeText(datosCompletos.datosEmpresa.departamento),
+          municipio: sanitizeText(datosCompletos.datosEmpresa.municipio || datosCompletos.datosEmpresa.ciudad),
+          direccion: sanitizeText(datosCompletos.datosEmpresa.direccion),
+          telefono: sanitizeText(datosCompletos.datosEmpresa.telefono),
+          correo: sanitizeText(datosCompletos.datosEmpresa.correo),
+          personaElabora: sanitizeText(datosCompletos.datosEmpresa.personaElabora),
+          cargo: sanitizeText(datosCompletos.datosEmpresa.cargo)
+        },
+        añoReporte,
+        fechaReporte,
+        periodoInicio: sanitizeText(datosCompletos?.periodoInicio || datosCompletos?.datosEmpresa?.periodoInicio),
+        periodoFin: sanitizeText(datosCompletos?.periodoFin || datosCompletos?.datosEmpresa?.periodoFin),
+        combustiblesSolidos,
+        combustiblesLiquidos,
+        combustiblesGaseosos,
+        electricidad,
+        vuelosAereos,
+        extintores,
+        evaluacion: {
+          nivel: evaluacionNivel,
+          arbolesCompensar: Number.isFinite(evaluacionArboles) && evaluacionArboles > 0
+            ? evaluacionArboles
+            : Math.max(Math.ceil(totalEmisionesTon * 18.3), 0)
+        },
+        notas: sanitizeText(datosCompletos?.notas)
+      };
+
+      console.log('📦 Registros preparados:', {
+        solidos: combustiblesSolidos.length,
+        liquidos: combustiblesLiquidos.length,
+        gaseosos: combustiblesGaseosos.length,
+        electricidad: electricidad.length,
+        vuelos: vuelosAereos.length,
+        extintores: extintores.length
+      });
+
+      const resultado = await DatabaseService.guardarHuellaCarbono(datosParaBD);
+
       if (resultado.success) {
         console.log('✅ Huella de carbono guardada exitosamente:', resultado.data.codigo);
         res.status(200).json(resultado);

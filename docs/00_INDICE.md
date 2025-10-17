@@ -76,6 +76,18 @@ Esta carpeta contiene la documentación técnica completa del sistema. Lee los d
 
 ---
 
+### 6. [CORRECCION_HUELLA_2025-10-17.md](./06_CORRECCION_HUELLA_2025-10-17.md)
+**Contenido:**
+- Análisis del error `NaN` al guardar cálculos HC
+- Normalización de datos en `/api/huella-carbono/guardar`
+- Conversión de unidades y sanitización numérica
+- Nuevo banner de código en `FormularioHuella`
+- Pruebas manuales recomendadas post-fix
+
+**Para quién:** Equipo de mantenimiento (frontend/backend)
+
+---
+
 ## 🚀 Guía Rápida
 
 ### Para empezar desde cero:
